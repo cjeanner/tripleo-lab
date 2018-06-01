@@ -3,11 +3,10 @@
   <memory>{{item.memory}}</memory>
   <vcpu>{{item.cpu}}</vcpu>
   <os>
-    <type arch="x84_64">hvm</type>
+    <type arch="x86_64">hvm</type>
   </os>
   <clock sync="localtime"/>
   <devices>
-    <emulator>/usr/bin/qemu-kvm</emulator>
     <disk type='file' device='disk'>
       <source file='{{basedir}}/workload/{{item.name}}.qcow2'/>
       <target dev='hda'/>
