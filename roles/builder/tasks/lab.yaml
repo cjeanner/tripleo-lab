@@ -1,0 +1,16 @@
+---
+
+- name: all tasks run as virt_user
+  become: yes
+  become_user: "{{ virt_user }}"
+  block:
+    - name: define node
+      tags:
+        - libvirt
+        - domains
+      virt:
+        name: "{{ item.name }}"
+        command: define
+        xml: "{{ lookup('template', 'domain.xml.j2') }}"
+        uri: "qemu:///system"
+      loop: "{{ vms }}"

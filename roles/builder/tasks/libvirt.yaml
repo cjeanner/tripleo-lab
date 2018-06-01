@@ -1,0 +1,64 @@
+---
+- name: create virt_user
+  tags:
+    - libvirt
+    - config
+  user:
+    comment: "Virtual user for tripleo lab"
+    create_home: yes
+    generate_ssh_key: yes
+    home: "{{basedir}}"
+    name: "{{virt_user}}"
+    shell: "/bin/bash"
+    ssh_key_bits: 4096
+    state: present
+
+- name: push polkit config
+  tags:
+    - libvirt
+    - config
+  template:
+    dest: /etc/polkit-1/rules.d/50-org.libvirt.unix.manage.rules
+    src: "50-org.libvirt.unix.manage.rules.j2"
+    group: root
+    mode: 0644
+    owner: root
+    serole: object_r
+    setype: etc_t
+    seuser: system_u
+
+- name: run tasks as virt_user user
+  become: yes
+  become_user: "{{ virt_user }}"
+  block:
+    - name: create some directories
+      tags:
+        - libvirt
+        - config
+      file:
+        state: directory
+        path: "{{basedir}}/{{item}}"
+        mode: 0750
+      with_items:
+        - images
+        - workload
+
+    - name: fetch centos base image
+      tags:
+        - libvirt
+        - images
+      get_url:
+        url: "http://cloud.centos.org/centos/7/images/CentOS-7-x86_64-GenericCloud.qcow2"
+        dest: "{{basedir}}/images/centos-7.qcow2"
+        mode: 0644
+
+    - name: create images based on centos
+      tags:
+        - libvirt
+        - images
+      command: |
+        qemu-img create -o backing_file=../images/centos-7.qcow2,backing_fmt=qcow2 -f qcow2 "{{item.name}}".qcow2 50G
+      args:
+        creates: "{{basedir}}/workload/{{item.name}}.qcow2"
+        chdir: "{{basedir}}/workload"
+      loop: "{{vms}}"

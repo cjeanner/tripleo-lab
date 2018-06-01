@@ -1,0 +1,6 @@
+---
+- hosts: builder
+  remote_user: root
+  roles:
+    - common
+    - builder

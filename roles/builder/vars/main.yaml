@@ -1,0 +1,59 @@
+---
+vms:
+  - name: undercloud
+    cpu: 4
+    memory: 16384
+    interfaces:
+      - "24:42:53:21:52:15"
+      - "24:42:53:21:52:16"
+  - name: controller-0
+    cpu: 2
+    memory: 4096
+    interfaces:
+      - "24:42:53:21:52:25"
+      - "24:42:53:21:52:26"
+  - name: controller-1
+    cpu: 2
+    memory: 4096
+    interfaces:
+      - "24:42:53:21:52:35"
+      - "24:42:53:21:52:36"
+  - name: controller-2
+    cpu: 2
+    memory: 4096
+    interfaces:
+      - "24:42:53:21:52:45"
+      - "24:42:53:21:52:46"
+  - name: compute-0
+    cpu: 2
+    memory: 4096
+    interfaces:
+      - "24:42:53:21:52:55"
+      - "24:42:53:21:52:56"
+  - name: compute-1
+    cpu: 2
+    memory: 4096
+    interfaces:
+      - "24:42:53:21:52:65"
+      - "24:42:53:21:52:66"
+  - name: ceph-storage-0
+    cpu: 2
+    memory: 8192
+    interfaces:
+      - "24:42:53:21:52:75"
+      - "24:42:53:21:52:76"
+  - name: ceph-storage-1
+    cpu: 2
+    memory: 8192
+    interfaces:
+      - "24:42:53:21:52:85"
+      - "24:42:53:21:52:86"
+  - name: ceph-storage-2
+    cpu: 2
+    memory: 8192
+    interfaces:
+      - "24:42:53:21:52:95"
+      - "24:42:53:21:52:96"
+
+virt_user: virtuser
+basedir: "/home/{{virt_user}}"

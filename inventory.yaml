@@ -1,0 +1,5 @@
+---
+all:
+  hosts:
+    builder:
+      ansible_host: 10.10.0.19

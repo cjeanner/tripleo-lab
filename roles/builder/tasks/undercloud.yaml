@@ -1,0 +1,20 @@
+---
+- name: execute all as virt_user
+  become: yes
+  become_user: "{{ virt_user }}"
+  block:
+    - name: undercloud image settings
+      tags:
+        - libvirt
+        - images
+        - undercloud
+      shell: |
+        virt-sysprep -a "{{basedir}}/workload/undercloud.qcow2" \
+          --firstboot-command "growpart /dev/sda 1" \
+          --hostname undercloud \
+          --network \
+          --selinux-relabel \
+          --ssh-inject root \
+          --update && touch "{{basedir}}/workload/undercloud.qcow2.done"
+      args:
+        creates: "{{basedir}}/workload/undercloud.qcow2.done"
