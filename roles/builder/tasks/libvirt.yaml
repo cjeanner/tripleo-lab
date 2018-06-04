@@ -7,11 +7,25 @@
     comment: "Virtual user for tripleo lab"
     create_home: yes
     generate_ssh_key: yes
+    groups:
+      - libvirt
+      - kvm
+      - qemu
     home: "{{basedir}}"
     name: "{{virt_user}}"
     shell: "/bin/bash"
     ssh_key_bits: 4096
     state: present
+
+- name: set virt_user home rights
+  tags:
+    - libvirt
+    - config
+  file:
+    state: directory
+    path: "{{basedir}}"
+    mode: 0750
+    group: qemu
 
 - name: push polkit config
   tags:
@@ -38,7 +52,7 @@
       file:
         state: directory
         path: "{{basedir}}/{{item}}"
-        mode: 0750
+        mode: 02770
       with_items:
         - images
         - workload
@@ -50,14 +64,14 @@
       get_url:
         url: "http://cloud.centos.org/centos/7/images/CentOS-7-x86_64-GenericCloud.qcow2"
         dest: "{{basedir}}/images/centos-7.qcow2"
-        mode: 0644
+        mode: 0664
 
     - name: create images based on centos
       tags:
         - libvirt
         - images
       command: |
-        qemu-img create -o backing_file=../images/centos-7.qcow2,backing_fmt=qcow2 -f qcow2 "{{item.name}}".qcow2 50G
+        qemu-img create -o backing_file=../images/centos-7.qcow2,backing_fmt=qcow2 -f qcow2 "{{item.name}}".qcow2 100G
       args:
         creates: "{{basedir}}/workload/{{item.name}}.qcow2"
         chdir: "{{basedir}}/workload"

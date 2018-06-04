@@ -4,7 +4,7 @@
   become: yes
   become_user: "{{ virt_user }}"
   block:
-    - name: define node
+    - name: define nodes
       tags:
         - libvirt
         - domains
@@ -12,5 +12,16 @@
         name: "{{ item.name }}"
         command: define
         xml: "{{ lookup('template', 'domain.xml.j2') }}"
+        uri: "qemu:///system"
+      loop: "{{ vms }}"
+
+    - name: start domains
+      tags:
+        - libvirt
+        - domains
+        - start-domains
+      virt:
+        name: "{{ item.name }}"
+        state: running
         uri: "qemu:///system"
       loop: "{{ vms }}"
