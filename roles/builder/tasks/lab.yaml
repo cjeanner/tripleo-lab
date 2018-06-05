@@ -104,7 +104,7 @@
     path: ~/.ssh/config
     marker: "## {mark} {{item.item.name}}"
     block: |
-      Host {{item.item.name}}
+      Host {{item.item.name}} {{item.stdout|replace('/24','')}}
         ProxyCommand ssh -o 'ForwardAgent yes' root@{{ansible_host}} 'ssh-add && nc %h %p'
         User root
         StrictHostKeyChecking no
