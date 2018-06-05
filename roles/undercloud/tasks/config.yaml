@@ -13,6 +13,15 @@
 - name: enable tripleo_version repository
   command: tripleo-repos -b "{{tripleo_version}}" current
 
+- name: install some tools
+  yum:
+    name: "{{item}}"
+    state: present
+  loop:
+    - git
+    - tmux
+    - vim
+
 - name: install tripleo client
   yum:
     name: python-tripleoclient
