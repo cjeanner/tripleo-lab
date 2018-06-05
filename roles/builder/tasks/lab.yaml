@@ -14,6 +14,8 @@
         xml: "{{ lookup('template', 'domain.xml.j2') }}"
         uri: "qemu:///system"
       loop: "{{ vms }}"
+      loop_control:
+        label: "{{item.name}}"
 
     - name: start domains
       tags:
@@ -25,6 +27,89 @@
         state: running
         uri: "qemu:///system"
       loop: "{{ vms }}"
+      loop_control:
+        label: "{{item.name}}"
       when:
         - item.autostart is defined
         - item.autostart
+
+    - name: fetch associated IP address for running domains
+      tags:
+        - libvirt
+        - domains
+        - start-domains
+        - gen-ssh-config
+        - inventory
+      shell: |
+        virsh --connect qemu:///system domifaddr "{{item.name}}" | awk '/ipv4/ {print $4}'
+      register: ip_address
+      loop: "{{ vms }}"
+      loop_control:
+        label: "{{item.name}}"
+      when:
+        - item.autostart is defined
+        - item.autostart
+
+    - name: populate ssh_config
+      tags:
+        - libvirt
+        - domains
+        - start-domains
+        - gen-ssh-config
+      template:
+        dest: "{{basedir}}/.ssh/config"
+        src: ssh_config.j2
+        group: "{{virt_user}}"
+        mode: 0644
+        owner: "{{virt_user}}"
+
+- name: provision hosts file
+  tags:
+    - libvirt
+    - domains
+    - start-domains
+  lineinfile:
+    line: "{{item.stdout|replace('/24','')}} {{item.item.name}}"
+    path: /etc/hosts
+    regexp: "{{item.item.name}}$"
+    state: present
+  loop: "{{ ip_address.results }}"
+  loop_control:
+    label: "{{item.item.name}}"
+  when: item.stdout is defined
+
+- name: inject domains in inventory
+  tags:
+    - libvirt
+    - domains
+    - start-domains
+    - inventory
+  add_host:
+    hostname: "{{item.item.name}}"
+    ansible_host: "{{item.stdout|replace('/24','')}}"
+  loop: "{{ ip_address.results }}"
+  loop_control:
+    label: "{{item.item.name}}"
+  when: item.stdout is defined
+
+- name: inject config on ansible host
+  tags:
+    - libvirt
+    - domains
+    - start-domains
+    - inventory
+    - gen-ssh-config
+  local_action:
+    module: blockinfile
+    path: ~/.ssh/config
+    marker: "## {mark} {{item.item.name}}"
+    block: |
+      Host {{item.item.name}}
+        ProxyCommand ssh -o 'ForwardAgent yes' root@{{ansible_host}} 'ssh-add && nc %h %p'
+        User root
+        StrictHostKeyChecking no
+        UserKnownHostsFile /dev/null
+  loop: "{{ ip_address.results }}"
+  loop_control:
+    label: "{{item.item.name}}"
+  when: item.stdout is defined
