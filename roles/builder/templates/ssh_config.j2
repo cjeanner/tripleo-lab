@@ -1,0 +1,11 @@
+Host *
+  StrictHostKeyChecking no
+  UserKnownHostsFile /dev/null
+
+{% for result in ip_address.results %}
+{% if result.skipped is not defined %}
+Host {{ result.item.name }}
+  HostName {{result.stdout|replace('/24','')}}
+  User root
+{% endif %}
+{% endfor %}
