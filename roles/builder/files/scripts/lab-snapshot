@@ -1,0 +1,15 @@
+#!/bin/bash
+source /usr/local/bin/lab-helpers
+
+read 'Snapshot name ' snapshot
+
+for i in $($VIRSH list --name); do
+  $VIRSH shutdown $i
+  while $($VIRSH list --name | grep -q $i); do
+    echo -n '.'; sleep 1
+  done
+done
+for i in $($VIRSH list --all --name); do
+  $VIRSH snapshot-create-as --name $snapshot $i
+  $VIRSH start $i
+done

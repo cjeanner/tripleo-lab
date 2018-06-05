@@ -1,0 +1,6 @@
+#!/bin/bash
+source /usr/local/bin/lab-helpers
+
+for i in $($VIRSH list --all | awk '/shut off/ {print $2}'); do
+  $VIRSH start $i
+done

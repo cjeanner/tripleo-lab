@@ -1,0 +1,22 @@
+#!/bin/bash
+
+source /usr/local/bin/lab-helpers
+
+do_destroy() {
+  for i in $($VIRSH list --all --name); do
+    $VIRSH destroy $i;
+    $VIRSH undefine $i;
+    rm -f /home/{{virt_user}}/workload/${i}*
+  done
+}
+
+echo -n 'Destroy the lab? [Ny] ' 
+read -r destroy
+case $destroy in
+  y|Y)
+    do_destroy
+    ;;
+  *)
+    echo 'Aborting on user request'
+    ;;
+esac
