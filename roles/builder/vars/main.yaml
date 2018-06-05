@@ -4,56 +4,66 @@ vms:
     cpu: 4
     memory: 16384
     interfaces:
-      - "24:42:53:21:52:15"
-      - "24:42:53:21:52:16"
+      - mac: "24:42:53:21:52:15"
+      - mac: "24:42:53:21:52:16"
+    autostart: yes
   - name: controller-0
     cpu: 2
     memory: 4096
     interfaces:
-      - "24:42:53:21:52:25"
-      - "24:42:53:21:52:26"
+      - mac: "24:42:53:21:52:25"
+      - mac: "24:42:53:21:52:26"
+    autostart: no
   - name: controller-1
     cpu: 2
     memory: 4096
     interfaces:
-      - "24:42:53:21:52:35"
-      - "24:42:53:21:52:36"
+      - mac: "24:42:53:21:52:35"
+      - mac: "24:42:53:21:52:36"
+    autostart: no
   - name: controller-2
     cpu: 2
     memory: 4096
     interfaces:
-      - "24:42:53:21:52:45"
-      - "24:42:53:21:52:46"
+      - mac: "24:42:53:21:52:45"
+      - mac: "24:42:53:21:52:46"
+    autostart: no
   - name: compute-0
     cpu: 2
     memory: 4096
     interfaces:
-      - "24:42:53:21:52:55"
-      - "24:42:53:21:52:56"
+      - mac: "24:42:53:21:52:55"
+      - mac: "24:42:53:21:52:56"
+    autostart: no
   - name: compute-1
     cpu: 2
     memory: 4096
     interfaces:
-      - "24:42:53:21:52:65"
-      - "24:42:53:21:52:66"
+      - mac: "24:42:53:21:52:65"
+      - mac: "24:42:53:21:52:66"
+    autostart: no
   - name: ceph-storage-0
     cpu: 2
     memory: 8192
     interfaces:
-      - "24:42:53:21:52:75"
-      - "24:42:53:21:52:76"
+      - mac: "24:42:53:21:52:75"
+      - mac: "24:42:53:21:52:76"
+    autostart: no
   - name: ceph-storage-1
     cpu: 2
     memory: 8192
     interfaces:
-      - "24:42:53:21:52:85"
-      - "24:42:53:21:52:86"
+      - mac: "24:42:53:21:52:85"
+      - mac: "24:42:53:21:52:86"
+    autostart: no
   - name: ceph-storage-2
     cpu: 2
     memory: 8192
     interfaces:
-      - "24:42:53:21:52:95"
-      - "24:42:53:21:52:96"
+      - mac: "24:42:53:21:52:95"
+      - mac: "24:42:53:21:52:96"
+    autostart: no
 
 virt_user: virtuser
 basedir: "/home/{{virt_user}}"
+undercloud_password: fooBar
