@@ -10,9 +10,11 @@
     state: present
 
 - name: give sudo accesses
+  tags:
+    - sudo
   copy:
     dest: /etc/sudoers.d/stack
-    content: "stack ALL=(ALL) NOPASSWD:ALL\n"
+    src: ../files/stack.sudoers
     group: root
     mode: 0444
     owner: root

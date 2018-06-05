@@ -1,0 +1,27 @@
+# Dedicated sudoers for stack
+Defaults:stack        !authenticate
+
+# tripleoclient/v1/undercloud.py
+stack ALL = /usr/bin/yum update -y instack-undercloud
+stack ALL = /usr/bin/systemctl restart openstack-nova-api
+
+# tripleoclient/v1/undercloud_preflight.py:
+stack ALL = /usr/bin/hostnamectl set-hostname
+stack ALL = /usr/bin/hostnamectl --static
+stack ALL = /usr/bin/hostnamectl --transient
+stack ALL = /usr/bin/yum update -y *
+stack ALL = /usr/bin/yum clean all
+stack ALL = /usr/bin/yum install -y *
+stack ALL = /bin/bash -c sed -i * /etc/hosts
+stack ALL = /bin/ln
+stack ALL = /bin/mv
+stack ALL = /bin/mkdir
+stack ALL = /usr/bin/mount
+stack ALL = /usr/bin/umount
+stack ALL = /usr/bin/chown
+stack ALL = /usr/bin/docker
+stack ALL = (heat) ALL
+
+# tripleo-ci
+stack ALL = /sbin/usermod -G mock -a stack
+stack ALL = (stack) ALL
