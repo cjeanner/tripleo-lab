@@ -1,0 +1,27 @@
+---
+- name: create stack user
+  user:
+    comment: "Stack user for tripleo"
+    create_home: yes
+    generate_ssh_key: yes
+    name: stack
+    shell: "/bin/bash"
+    ssh_key_bits: 4096
+    state: present
+
+- name: give sudo accesses
+  copy:
+    dest: /etc/sudoers.d/stack
+    content: "stack ALL=(ALL) NOPASSWD:ALL\n"
+    group: root
+    mode: 0444
+    owner: root
+
+- name: do some actions as stack user
+  become: yes
+  become_user: stack
+  block:
+    - name: copy undercloud.conf sample
+      copy:
+        dest: /home/stack/undercloud.conf
+        remote_src: /usr/share/python-tripleoclient/undercloud.conf.sample
