@@ -11,10 +11,16 @@
       shell: |
         virt-sysprep -a "{{basedir}}/workload/undercloud.qcow2" \
           --firstboot-command "growpart /dev/sda 1" \
-          --hostname undercloud \
+          --firstboot-command "xfs_growfs /dev/sda1" \
+          --firstboot-command "systemctl enable acpid" \
+          --firstboot-command "systemctl start acpid" \
+          --hostname undercloud.lain.internux.ch \
           --network \
+          --install acpid \
+          --uninstall cloud-init \
           --selinux-relabel \
-          --ssh-inject root \
-          --update && touch "{{basedir}}/workload/undercloud.qcow2.done"
+          --root-password "password:{{undercloud_password}}" \
+          --ssh-inject root && \
+          touch "{{basedir}}/workload/undercloud.qcow2.done"
       args:
         creates: "{{basedir}}/workload/undercloud.qcow2.done"
