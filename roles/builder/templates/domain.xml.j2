@@ -1,26 +1,38 @@
 <domain type='kvm'>
   <name>{{item.name}}</name>
-  <memory>{{item.memory}}</memory>
+  <memory unit='MB'>{{item.memory}}</memory>
   <vcpu>{{item.cpu}}</vcpu>
   <os>
     <type arch="x86_64">hvm</type>
   </os>
   <clock sync="localtime"/>
+  <features>
+    <acpi/>
+  </features>
   <devices>
     <disk type='file' device='disk'>
+      <driver name='qemu' type='qcow2'/>
       <source file='{{basedir}}/workload/{{item.name}}.qcow2'/>
       <target dev='hda'/>
     </disk>
-    <interface type='network'>
-      <source network='default'/>
-      <mac address='24:42:53:21:52:45'/>
-    </interface>
     {% for interface in item.interfaces %}
     <interface type='network'>
       <source network='default'/>
-      <mac address='{{ interface }}'/>
+      <mac address='{{ interface.mac }}'/>
+      <model type="virtio"/>
     </interface>
     {% endfor %}
-    <graphics type='vnc' port='-1' keymap='de'/>
+    <serial type='pty'>
+      <target type='isa-serial' port='0'>
+        <model name='isa-serial'/>
+      </target>
+    </serial>
+    <console type='pty'>
+      <target type='serial' port='0'/>
+    </console>
   </devices>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>restart</on_crash>
+  <on_lockfailure>poweroff</on_lockfailure>
 </domain>
