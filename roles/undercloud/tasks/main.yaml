@@ -7,3 +7,4 @@
   block:
     - import_tasks: config.yaml
     - import_tasks: user.yaml
+    - import_tasks: prepare.yaml

@@ -16,12 +16,3 @@
     group: root
     mode: 0444
     owner: root
-
-- name: do some actions as stack user
-  become: yes
-  become_user: stack
-  block:
-    - name: copy undercloud.conf sample
-      copy:
-        dest: /home/stack/undercloud.conf
-        remote_src: /usr/share/python-tripleoclient/undercloud.conf.sample

@@ -1,0 +1,22 @@
+{
+  "nodes": [
+{% for node in vms %}
+    {
+      "name": "{{node.name}}",
+      "pm_type": "ipmi",
+      "ports": [
+        {
+          "address": "{{node.interfaces[0].mac}}"
+        }
+      ],
+      "pm_user": "ADMIN",
+      "pm_password": "ADMIN",
+      "pm_addr": "TBD",
+      "properties": {
+        "capabilities": "node:{{node.name}},boot_option:local"
+      }
+    }{% if not loop.last %}, {% endif %}
+
+{% endfor %}
+  ]
+}

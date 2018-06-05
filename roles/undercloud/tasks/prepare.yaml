@@ -1,0 +1,22 @@
+---
+- name: run commands as stack user
+  become: yes
+  become_user: stack
+  block:
+    - name: copy undercloud.conf sample
+      copy:
+        dest: /home/stack/undercloud.conf
+        src: /usr/share/python-tripleoclient/undercloud.conf.sample
+        remote_src: yes
+    - name: generate baremetal.json file
+      tags:
+        - baremetal
+      template:
+        dest: /home/stack/baremetal.json
+        src: baremetal.json.j2
+    - name: prepare some scheduler hint ninja trick
+      tags:
+        - baremetal
+      copy:
+        dest: /home/stack/node-placement.yaml
+        src: ../files/node-placement.yaml
