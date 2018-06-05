@@ -25,3 +25,6 @@
         state: running
         uri: "qemu:///system"
       loop: "{{ vms }}"
+      when:
+        - item.autostart is defined
+        - item.autostart
