@@ -15,20 +15,20 @@ set in the VMs, but it might come handy for the undercloud node.
 ## Usage
 ### Standard deploy:
 ```Bash
-ansible-playbook builder.yaml --skip-tags overcloud-images
+ansible-playbook builder.yaml
 ```
 
-This will deploy the whole thing, but not manage the overcloud images.
-This is mandatory since this playbook will NOT deploy the undercloud (for now).
+It will deploy a containerized undercloud and prepare the baremetal.json file you will
+use in order to register nodes in ironic.
 
 ### Redeploy the lab
 If you issue a ```lab-destroy``` on the builder, you will need to redeploy the lab:
 ```Bash
-ansible-playbook builder.yaml --tags lab --skip-tags overcloud-images
+ansible-playbook builder.yaml --tags lab
 ```
 
 ### I have my undercloud - may I deploy the overcloud images
-Yes, but currently the command is only compatible with a containerized undercloud.
+Yes !
 ```Bash
 ansible-playbook builder.yaml --tags overcloud-images
 ```
