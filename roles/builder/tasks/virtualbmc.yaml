@@ -1,0 +1,44 @@
+---
+- name: push virtualbmc script
+  tags:
+    - vbmc
+  template:
+    dest: /usr/local/sbin/vbmc-run
+    src: vbmc-run.j2
+    group: "{{virt_user}}"
+    mode: 0750
+    owner: root
+  register: vbmc_script
+
+- name: create systemd unit file
+  tags:
+    - vbmc
+  template:
+    dest: /etc/systemd/system/vbmc.service
+    src: vbmc.service.j2
+    group: root
+    mode: 0644
+    owner: root
+  register: install_vbmc_service
+
+- name: reload systemd daemon if vbmc.service changed
+  tags:
+    - vbmc
+  command: systemctl daemon-reload
+  when: install_vbmc_service.changed
+
+- name: register vbmc.service
+  tags:
+    - vbmc
+  service:
+    name: vbmc
+    enabled: yes
+    state: started
+
+- name: restart vbmc if script changed
+  tags:
+    - vbmc
+  service:
+    name: vbmc
+    state: reloaded
+  when: vbmc_script.changed

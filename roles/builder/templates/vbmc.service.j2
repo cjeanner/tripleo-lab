@@ -1,0 +1,13 @@
+[Unit]
+Description=VirtualBMC service
+After=network.target
+
+[Service]
+ExecStart=/usr/local/sbin/vbmc-run start
+ExecStop=/usr/local/sbin/vbmc-run stop
+ExecReload=/usr/local/sbin/vbmc-run reload
+Type=forking
+User={{virt_user}}
+
+[Install]
+WantedBy=multi-user.target

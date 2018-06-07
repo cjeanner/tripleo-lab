@@ -1,0 +1,33 @@
+#!/bin/bash
+
+if [ $# -ne 1 ]; then
+  echo "Usage: $0 (start|stop|reload)"
+  exit 1
+fi
+
+{% for node in vms %}
+/usr/bin/vbmc show {{node.name}} > /dev/null 2>&1
+if [ $? -ne 0 ]; then
+  /usr/bin/vbmc add --username ADMIN \
+    --password ADMIN \
+    --port 112{{node.interfaces.0.mac|replace('24:42:53:21:52:','')}} \
+    {{node.name}}
+fi
+{% endfor %}
+case $1 in
+  start|stop)
+    {% for node in vms %}
+    /usr/bin/vbmc $1 {{node.name}}
+    {% endfor %}
+    ;;
+  reload)
+    {% for node in vms %}
+    /usr/bin/vbmc stop {{node.name}}
+    /usr/bin/vbmc start {{node.name}}
+    {% endfor %}
+    ;;
+  *)
+    echo "Usage: $0 (start|stop)"
+    exit 2
+    ;;
+esac
