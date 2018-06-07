@@ -1,0 +1,11 @@
+---
+- name: ensure services are loaded and active
+  tags:
+    - builder-services
+  service:
+    enabled: yes
+    name: "{{item}}"
+    state: started
+  with_items:
+    - libvirtd
+    - docker
