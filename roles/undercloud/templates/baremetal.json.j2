@@ -1,6 +1,7 @@
 {
   "nodes": [
 {% for node in vms %}
+{% if node.name != 'undercloud' %}
     {
       "name": "{{node.name}}",
       "pm_type": "ipmi",
@@ -15,7 +16,7 @@
       "pm_port": "112{{node.interfaces.0.mac|replace('24:42:53:21:52:','')}}",
       "capabilities": "node:{{node.name}},boot_option:local"
     }{% if not loop.last %}, {% endif %}
-
+{% endif %}
 {% endfor %}
   ]
 }
