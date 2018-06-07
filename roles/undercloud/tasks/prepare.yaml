@@ -13,6 +13,7 @@
         - baremetal
       template:
         dest: /home/stack/baremetal.json
+        mode: 0644
         src: baremetal.json.j2
     - name: prepare some scheduler hint ninja trick
       tags:
