@@ -32,7 +32,7 @@
         - baremetal
       get_url:
         dest: "/home/stack/overcloud_imgs/{{item.file}}"
-        url: "https://buildlogs.centos.org/centos/7/cloud/x86_64/tripleo_images/master/delorean/{{item.file}}"
+        url: "https://images.rdoproject.org/master/rdo_trunk/current-tripleo/{{item.file}}"
       loop: "{{ overcloud_images }}"
       loop_control:
         label: "{{item.file}}"
@@ -47,3 +47,12 @@
       loop: "{{ overcloud_images }}"
       loop_control:
         label: "{{item.file}}"
+    - name: upload images to glance
+      tags:
+        - baremetal
+      shell: |
+        source ~/stackrc
+        openstack overcloud image upload \
+          --image-path /home/stack/overcloud_imgs \
+          --http-boot /var/lib/ironic/httpboot \
+          --update-existing
