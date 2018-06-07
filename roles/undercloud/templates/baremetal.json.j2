@@ -11,7 +11,8 @@
       ],
       "pm_user": "ADMIN",
       "pm_password": "ADMIN",
-      "pm_addr": "192.168.122.1:112{{node.interfaces.0.mac|replace('24:42:53:21:52:','')}}",
+      "pm_addr": "192.168.122.1",
+      "pm_port": "112{{node.interfaces.0.mac|replace('24:42:53:21:52:','')}}",
       "capabilities": "node:{{node.name}},boot_option:local"
     }{% if not loop.last %}, {% endif %}
 
