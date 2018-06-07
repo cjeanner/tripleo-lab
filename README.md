@@ -32,3 +32,8 @@ Yes, but currently the command is only compatible with a containerized underclou
 ```Bash
 ansible-playbook builder.yaml --tags overcloud-images
 ```
+### Extend the lab
+You can pass variables and environment files using the ```-e``` option, like:
+```Bash
+ansible-playbook builder.yaml --skip-tags overcloud-images --tags lab -e @mylab.yml
+```
