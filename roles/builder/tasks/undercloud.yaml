@@ -8,6 +8,7 @@
         - libvirt
         - images
         - undercloud
+        - lab
       shell: |
         virt-sysprep -a "{{basedir}}/workload/undercloud.qcow2" \
           --firstboot-command "growpart /dev/sda 1" \

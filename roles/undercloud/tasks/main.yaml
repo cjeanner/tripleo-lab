@@ -2,6 +2,7 @@
 - name: run on undercloud node
   tags:
     - undercloud-bootstrap
+    - lab
   delegate_to: undercloud
   delegate_facts: false
   block:

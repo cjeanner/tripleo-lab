@@ -8,6 +8,7 @@
       tags:
         - libvirt
         - domains
+        - lab
       virt:
         name: "{{ item.name }}"
         command: define
@@ -68,6 +69,7 @@
     - libvirt
     - domains
     - start-domains
+    - lab
   lineinfile:
     line: "{{item.stdout|replace('/24','')}} {{item.item.name}}"
     path: /etc/hosts
@@ -84,6 +86,7 @@
     - domains
     - start-domains
     - inventory
+    - lab
   add_host:
     hostname: "{{item.item.name}}"
     ansible_host: "{{item.stdout|replace('/24','')}}"
@@ -99,6 +102,7 @@
     - start-domains
     - inventory
     - gen-ssh-config
+    - lab
   local_action:
     module: blockinfile
     path: ~/.ssh/config
