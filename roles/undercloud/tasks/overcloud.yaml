@@ -27,7 +27,7 @@
         label: "{{item.file}}"
 
     - name: upload images to glance
-      when: containerized_undercloud == "yes"
+      when: containerized_undercloud
       tags:
         - baremetal
         - overcloud-images
@@ -38,7 +38,7 @@
           --http-boot /var/lib/ironic/httpboot \
           --update-existing
     - name: upload images to glance
-      when: containerized_undercloud != "yes"
+      when: not containerized_undercloud
       tags:
         - baremetal
         - overcloud-images

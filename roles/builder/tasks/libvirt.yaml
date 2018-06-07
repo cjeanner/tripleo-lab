@@ -76,5 +76,5 @@
         creates: "{{basedir}}/workload/{{item.name}}.qcow2"
         chdir: "{{basedir}}/workload"
       loop: "{{vms}}"
-      loop_controls:
+      loop_control:
         label: "{{item.name}}"

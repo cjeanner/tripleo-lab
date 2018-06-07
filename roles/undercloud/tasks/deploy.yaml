@@ -4,13 +4,13 @@
   become_user: stack
   block:
     - name: deploy containerized undercloud
-      when: containerized_undercloud == "yes"
+      when: containerized_undercloud
       command: openstack undercloud install --use-heat
       args:
         creates: /home/stack/stackrc
 
     - name: deploy baremetal undercloud
-      when: containerized_undercloud != "yes"
+      when: not containerized_undercloud
       command: openstack undercloud install
       args:
         creates: /home/stack/stackrc
