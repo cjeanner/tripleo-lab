@@ -1,4 +1,13 @@
 ---
+- name: copy root authorized_keys to stack user
+  copy:
+    dest: /home/stack/.ssh/authorized_keys
+    group: stack
+    mode: 0644
+    owner: stack
+    remote_src: yes
+    src: /root/.ssh/authorized_keys
+
 - name: run commands as stack user
   become: yes
   become_user: stack
