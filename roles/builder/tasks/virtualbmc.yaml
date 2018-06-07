@@ -42,3 +42,15 @@
     name: vbmc
     state: reloaded
   when: vbmc_script.changed
+
+- name: open firewall on libvirt link
+  tags:
+    - vbmc
+  iptables:
+    action: insert
+    chain: INPUT
+    comment: "allow vbmc access from undercloud"
+    destination: "192.168.122.1"
+    destination_port: "11200:11299"
+    jump: ACCEPT
+    protocol: udp
