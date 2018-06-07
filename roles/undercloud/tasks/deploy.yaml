@@ -1,0 +1,16 @@
+---
+- name: run commands as stack user
+  become: yes
+  become_user: stack
+  block:
+    - name: deploy containerized undercloud
+      when: containerized_undercloud == "yes"
+      command: openstack undercloud install --use-heat
+      args:
+        creates: /home/stack/stackrc
+
+    - name: deploy baremetal undercloud
+      when: containerized_undercloud != "yes"
+      command: openstack undercloud install
+      args:
+        creates: /home/stack/stackrc

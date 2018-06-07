@@ -44,10 +44,12 @@
 - name: run tasks as virt_user user
   become: yes
   become_user: "{{ virt_user }}"
+  tags:
+    - libvirt
+    - lab
   block:
     - name: create some directories
       tags:
-        - libvirt
         - config
       file:
         state: directory
@@ -59,7 +61,6 @@
 
     - name: fetch centos base image
       tags:
-        - libvirt
         - images
       get_url:
         url: "http://cloud.centos.org/centos/7/images/CentOS-7-x86_64-GenericCloud.qcow2"
@@ -68,7 +69,6 @@
 
     - name: create images based on centos
       tags:
-        - libvirt
         - images
       command: |
         qemu-img create -o backing_file=../images/centos-7.qcow2,backing_fmt=qcow2 -f qcow2 "{{item.name}}".qcow2 100G
@@ -76,3 +76,5 @@
         creates: "{{basedir}}/workload/{{item.name}}.qcow2"
         chdir: "{{basedir}}/workload"
       loop: "{{vms}}"
+      loop_controls:
+        label: "{{item.name}}"

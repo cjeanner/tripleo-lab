@@ -9,3 +9,5 @@
     - import_tasks: config.yaml
     - import_tasks: user.yaml
     - import_tasks: prepare.yaml
+    - import_tasks: deploy.yaml
+    - import_tasks: overcloud.yaml
