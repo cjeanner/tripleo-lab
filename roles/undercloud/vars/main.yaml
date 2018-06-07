@@ -2,3 +2,8 @@
 virt_user: virtuser
 tripleo_repo_version: python2-tripleo-repos-0.0.1-0.20180418175107.ef4e12e.el7.centos.noarch.rpm
 tripleo_version: rocky
+overcloud_images:
+  - file: ironic-python-agent.tar
+    content: ironic-python-agent.kernel
+  - file: overcloud-full.tar
+    content: overcloud-full.qcow2

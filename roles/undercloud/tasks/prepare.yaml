@@ -21,3 +21,29 @@
       copy:
         dest: /home/stack/node-placement.yaml
         src: ../files/node-placement.yaml
+    - name: create image directory
+      tags:
+        - baremetal
+      file:
+        path: "/home/stack/overcloud_imgs"
+        state: directory
+    - name: fetch images
+      tags:
+        - baremetal
+      get_url:
+        dest: "/home/stack/overcloud_imgs/{{item.file}}"
+        url: "https://buildlogs.centos.org/centos/7/cloud/x86_64/tripleo_images/master/delorean/{{item.file}}"
+      loop: "{{ overcloud_images }}"
+      loop_control:
+        label: "{{item.file}}"
+    - name: uncompress images
+      tags:
+        - baremetal
+      unarchive:
+        creates: "/home/stack/overcloud_imgs/{{item.content}}"
+        dest: "/home/stack/overcloud_imgs/"
+        remote_src: yes
+        src: "/home/stack/overcloud_imgs/{{item.file}}"
+      loop: "{{ overcloud_images }}"
+      loop_control:
+        label: "{{item.file}}"
