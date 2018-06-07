@@ -3,12 +3,12 @@
 - name: all tasks run as virt_user
   become: yes
   become_user: "{{ virt_user }}"
+  tags:
+    - libvirt
+    - domains
+    - lab
   block:
     - name: define nodes
-      tags:
-        - libvirt
-        - domains
-        - lab
       virt:
         name: "{{ item.name }}"
         command: define
@@ -20,8 +20,6 @@
 
     - name: start domains
       tags:
-        - libvirt
-        - domains
         - start-domains
       virt:
         name: "{{ item.name }}"
@@ -36,8 +34,6 @@
 
     - name: fetch associated IP address for running domains
       tags:
-        - libvirt
-        - domains
         - start-domains
         - gen-ssh-config
         - inventory
@@ -53,8 +49,6 @@
 
     - name: populate ssh_config
       tags:
-        - libvirt
-        - domains
         - start-domains
         - gen-ssh-config
       template:
