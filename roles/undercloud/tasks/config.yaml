@@ -12,6 +12,8 @@
 
 - name: enable tripleo_version repository
   command: tripleo-repos -b "{{tripleo_version}}" current
+  args:
+    creates: "/etc/yum.repos.d/delorean-{{tripleo_version}}.repo"
 
 - name: install some tools
   yum:
