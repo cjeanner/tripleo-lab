@@ -35,5 +35,6 @@ ansible-playbook builder.yaml --tags overcloud-images
 ### Extend the lab
 You can pass variables and environment files using the ```-e``` option, like:
 ```Bash
-ansible-playbook builder.yaml --skip-tags overcloud-images --tags lab -e @mylab.yml
+ansible-playbook builder.yaml --skip-tags overcloud-images --tags lab -e @environments/3ctl-1compute.yaml
 ```
+This will start a lab with just 3 controllers and 1 compute.
