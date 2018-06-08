@@ -4,7 +4,7 @@
     - deploy-ci
   become: yes
   become_user: stack
-  when: ci_tools
+  when: ci_tools|bool
   block:
     - name: clone tripleo-ci in stack home
       git:

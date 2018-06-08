@@ -29,7 +29,7 @@
         label: "{{item.name}}"
       when:
         - item.autostart is defined
-        - item.autostart
+        - item.autostart|bool
 
     - name: fetch associated IP address for running domains
       tags:
@@ -44,7 +44,7 @@
         label: "{{item.name}}"
       when:
         - item.autostart is defined
-        - item.autostart
+        - item.autostart|bool
 
     - name: populate ssh_config
       tags:
