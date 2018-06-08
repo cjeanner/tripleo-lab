@@ -38,3 +38,39 @@ You can pass variables and environment files using the ```-e``` option, like:
 ansible-playbook builder.yaml --skip-tags overcloud-images --tags lab -e @environments/3ctl-1compute.yaml
 ```
 This will start a lab with just 3 controllers and 1 compute.
+
+#### Variables
+*vms*
+  Hash with the following entries:
+  - name (string)
+  - cpu (int)
+  - memory (int, MB)
+  - interfaces (list)
+    - mac (MAC address)
+  - autostart (bool)
+
+*virt_user*
+  Username on the builder (will be created)
+
+*basedir*
+  Base directory for all the VM images
+
+*undercloud_password*
+  Root password on the undercloud VM (debug purpose)
+
+*tripleo_repo_version*
+  Tripleo-repos package name/version
+
+*tripleo_version*
+  Tripleo version name
+
+*overcloud_images*
+  Hash with the following entries:
+  - file (string)
+  - content (string)
+
+*containerized_undercloud*
+  Boolean
+
+*ci_tools*
+  Install CI tools (Boolean)
