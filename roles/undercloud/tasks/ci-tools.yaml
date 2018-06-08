@@ -2,6 +2,8 @@
 - name: common tags
   tags:
     - deploy-ci
+  become: yes
+  become_user: stack
   when: ci_tools
   block:
     - name: clone tripleo-ci in stack home
@@ -11,6 +13,8 @@
         repo: "https://git.openstack.org/openstack-infra/tripleo-ci"
 
     - name: install tripleo-ci dependencies
-      command: /home/stack/tripleo-ci/scripts/tripleo.sh --delorean-setup
+      shell: |
+        TRIPLEO_ROOT=/home/stack
+        /home/stack/tripleo-ci/scripts/tripleo.sh --delorean-setup > /home/stack/deploy-ci.log
       args:
         creates: /home/stack/tripleo/delorean
