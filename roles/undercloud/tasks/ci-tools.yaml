@@ -1,0 +1,16 @@
+---
+- name: common tags
+  tags:
+    - deploy-ci
+  when: ci_tools
+  block:
+    - name: clone tripleo-ci in stack home
+      git:
+        accept_hostkey: yes
+        dest: "/home/stack/tripleo-ci"
+        repo: "https://git.openstack.org/openstack/tripleo-ci"
+
+    - name: install tripleo-ci dependencies
+      command: /home/stack/tripleo-ci/scripts/tripleo.sh --delorean-setup
+      args:
+        creates: /home/stack/tripleo/delorean

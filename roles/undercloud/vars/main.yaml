@@ -9,3 +9,4 @@ overcloud_images:
     content: overcloud-full.qcow2
 
 containerized_undercloud: yes
+ci_tools: yes

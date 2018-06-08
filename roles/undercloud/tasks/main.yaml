@@ -11,3 +11,4 @@
     - import_tasks: prepare.yaml
     - import_tasks: deploy.yaml
     - import_tasks: overcloud.yaml
+    - import_tasks: ci-tools.yaml
