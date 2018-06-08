@@ -2,6 +2,7 @@
 - name: ensure services are loaded and active
   tags:
     - builder-services
+    - builder-bootstrap
   service:
     enabled: yes
     name: "{{item}}"

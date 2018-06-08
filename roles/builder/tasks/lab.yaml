@@ -4,7 +4,6 @@
   become: yes
   become_user: "{{ virt_user }}"
   tags:
-    - libvirt
     - domains
     - lab
   block:
@@ -60,7 +59,6 @@
 
 - name: provision hosts file
   tags:
-    - libvirt
     - domains
     - start-domains
     - lab
@@ -76,7 +74,6 @@
 
 - name: inject domains in inventory
   tags:
-    - libvirt
     - domains
     - start-domains
     - inventory
@@ -91,7 +88,6 @@
 
 - name: inject config on ansible host
   tags:
-    - libvirt
     - domains
     - start-domains
     - inventory

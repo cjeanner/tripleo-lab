@@ -1,32 +1,30 @@
 ---
-- name: install rdo-trunk deps
+- name: common tags
   tags:
     - builder-packages
-  get_url:
-    url: https://trunk.rdoproject.org/centos7-master/rdo-trunk-runtime-deps.repo
-    dest: /etc/yum.repos.d/rdo-trunk-runtime-deps.repo
+    - builder-bootstrap
+    - name: install rdo-trunk deps
+      get_url:
+        url: https://trunk.rdoproject.org/centos7-master/rdo-trunk-runtime-deps.repo
+        dest: /etc/yum.repos.d/rdo-trunk-runtime-deps.repo
 
-- name: install delorean
-  tags:
-    - builder-packages
-  get_url:
-    url: https://trunk.rdoproject.org/centos7-master/puppet-passed-ci/delorean.repo
-    dest: /etc/yum.repos.d/delorean.repo
+    - name: install delorean
+      get_url:
+        url: https://trunk.rdoproject.org/centos7-master/puppet-passed-ci/delorean.repo
+        dest: /etc/yum.repos.d/delorean.repo
 
-- name: ensure packages are present
-  tags:
-    - builder-packages
-  package:
-    name: "{{item}}"
-    state: present
-  with_items:
-    - docker
-    - libguestfs-tools
-    - libvirt
-    - libvirt-client
-    - libvirt-daemon
-    - libvirt-daemon-kvm
-    - python2-virtualbmc
-    - screen
-    - tmux
-    - vim
+    - name: ensure packages are present
+      package:
+        name: "{{item}}"
+        state: present
+      with_items:
+        - docker
+        - libguestfs-tools
+        - libvirt
+        - libvirt-client
+        - libvirt-daemon
+        - libvirt-daemon-kvm
+        - python2-virtualbmc
+        - screen
+        - tmux
+        - vim

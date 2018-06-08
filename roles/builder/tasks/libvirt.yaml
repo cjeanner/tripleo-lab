@@ -1,51 +1,47 @@
 ---
-- name: create virt_user
+- name: common tags
   tags:
     - libvirt
     - config
-  user:
-    comment: "Virtual user for tripleo lab"
-    create_home: yes
-    generate_ssh_key: yes
-    groups:
-      - libvirt
-      - kvm
-      - qemu
-    home: "{{basedir}}"
-    name: "{{virt_user}}"
-    shell: "/bin/bash"
-    ssh_key_bits: 4096
-    state: present
+    - builder-bootstrap
+  block:
+    - name: create virt_user
+      user:
+        comment: "Virtual user for tripleo lab"
+        create_home: yes
+        generate_ssh_key: yes
+        groups:
+          - libvirt
+          - kvm
+          - qemu
+        home: "{{basedir}}"
+        name: "{{virt_user}}"
+        shell: "/bin/bash"
+        ssh_key_bits: 4096
+        state: present
 
-- name: set virt_user home rights
-  tags:
-    - libvirt
-    - config
-  file:
-    state: directory
-    path: "{{basedir}}"
-    mode: 0750
-    group: qemu
+    - name: set virt_user home rights
+      file:
+        state: directory
+        path: "{{basedir}}"
+        mode: 0750
+        group: qemu
 
-- name: push polkit config
-  tags:
-    - libvirt
-    - config
-  template:
-    dest: /etc/polkit-1/rules.d/50-org.libvirt.unix.manage.rules
-    src: "50-org.libvirt.unix.manage.rules.j2"
-    group: root
-    mode: 0644
-    owner: root
-    serole: object_r
-    setype: etc_t
-    seuser: system_u
+    - name: push polkit config
+      template:
+        dest: /etc/polkit-1/rules.d/50-org.libvirt.unix.manage.rules
+        src: "50-org.libvirt.unix.manage.rules.j2"
+        group: root
+        mode: 0644
+        owner: root
+        serole: object_r
+        setype: etc_t
+        seuser: system_u
 
 - name: run tasks as virt_user user
   become: yes
   become_user: "{{ virt_user }}"
   tags:
-    - libvirt
     - lab
   block:
     - name: create some directories

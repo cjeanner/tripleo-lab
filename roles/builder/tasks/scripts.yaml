@@ -1,27 +1,27 @@
 ---
-- name: push helper scripts
+- name: common tags
   tags:
     - config
     - scripts
-  copy:
-    dest: "/usr/local/bin/{{item}}"
-    group: root
-    mode: 0755
-    owner: root
-    src: "../files/scripts/{{item}}"
-  loop:
-    - lab-helpers
-    - lab-snapshot
-    - lab-start
-    - lab-stop
+    - builder-bootstrap
+  block:
+    - name: push helper scripts
+      copy:
+        dest: "/usr/local/bin/{{item}}"
+        group: root
+        mode: 0755
+        owner: root
+        src: "../files/scripts/{{item}}"
+      loop:
+        - lab-helpers
+        - lab-snapshot
+        - lab-start
+        - lab-stop
 
-- name: push lab-destroy template
-  tags:
-    - config
-    - scripts
-  template:
-    dest: /usr/local/bin/lab-destroy
-    group: root
-    mode: 0755
-    owner: root
-    src: scripts/lab-destroy.j2
+    - name: push lab-destroy template
+      template:
+        dest: /usr/local/bin/lab-destroy
+        group: root
+        mode: 0755
+        owner: root
+        src: scripts/lab-destroy.j2
