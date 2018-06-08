@@ -3,6 +3,7 @@
   tags:
     - builder-packages
     - builder-bootstrap
+  block:
     - name: install rdo-trunk deps
       get_url:
         url: https://trunk.rdoproject.org/centos7-master/rdo-trunk-runtime-deps.repo
