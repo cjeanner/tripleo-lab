@@ -1,6 +1,6 @@
 # Custom Lab for TripleO
-A simple way to bootstrap a bunch of VMs on a libvirt host. Gives more control than quickstart in
-some cases.
+A simple way to bootstrap a bunch of VMs on a libvirt host. Gives more control
+than quickstart in some cases.
 
 ## Specs
 It is expected to run the following resources:
@@ -9,8 +9,8 @@ It is expected to run the following resources:
 - 2 computes
 - 3 ceph-storage
 
-The amount of used memory for that env is about 52G, and about 20 CPU cores. For now, no swap is
-set in the VMs, but it might come handy for the undercloud node.
+The amount of used memory for that env is about 52G, and about 20 CPU cores. For
+now, no swap is set in the VMs, but it might come handy for the undercloud node.
 
 ## Usage
 ### Standard deploy:
@@ -18,11 +18,12 @@ set in the VMs, but it might come handy for the undercloud node.
 ansible-playbook builder.yaml
 ```
 
-It will deploy a containerized undercloud and prepare the baremetal.json file you will
-use in order to register nodes in ironic.
+It will deploy a containerized undercloud and prepare the baremetal.json file
+you will use in order to register nodes in ironic.
 
 ### Redeploy the lab
-If you issue a ```lab-destroy``` on the builder, you will need to redeploy the lab:
+If you issue a ```lab-destroy``` on the builder, you will need to redeploy the
+lab:
 ```Bash
 ansible-playbook builder.yaml --tags lab
 ```
