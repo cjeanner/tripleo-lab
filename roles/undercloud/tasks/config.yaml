@@ -24,6 +24,20 @@
     - tmux
     - vim
 
+- name: do we have a swap file
+  stat:
+    path: /dev/sdb
+  register: swap_on
+
+- name: set fstab entry for swap if needed
+  lineinfile:
+    backup: yes
+    dest: /etc/fstab
+    line: '/dev/sdb swap swap defaults 0 0'
+  when:
+    - swap_on.stat.exists
+    - swap_on.stat.isblk
+
 - name: install tripleo client
   yum:
     name: python-tripleoclient
