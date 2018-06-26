@@ -74,3 +74,17 @@
       loop: "{{vms}}"
       loop_control:
         label: "{{item.name}}"
+
+    - name: create swap files when needed
+      tags:
+        - images
+      command: "qemu-img create -f raw {{item.name}}-swap.img {{item.swap_size}}"
+      when:
+        - item.swap is defined
+        - item.swap|bool
+      args:
+        creates: "{{basedir}}/workload/{{item.name}}-swap.img"
+        chdir: "{{basedir}}/workload"
+      loop: "{{vms}}"
+      loop_control:
+        label: "{{item.name}}"

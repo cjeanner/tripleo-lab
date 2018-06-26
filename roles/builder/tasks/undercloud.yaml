@@ -2,18 +2,20 @@
 - name: execute all as virt_user
   become: yes
   become_user: "{{ virt_user }}"
+  tags:
+    - images
+    - undercloud
+    - lab
   block:
     - name: undercloud image settings
-      tags:
-        - images
-        - undercloud
-        - lab
       shell: |
         virt-sysprep -a "{{basedir}}/workload/undercloud.qcow2" \
           --firstboot-command "growpart /dev/sda 1" \
           --firstboot-command "xfs_growfs /dev/sda1" \
           --firstboot-command "systemctl enable acpid" \
           --firstboot-command "systemctl start acpid" \
+          --firstboot-command "mkswap /dev/sdb" \
+          --firstboot-command "swapon /dev/sdb" \
           --hostname undercloud.lain.internux.ch \
           --network \
           --install acpid \
@@ -24,3 +26,4 @@
           touch "{{basedir}}/workload/undercloud.qcow2.done"
       args:
         creates: "{{basedir}}/workload/undercloud.qcow2.done"
+

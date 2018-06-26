@@ -15,6 +15,13 @@
       <source file='{{basedir}}/workload/{{item.name}}.qcow2'/>
       <target dev='hda'/>
     </disk>
+    {% if item.swap is defined and item.swap %}
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='{{basedir}}/workload/{{item.name}}-swap.img'/>
+      <target dev='hdb'/>
+    </disk>
+    {% endif %}
     {% for interface in item.interfaces %}
     <interface type='network'>
       <source network='default'/>
