@@ -99,7 +99,7 @@
     marker: "## {mark} {{item.item.name}}"
     block: |
       Host {{item.item.name}} {{item.stdout|replace('/24','')}}
-        ProxyCommand ssh -o 'ForwardAgent yes' root@{{ansible_host}} 'ssh-add && nc %h %p'
+        ProxyCommand ssh -o 'ForwardAgent yes' root@{{ansible_host}} 'ssh-add && nc {{item.stdout|replace('/24','')}} %p'
         User root
         StrictHostKeyChecking no
         UserKnownHostsFile /dev/null
