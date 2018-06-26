@@ -49,8 +49,7 @@ This will start a lab with just 3 controllers and 1 compute.
   - interfaces (list)
     - mac (MAC address)
   - autostart (bool)
-  - swap (bool)
-  - swap_size (string)
+  - swap (string, for example 10G)
 
 *virt_user*
   Username on the builder (will be created)

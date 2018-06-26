@@ -78,10 +78,9 @@
     - name: create swap files when needed
       tags:
         - images
-      command: "qemu-img create -f raw {{item.name}}-swap.img {{item.swap_size}}"
+      command: "qemu-img create -f raw {{item.name}}-swap.img {{item.swap}}"
       when:
         - item.swap is defined
-        - item.swap|bool
       args:
         creates: "{{basedir}}/workload/{{item.name}}-swap.img"
         chdir: "{{basedir}}/workload"
