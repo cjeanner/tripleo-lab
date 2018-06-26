@@ -2,6 +2,7 @@
 - name: common tags
   tags:
     - vbmc
+    - lab
     - builder-bootstrap
   block:
     - name: push virtualbmc script
