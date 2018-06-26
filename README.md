@@ -9,8 +9,7 @@ It is expected to run the following resources:
 - 2 computes
 - 3 ceph-storage
 
-The amount of used memory for that env is about 52G, and about 20 CPU cores. For
-now, no swap is set in the VMs, but it might come handy for the undercloud node.
+The amount of used memory for that env is about 52G, and about 20 CPU cores.
 
 ## Usage
 ### Standard deploy:
