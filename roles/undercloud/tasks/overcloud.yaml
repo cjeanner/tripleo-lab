@@ -1,4 +1,3 @@
----
 - name: run commands as stack user
   become: yes
   become_user: stack
@@ -13,6 +12,7 @@
       loop: "{{ overcloud_images }}"
       loop_control:
         label: "{{item.file}}"
+
     - name: uncompress images
       tags:
         - baremetal
@@ -26,6 +26,7 @@
       loop_control:
         label: "{{item.file}}"
 
+    # FIXME: Use os_image for these tasks
     - name: upload images to glance
       when: containerized_undercloud|bool
       tags:
@@ -37,6 +38,7 @@
           --image-path /home/stack/overcloud_imgs \
           --http-boot /var/lib/ironic/httpboot \
           --update-existing
+
     - name: upload images to glance
       when: not containerized_undercloud|bool
       tags:

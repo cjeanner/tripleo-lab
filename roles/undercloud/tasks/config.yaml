@@ -1,4 +1,3 @@
----
 - name: set hostname properly
   lineinfile:
     dest: /etc/hosts
@@ -17,12 +16,11 @@
 
 - name: install some tools
   yum:
-    name: "{{item}}"
+    name:
+      - git
+      - tmux
+      - vim
     state: present
-  loop:
-    - git
-    - tmux
-    - vim
 
 - name: do we have a swap file
   stat:
@@ -30,10 +28,13 @@
   register: swap_on
 
 - name: set fstab entry for swap if needed
-  lineinfile:
+  mount:
     backup: yes
-    dest: /etc/fstab
-    line: '/dev/sdb swap swap defaults 0 0'
+    path: swap
+    src: /dev/sdb
+    state: present
+    opts: defaults
+    fstype: swap
   when:
     - swap_on.stat.exists
     - swap_on.stat.isblk
