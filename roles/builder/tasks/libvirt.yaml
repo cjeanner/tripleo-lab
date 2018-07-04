@@ -49,6 +49,7 @@
         - config
       file:
         state: directory
+        group: qemu
         path: "{{basedir}}/{{item}}"
         mode: 02770
       with_items:
