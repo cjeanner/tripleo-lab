@@ -69,3 +69,4 @@ basedir: "/home/{{virt_user}}"
 undercloud_password: fooBar
 centos_mirror: yes
 centos_mirror_device: /dev/sdc
+base_image: centos

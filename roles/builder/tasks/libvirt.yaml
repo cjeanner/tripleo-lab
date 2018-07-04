@@ -79,10 +79,26 @@
         mode: 0664
 
     - name: create images based on centos
+      when:
+        base_image == "centos"
       tags:
         - images
       command: |
         qemu-img create -o backing_file=../images/centos-7.qcow2,backing_fmt=qcow2 -f qcow2 "{{item.name}}".qcow2 100G
+      args:
+        creates: "{{basedir}}/workload/{{item.name}}.qcow2"
+        chdir: "{{basedir}}/workload"
+      loop: "{{vms}}"
+      loop_control:
+        label: "{{item.name}}"
+
+    - name: create images based on RHEL
+      when:
+        base_image == "rhel"
+      tags:
+        - images
+      command: |
+        qemu-img create -o backing_file=../images/redhat-7.qcow2,backing_fmt=qcow2 -f qcow2 "{{item.name}}".qcow2 100G
       args:
         creates: "{{basedir}}/workload/{{item.name}}.qcow2"
         chdir: "{{basedir}}/workload"
