@@ -19,13 +19,14 @@
         name: "{{item}}"
         state: present
       with_items:
+        - bash-completion
         - docker
         - libguestfs-tools
         - libvirt
         - libvirt-client
         - libvirt-daemon
         - libvirt-daemon-kvm
+        - python2-setuptools
         - python2-virtualbmc
-        - screen
         - tmux
         - vim
