@@ -27,6 +27,15 @@
         mode: 0750
         group: qemu
 
+    - name: push authorized_keys
+      copy:
+        src: /root/.ssh/authorized_keys
+        remote_src: yes
+        dest: "{{basedir}}/.ssh/authorized_keys"
+        group: "{{virt_user}}"
+        mode: 0600
+        owner: "{{virt_user}}"
+
     - name: push polkit config
       template:
         dest: /etc/polkit-1/rules.d/50-org.libvirt.unix.manage.rules
