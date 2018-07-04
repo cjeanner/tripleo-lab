@@ -1,0 +1,32 @@
+#!/bin/bash
+
+version="7"
+basedir="/srv/mirror"
+src="rsync://mirrors.ircam.fr/CentOS"
+dest="${basedir}/CentOS"
+mkdir -p $dest
+rsync -aSHP \
+  --delete \
+  --exclude "local*" \
+  --exclude "isos" \
+  "${src}/${version}/" \
+  "${dest}/${version}/"
+rsync -aSHP \
+  --delete \
+  "${src}/RPM-GPG-KEY-CentOS-7" \
+  "${dest}/"
+
+epel_dest="${basedir}/EPEL"
+epel_src="rsync://pkg.adfinis-sygroup.ch/fedora-epel"
+mkdir -p $epel_dest
+rsync -aSHP \
+  --delete \
+  "${epel_src}/${version}/x86_64/" \
+  "${epel_dest}/${version}/"
+
+rsync -aSHP \
+  --delete \
+  "${epel_src}/RPM-GPG-KEY-EPEL-7" \
+  "$epel_dest"
+
+chcon -R -t httpd_var_lib_t $basedir

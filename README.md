@@ -50,6 +50,14 @@ This will start a lab with just 3 controllers and 1 compute.
   - autostart (bool)
   - swap (string, for example 10G)
 
+*centos_mirror*
+  Create a CentOS repository mirror (default to yes)
+
+*centos_mirror_device*
+  Block device name for mirror content.
+
+  Please note it will create a partition and format it as XFS.
+
 *virt_user*
   Username on the builder (will be created)
 
