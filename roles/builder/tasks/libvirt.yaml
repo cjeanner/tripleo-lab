@@ -53,6 +53,11 @@
   tags:
     - lab
   block:
+    - name: export LIBVIRT_DEFAULT_URI
+      lineinfile:
+        path: "{{basedir}}/.bashrc"
+        line: "export LIBVIRT_DEFAULT_URI='qemu:///system'"
+
     - name: create some directories
       tags:
         - config
