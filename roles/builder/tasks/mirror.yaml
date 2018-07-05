@@ -42,6 +42,11 @@
         minute: 0
         hour: 21
         job: /usr/local/sbin/mirror
+    - name: refresh on boot
+      cron:
+        name: "refresh centos mirror on boot"
+        special_time: reboot
+        job: /usr/local/sbin/mirror
 
     - name: install epel-release
       package:
