@@ -2,6 +2,8 @@
 - name: run commands as stack user
   become: yes
   become_user: stack
+  when:
+    - deploy_undercloud|bool
   block:
     - name: fetch images
       tags:

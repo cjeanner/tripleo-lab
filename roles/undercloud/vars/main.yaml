@@ -10,3 +10,4 @@ overcloud_images:
 
 containerized_undercloud: yes
 ci_tools: yes
+deploy_undercloud: yes

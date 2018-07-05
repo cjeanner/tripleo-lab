@@ -83,3 +83,6 @@ This will start a lab with just 3 controllers and 1 compute.
 
 *ci_tools*
   Install CI tools (Boolean)
+
+*deploy_undercloud*
+  Boolean
