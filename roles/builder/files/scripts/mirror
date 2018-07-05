@@ -22,7 +22,7 @@ mkdir -p $epel_dest
 rsync -aSHP \
   --delete \
   "${epel_src}/${version}/x86_64/" \
-  "${epel_dest}/${version}/"
+  "${epel_dest}/${version}/x86_64/"
 
 rsync -aSHP \
   --delete \
