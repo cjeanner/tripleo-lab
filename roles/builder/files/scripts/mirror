@@ -29,4 +29,24 @@ rsync -aSHP \
   "${epel_src}/RPM-GPG-KEY-EPEL-7" \
   "$epel_dest"
 
+fedora_version="27 28"
+fedora_dest="${basedir}/Fedora"
+fedora_src="rsync://fedora.tu-chemnitz.de/ftp/pub/linux/fedora/linux"
+
+for i in $fedora_version; do
+  mkdir -p "${fedora_dest}/releases/${i}/Everything"
+  mkdir -p "${fedora_dest}/updates/${i}/x86_64"
+
+  rsync -aSHP \
+    --delete \
+    --exclude "**/iso" \
+    --exclude "**/debug" \
+    "${fedora_src}/releases/${i}/Everything/x86_64" \
+    "${fedora_dest}/releases/${i}/Everything/"
+
+  rsync -aSHP \
+    --delete \
+    "${fedora_src}/updates/${i}/x86_64" \
+    "${fedora_dest}/updates/${i}/"
+done
 chcon -R -t httpd_var_lib_t $basedir
