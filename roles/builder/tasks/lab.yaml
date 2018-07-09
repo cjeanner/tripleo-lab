@@ -37,7 +37,9 @@
         - gen-ssh-config
         - inventory
       shell: |
-        virsh --connect qemu:///system domifaddr "{{item.name}}" | awk '/ipv4/ {print $4}'
+        sleep 10 && \
+        virsh --connect qemu:///system domifaddr "{{item.name}}" | \
+        awk '/ipv4/ {print $4}'
       register: ip_address
       loop: "{{ vms }}"
       loop_control:
@@ -46,6 +48,10 @@
         - item.autostart is defined
         - item.autostart|bool
 
+    - name: ensure variable ip_address is not empty
+      fail:
+        msg: "Variable ip_address is empty or not set"
+      when: ip_address is not defined or ip_address|length == 0
     - name: populate ssh_config
       tags:
         - start-domains
