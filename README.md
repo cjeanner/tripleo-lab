@@ -70,9 +70,6 @@ This will start a lab with just 3 controllers and 1 compute.
 *tripleo_repo_version*
   Tripleo-repos package name/version
 
-*tripleo_version*
-  Tripleo version name
-
 *overcloud_images*
   Hash with the following entries:
   - file (string)
