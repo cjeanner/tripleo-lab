@@ -10,9 +10,11 @@
       command: openstack undercloud install --use-heat
       args:
         creates: /home/stack/stackrc
+        chdir: /home/stack
 
     - name: deploy baremetal undercloud
       when: not containerized_undercloud|bool
       command: openstack undercloud install
       args:
         creates: /home/stack/stackrc
+        chdir: /home/stack
