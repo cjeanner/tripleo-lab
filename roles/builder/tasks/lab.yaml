@@ -48,10 +48,19 @@
         - item.autostart is defined
         - item.autostart|bool
 
+    - name: print out the ip_address
+      debug:
+        msg: "Retrieved ip_address value: {{ip_address.results[0]}}"
+
     - name: ensure variable ip_address is not empty
+      tags:
+        - start-domains
+        - gen-ssh-config
       fail:
-        msg: "Variable ip_address is empty or not set"
-      when: ip_address is not defined or ip_address|length == 0
+        msg: "No IP address for undercloud"
+      when:
+        - ip_address.results[0].stdout == ""
+
     - name: populate ssh_config
       tags:
         - start-domains
