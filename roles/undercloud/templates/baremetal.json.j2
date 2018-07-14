@@ -5,11 +5,15 @@
     {
       "name": "{{node.name}}",
       "pm_type": "ipmi",
+      {% if tripleo_version not in ['rocky', 'master'] %}
+      "mac": ["{{node.interfaces[0].mac}}"],
+      {% else %}
       "ports": [
         {
           "address": "{{node.interfaces[0].mac}}"
         }
       ],
+      {% endif %}
       "pm_user": "ADMIN",
       "pm_password": "ADMIN",
       "pm_addr": "192.168.122.1",
