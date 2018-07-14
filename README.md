@@ -83,3 +83,6 @@ This will start a lab with just 3 controllers and 1 compute.
 
 *deploy_undercloud*
   Boolean
+
+*proxy_host*
+  Allows to use a proxy on the lab - put IP:PORT as value

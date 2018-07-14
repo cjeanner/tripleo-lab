@@ -17,6 +17,16 @@
       when:
         - base_image == "rhel"
 
+    - name: copy http proxy env file if defined
+      set_fact: proxy="--copy-in {{basedir}}/configs/http_proxy.sh:/etc/profile.d/"
+      when:
+        - proxy_host is defined
+
+    - name: no proxy
+      set_fact: proxy=""
+      when:
+        - proxy_host is not defined
+
     - name: undercloud image settings
       shell: |
         virt-sysprep -a "{{basedir}}/workload/undercloud.qcow2" \
@@ -29,6 +39,7 @@
           --hostname undercloud.lain.internux.ch \
           --network \
           {{opt_pkg}} \
+          {{proxy}} \
           --uninstall cloud-init \
           --selinux-relabel \
           --root-password "password:{{undercloud_password}}" \

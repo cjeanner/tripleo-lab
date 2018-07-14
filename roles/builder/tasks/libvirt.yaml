@@ -69,6 +69,7 @@
       with_items:
         - images
         - workload
+        - configs
 
     - name: fetch centos base image
       tags:
@@ -118,3 +119,10 @@
       loop: "{{vms}}"
       loop_control:
         label: "{{item.name}}"
+
+    - name: push proxy config id needed
+      template:
+        dest: "{{basedir}}/configs/http_proxy.sh"
+        src: http_proxy.j2
+      when:
+        - proxy_host is defined
