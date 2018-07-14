@@ -1,0 +1,17 @@
+[delorean-{{tripleo_version}}]
+name=delorean-{{tripleo_version}}
+baseurl=http://{{ansible_default_ipv4.address}}/dlrn/delorean-{{tripleo_version}}
+enabled=1
+gpgcheck=0
+
+[delorean-{{tripleo_version}}-deps]
+name=delorean-{{tripleo_version}}
+baseurl=http://{{ansible_default_ipv4.address}}/dlrn/delorean-{{tripleo_version}}-deps
+enabled=1
+gpgcheck=0
+
+[rdo-qemu-ev]
+name=RDO CentOS-$releasever - QEMU EV
+baseurl=http://{{ansible_default_ipv4.address}}/dlrn/rdo-qemu-ev/
+gpgcheck=0
+enabled=1

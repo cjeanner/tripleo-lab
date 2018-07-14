@@ -5,19 +5,37 @@
     line: "127.0.0.1 undercloud.{{ansible_domain}} undercloud localhost localhost.localdomain"
     regexp: '^127\.0\.0\.1'
 
-- name: fetch latest repo version
-  shell: |
-    curl -s https://trunk.rdoproject.org/centos7/current/ | awk '/python2-tripleo-repos/ { print $6}' | cut -d '"' -f 2
-  register: tripleo_repo_version
-- name: install tripleo repository
-  yum:
-    name: "https://trunk.rdoproject.org/centos7/current/{{tripleo_repo_version.stdout}}"
-    state: present
+- name: set proxy for yum if needed
+  lineinfile:
+    backup: yes
+    dest: /etc/yum.conf
+    line: "proxy=http://{{proxy_host}}"
+  when:
+    - proxy_host is defined
 
-- name: enable tripleo_version repository
-  command: tripleo-repos -b "{{tripleo_version}}" current
-  args:
-    creates: "/etc/yum.repos.d/delorean-{{tripleo_version}}.repo"
+- name: set delorean repository if we have a mirror
+  template:
+    dest: "/etc/yum.repos.d/delorean-{{tripleo_version}}.repo"
+    src: delorean.repo.j2
+  when:
+    - centos_mirror|bool
+
+- name: set delorean repository from upstream if no mirror
+  when:
+    - not centos_mirror|bool
+  block:
+    - name: fetch latest repo version
+      shell: |
+        curl -s https://trunk.rdoproject.org/centos7/current/ | awk '/python2-tripleo-repos/ { print $6}' | cut -d '"' -f 2
+      register: tripleo_repo_version
+    - name: install tripleo repository
+      yum:
+        name: "https://trunk.rdoproject.org/centos7/current/{{tripleo_repo_version.stdout}}"
+        state: present
+    - name: enable tripleo_version repository
+      command: tripleo-repos -b "{{tripleo_version}}" current
+      args:
+        creates: "/etc/yum.repos.d/delorean-{{tripleo_version}}.repo"
 
 - name: install some tools
   yum:
