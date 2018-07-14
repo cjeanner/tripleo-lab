@@ -1,20 +1,21 @@
 ---
+- name: fetch images
+  tags:
+    - baremetal
+    - overcloud-images
+  get_url:
+    dest: "/home/stack/overcloud_imgs/{{item.file}}"
+    group: stack
+    mode: 0644
+    owner: stack
+    url: "https://images.rdoproject.org/{{tripleo_version}}/rdo_trunk/current-tripleo/{{item.file}}"
+  loop: "{{ overcloud_images }}"
+  loop_control:
+    label: "{{item.file}}"
 - name: run commands as stack user
   become: yes
   become_user: stack
-  when:
-    - deploy_undercloud|bool
   block:
-    - name: fetch images
-      tags:
-        - baremetal
-        - overcloud-images
-      get_url:
-        dest: "/home/stack/overcloud_imgs/{{item.file}}"
-        url: "https://images.rdoproject.org/master/rdo_trunk/current-tripleo/{{item.file}}"
-      loop: "{{ overcloud_images }}"
-      loop_control:
-        label: "{{item.file}}"
     - name: uncompress images
       tags:
         - baremetal
@@ -28,8 +29,10 @@
       loop_control:
         label: "{{item.file}}"
 
-    - name: upload images to glance
-      when: containerized_undercloud|bool
+    - name: upload images to glance (container)
+      when:
+        - deploy_undercloud|bool
+        - containerized_undercloud|bool
       tags:
         - baremetal
         - overcloud-images
@@ -39,8 +42,10 @@
           --image-path /home/stack/overcloud_imgs \
           --http-boot /var/lib/ironic/httpboot \
           --update-existing
-    - name: upload images to glance
-      when: not containerized_undercloud|bool
+    - name: upload images to glance (bm)
+      when:
+        - deploy_undercloud|bool
+        - not containerized_undercloud|bool
       tags:
         - baremetal
         - overcloud-images
@@ -49,3 +54,26 @@
         openstack overcloud image upload \
           --image-path /home/stack/overcloud_imgs \
           --update-existing
+    - name: common condition and tags
+      tags:
+        - baremetal
+        - overcloud
+      when:
+        - deploy_undercloud|bool
+      block:
+        - name: check overcloud node import status
+          shell: |
+            source ~/stackrc
+            openstack baremetal node list -f value -c UUID | wc -l
+          register: known_bm
+        - name: debug value
+          debug:
+            msg: "Got {{known_bm.stdout}} instances"
+        - name: import nodes in ironic
+          when:
+            - known_bm.stdout == "0"
+          shell: |
+            source ~/stackrc
+            openstack overcloud node import \
+              --introspect --provide \
+              ~/baremetal.json
