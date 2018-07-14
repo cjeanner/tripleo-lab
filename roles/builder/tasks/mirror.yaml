@@ -69,3 +69,18 @@
         name: nginx
         state: started
         enabled: yes
+
+    - name: mirror DLRN
+      command: /usr/local/sbin/mirror dlrn
+      args:
+        creates: /srv/mirror/dlrn
+
+    - name: mirror centos 7
+      command: /usr/local/sbin/mirror centos
+      args:
+        creates: /srv/mirror/CentOS/7
+
+    - name: mirror EPEL
+      command: /usr/local/sbin/mirror epel
+      args:
+        creates: /srv/mirror/EPEL/7
