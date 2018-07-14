@@ -1,64 +1,109 @@
 #!/bin/bash
 
-version="7"
-basedir="/srv/mirror"
-src="rsync://mirrors.ircam.fr/CentOS"
-dest="${basedir}/CentOS"
-mkdir -p $dest
-rsync -aSHP \
-  --delete \
-  --exclude "local*" \
-  --exclude "isos" \
-  "${src}/${version}/" \
-  "${dest}/${version}/"
-rsync -aSHP \
-  --delete \
-  "${src}/RPM-GPG-KEY-CentOS-7" \
-  "${dest}/"
 
-epel_dest="${basedir}/EPEL"
-epel_src="rsync://pkg.adfinis-sygroup.ch/fedora-epel"
-mkdir -p $epel_dest
-rsync -aSHP \
-  --delete \
-  "${epel_src}/${version}/x86_64/" \
-  "${epel_dest}/${version}/x86_64/"
-
-rsync -aSHP \
-  --delete \
-  "${epel_src}/RPM-GPG-KEY-EPEL-7" \
-  "$epel_dest"
-
-fedora_version="27 28"
-fedora_dest="${basedir}/Fedora"
-fedora_src="rsync://fedora.tu-chemnitz.de/ftp/pub/linux/fedora/linux"
-
-for i in $fedora_version; do
-  mkdir -p "${fedora_dest}/releases/${i}/Everything"
-  mkdir -p "${fedora_dest}/updates/${i}/Everything"
+function centos {
+  version="7"
+  basedir="/srv/mirror"
+  src="rsync://mirrors.ircam.fr/CentOS"
+  dest="${basedir}/CentOS"
+  mkdir -p $dest
+  rsync -aSHP \
+    --delete \
+    --exclude "local*" \
+    --exclude "isos" \
+    "${src}/${version}/" \
+    "${dest}/${version}/"
+  rsync -aSHP \
+    --delete \
+    "${src}/RPM-GPG-KEY-CentOS-7" \
+    "${dest}/"
+}
+function epel {
+  epel_dest="${basedir}/EPEL"
+  epel_src="rsync://pkg.adfinis-sygroup.ch/fedora-epel"
+  mkdir -p $epel_dest
+  rsync -aSHP \
+    --delete \
+    "${epel_src}/${version}/x86_64/" \
+    "${epel_dest}/${version}/x86_64/"
 
   rsync -aSHP \
     --delete \
-    --exclude "**/iso" \
-    --exclude "**/debug" \
-    "${fedora_src}/releases/${i}/Everything/x86_64" \
-    "${fedora_dest}/releases/${i}/Everything/"
+    "${epel_src}/RPM-GPG-KEY-EPEL-7" \
+    "$epel_dest"
+}
+function fedora {
+  fedora_version="27 28"
+  fedora_dest="${basedir}/Fedora"
+  fedora_src="rsync://fedora.tu-chemnitz.de/ftp/pub/linux/fedora/linux"
 
-  case $i in
-    27)
-      rsync -aSHP \
-        --delete \
-        --exclude "**/debug" \
-        "${fedora_src}/updates/${i}/x86_64" \
-        "${fedora_dest}/updates/${i}/"
-      ;;
-    *)
-      rsync -aSHP \
-        --delete \
-        --exclude "**/debug" \
-        "${fedora_src}/updates/${i}/Everything/x86_64" \
-        "${fedora_dest}/updates/${i}/Everything/"
-      ;;
-  esac
-done
+  for i in $fedora_version; do
+    mkdir -p "${fedora_dest}/releases/${i}/Everything"
+    mkdir -p "${fedora_dest}/updates/${i}/Everything"
+
+    rsync -aSHP \
+      --delete \
+      --exclude "**/iso" \
+      --exclude "**/debug" \
+      "${fedora_src}/releases/${i}/Everything/x86_64" \
+      "${fedora_dest}/releases/${i}/Everything/"
+
+    case $i in
+      27)
+        rsync -aSHP \
+          --delete \
+          --exclude "**/debug" \
+          "${fedora_src}/updates/${i}/x86_64" \
+          "${fedora_dest}/updates/${i}/"
+        ;;
+      *)
+        rsync -aSHP \
+          --delete \
+          --exclude "**/debug" \
+          "${fedora_src}/updates/${i}/Everything/x86_64" \
+          "${fedora_dest}/updates/${i}/Everything/"
+        ;;
+    esac
+  done
+}
+function dlrn {
+  for i in queens master; do
+    reposync -l --repoid delorean-${i} --download_path /srv/mirror/dlrn/
+    createrepo /srv/mirror/dlrn/delorean-${i}
+
+    reposync -l --repoid delorean-${i}-deps --download_path /srv/mirror/dlrn/
+    createrepo /srv/mirror/dlrn/delorean-${i}-deps
+  done
+  reposync -l --repoid rdo-qemu-ev --download_path /srv/mirror/dlrn/
+  createrepo /srv/mirror/dlrn/rdo-qemu-ev
+}
+
+if [ -z $1 ]; then
+  r='all'
+else
+  r=$1
+fi
+
+case $r in
+  "dlrn")
+    dlrn
+    ;;
+  "centos")
+    centos
+    ;;
+  "fedora")
+    fedora
+    ;;
+  "epel")
+    epel
+    ;;
+  "all")
+    dlrn
+    centos
+    epel
+    fedora
+    ;;
+esac
+
+
 chcon -R -t httpd_var_lib_t $basedir
