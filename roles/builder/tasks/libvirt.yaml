@@ -85,7 +85,7 @@
       tags:
         - images
       command: |
-        qemu-img create -o backing_file=../images/centos-7.qcow2,backing_fmt=qcow2 -f qcow2 "{{item.name}}".qcow2 100G
+        qemu-img create -o backing_file=../images/centos-7.qcow2,backing_fmt=qcow2 -f qcow2 "{{item.name}}".qcow2 "{{item.disksize|default ('100')}}"G
       args:
         creates: "{{basedir}}/workload/{{item.name}}.qcow2"
         chdir: "{{basedir}}/workload"
