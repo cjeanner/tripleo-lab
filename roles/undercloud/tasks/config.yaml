@@ -6,12 +6,36 @@
     regexp: '^127\.0\.0\.1'
 
 - name: set proxy for yum if needed
-  lineinfile:
+  ini_file:
     backup: yes
-    dest: /etc/yum.conf
-    line: "proxy=http://{{proxy_host}}"
+    path: /etc/yum.conf
+    option: proxy
+    section: main
+    value: "http://{{proxy_host}}"
   when:
     - proxy_host is defined
+
+- name: create docker proxy config if needed
+  when:
+    - proxy_host is defined
+  block:
+    - name: create base dir
+      file:
+        group: root
+        mode: 0755
+        owner: root
+        path: /etc/systemd/system/docker.service.d
+        state: directory
+    - name: create service file
+      copy:
+        content: |
+          [Service]
+          Environment="HTTP_PROXY=http://{{proxy_host}}/"
+          Environment="NO_PROXY=localhost,127.0.0.0/8"
+        dest: /etc/systemd/system/docker.service.d/http-proxy.conf
+        group: root
+        mode: 0755
+        owner: root
 
 - name: set delorean repository if we have a mirror
   template:
@@ -23,6 +47,7 @@
 - name: set delorean repository from upstream if no mirror
   when:
     - not centos_mirror|bool
+    - base_image != 'rhel'
   block:
     - name: fetch latest repo version
       shell: |
@@ -37,15 +62,6 @@
       args:
         creates: "/etc/yum.repos.d/delorean-{{tripleo_version}}.repo"
 
-- name: install some tools
-  yum:
-    name: "{{item}}"
-    state: present
-  loop:
-    - git
-    - tmux
-    - vim
-
 - name: do we have a swap file
   stat:
     path: /dev/sdb
@@ -59,8 +75,3 @@
   when:
     - swap_on.stat.exists
     - swap_on.stat.isblk
-
-- name: install tripleo client
-  yum:
-    name: python-tripleoclient
-    state: present

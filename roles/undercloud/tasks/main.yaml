@@ -7,6 +7,8 @@
   delegate_facts: false
   block:
     - import_tasks: config.yaml
+    - import_tasks: rhos-release.yaml
+    - import_tasks: packages.yaml
     - import_tasks: user.yaml
     - import_tasks: prepare.yaml
     - import_tasks: deploy.yaml
