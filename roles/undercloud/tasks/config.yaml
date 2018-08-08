@@ -5,20 +5,17 @@
     line: "127.0.0.1 undercloud.{{ansible_domain}} undercloud localhost localhost.localdomain"
     regexp: '^127\.0\.0\.1'
 
-- name: set proxy for yum if needed
-  ini_file:
-    backup: yes
-    path: /etc/yum.conf
-    option: proxy
-    section: main
-    value: "http://{{proxy_host}}"
-  when:
-    - proxy_host is defined
-
-- name: create docker proxy config if needed
+- name: proxy configurations if required
   when:
     - proxy_host is defined
   block:
+    - name: set proxy for yum
+      ini_file:
+        backup: yes
+        path: /etc/yum.conf
+        option: proxy
+        section: main
+        value: "http://{{proxy_host}}"
     - name: create base dir
       file:
         group: root
@@ -43,6 +40,7 @@
     src: delorean.repo.j2
   when:
     - centos_mirror|bool
+    - base_image != 'rhel'
 
 - name: set delorean repository from upstream if no mirror
   when:

@@ -1,41 +1,74 @@
 ---
-- name: fetch images
+- name: image management on non-RHEL system
   tags:
     - baremetal
     - overcloud-images
-  get_url:
-    dest: "/home/stack/overcloud_imgs/{{item.file}}"
-    group: stack
-    mode: 0644
-    owner: stack
-    url: "https://images.rdoproject.org/{{tripleo_version}}/rdo_trunk/current-tripleo/{{item.file}}"
-  loop: "{{ overcloud_images }}"
-  loop_control:
-    label: "{{item.file}}"
+  when:
+    - base_image != 'rhel'
+  block:
+    - name: fetch images
+      get_url:
+        dest: "/home/stack/overcloud_imgs/{{item.file}}"
+        group: stack
+        mode: 0644
+        owner: stack
+        url: "https://images.rdoproject.org/{{tripleo_version}}/rdo_trunk/current-tripleo/{{item.file}}"
+      loop: "{{ overcloud_images }}"
+      loop_control:
+        label: "{{item.file}}"
+    - name: run commands as stack user
+      become: yes
+      become_user: stack
+      tags:
+        - baremetal
+        - overcloud-images
+      block:
+        - name: uncompress images
+          unarchive:
+            creates: "/home/stack/overcloud_imgs/{{item.content}}"
+            dest: "/home/stack/overcloud_imgs/"
+            remote_src: yes
+            src: "/home/stack/overcloud_imgs/{{item.file}}"
+          loop: "{{ overcloud_images }}"
+          loop_control:
+            label: "{{item.file}}"
+
+- name: manage image on RHEL
+  tags:
+    - baremetal
+    - overcloud-images
+  when:
+    - base_image == 'rhel'
+  block:
+    - name: install package
+      package:
+        name: rhosp-director-images
+        state: installed
+    - name: run commands as stack user
+      become: yes
+      become_user: stack
+      tags:
+        - baremetal
+        - overcloud-images
+      block:
+        - name: uncompress images
+          unarchive:
+            creates: "/home/stack/overcloud_imgs/{{item.content}}"
+            dest: "/home/stack/overcloud_imgs/"
+            remote_src: yes
+            src: "/usr/share/rhosp-director-images/{{item.file}}"
+          loop: "{{ overcloud_images }}"
+          loop_control:
+            label: "{{item.file}}"
+
 - name: run commands as stack user
   become: yes
   become_user: stack
   block:
-    - name: uncompress images
-      tags:
-        - baremetal
-        - overcloud-images
-      unarchive:
-        creates: "/home/stack/overcloud_imgs/{{item.content}}"
-        dest: "/home/stack/overcloud_imgs/"
-        remote_src: yes
-        src: "/home/stack/overcloud_imgs/{{item.file}}"
-      loop: "{{ overcloud_images }}"
-      loop_control:
-        label: "{{item.file}}"
-
     - name: upload images to glance (container)
       when:
         - deploy_undercloud|bool
         - containerized_undercloud|bool
-      tags:
-        - baremetal
-        - overcloud-images
       shell: |
         source ~/stackrc
         openstack overcloud image upload \
@@ -46,9 +79,6 @@
       when:
         - deploy_undercloud|bool
         - not containerized_undercloud|bool
-      tags:
-        - baremetal
-        - overcloud-images
       shell: |
         source ~/stackrc
         openstack overcloud image upload \
