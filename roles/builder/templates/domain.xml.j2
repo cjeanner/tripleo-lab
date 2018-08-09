@@ -4,6 +4,7 @@
   <vcpu>{{item.cpu}}</vcpu>
   <os>
     <type arch="x86_64">hvm</type>
+    <bios useserial='yes' rebootTimeout='0'/>
   </os>
   <clock sync="localtime"/>
   <features>
