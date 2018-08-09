@@ -60,50 +60,71 @@
           loop: "{{ overcloud_images }}"
           loop_control:
             label: "{{item.file}}"
-
-- name: run commands as stack user
-  become: yes
-  become_user: stack
+- name: common tag
+  tags:
+    - overcloud-images
+    - baremetal
   block:
-    - name: upload images to glance (container)
+    - name: install rhos-release on rhel image
+      set_fact:
+        rhos_install:
+          - "--firstboot-command 'yum install -y {{ rhos_release_repo_url }}/rhos-release-latest.noarch.rpm'"
+          - "--firstboot-command 'rhos-release {{ rhos_release_opts|default('') }} {{ rhos_release_version }}'"
       when:
-        - deploy_undercloud|bool
-        - containerized_undercloud|bool
-      shell: |
-        source ~/stackrc
-        openstack overcloud image upload \
-          --image-path /home/stack/overcloud_imgs \
-          --http-boot /var/lib/ironic/httpboot \
-          --update-existing
-    - name: upload images to glance (bm)
-      when:
-        - deploy_undercloud|bool
-        - not containerized_undercloud|bool
-      shell: |
-        source ~/stackrc
-        openstack overcloud image upload \
-          --image-path /home/stack/overcloud_imgs \
-          --update-existing
-    - name: common condition and tags
-      tags:
-        - baremetal
-        - overcloud
-      when:
-        - deploy_undercloud|bool
+        - base_image == 'rhel'
+
+    - name: run commands as stack user
+      become: yes
+      become_user: stack
       block:
-        - name: check overcloud node import status
+        - name: modify overcloud image
           shell: |
-            source ~/stackrc
-            openstack baremetal node list -f value -c UUID | wc -l
-          register: known_bm
-        - name: debug value
-          debug:
-            msg: "Got {{known_bm.stdout}} instances"
-        - name: import nodes in ironic
+            virt-sysprep -a /home/stack/overcloud_imgs/overcloud-full.qcow2 \
+              --copy-in /etc/yum.conf:/etc/ \
+              --network {{rhos_install|default([''])|join(' ')}} \
+              && \
+              touch /home/stack/overcloud_imgs/overcloud-full.qcow2.done
+          args:
+            creates: /home/stack/overcloud_imgs/overcloud-full.qcow2.done
+        - name: upload images to glance (container)
           when:
-            - known_bm.stdout == "0"
+            - deploy_undercloud|bool
+            - containerized_undercloud|bool
           shell: |
             source ~/stackrc
-            openstack overcloud node import \
-              --introspect --provide \
-              ~/baremetal.json
+            openstack overcloud image upload \
+              --image-path /home/stack/overcloud_imgs \
+              --http-boot /var/lib/ironic/httpboot \
+              --update-existing
+        - name: upload images to glance (bm)
+          when:
+            - deploy_undercloud|bool
+            - not containerized_undercloud|bool
+          shell: |
+            source ~/stackrc
+            openstack overcloud image upload \
+              --image-path /home/stack/overcloud_imgs \
+              --update-existing
+        - name: common condition and tags
+          tags:
+            - baremetal
+            - overcloud
+          when:
+            - deploy_undercloud|bool
+          block:
+            - name: check overcloud node import status
+              shell: |
+                source ~/stackrc
+                openstack baremetal node list -f value -c UUID | wc -l
+              register: known_bm
+            - name: debug value
+              debug:
+                msg: "Got {{known_bm.stdout}} instances"
+            - name: import nodes in ironic
+              when:
+                - known_bm.stdout == "0"
+              shell: |
+                source ~/stackrc
+                openstack overcloud node import \
+                  --introspect --provide \
+                  ~/baremetal.json
