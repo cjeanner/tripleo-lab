@@ -5,6 +5,7 @@
     state: present
   loop:
     - git
+    - libguestfs-tools
     - tmux
     - vim
 
