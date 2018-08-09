@@ -12,11 +12,6 @@
       when:
         - base_image == "centos"
 
-    - name: no install for RHEL
-      set_fact: opt_pkg=""
-      when:
-        - base_image == "rhel"
-
     - name: undercloud image settings
       shell: |
         virt-sysprep -a "{{basedir}}/workload/undercloud.qcow2" \
@@ -27,8 +22,7 @@
           --firstboot-command "mkswap /dev/sdb" \
           --firstboot-command "swapon /dev/sdb" \
           --hostname undercloud.lain.internux.ch \
-          --network \
-          {{opt_pkg}} \
+          --network {{ opt_pkg|default('') }} \
           --uninstall cloud-init \
           --selinux-relabel \
           --root-password "password:{{undercloud_password}}" \
