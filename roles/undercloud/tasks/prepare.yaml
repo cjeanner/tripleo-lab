@@ -51,11 +51,17 @@
       copy:
         dest: /home/stack/overcloud-yml/network.yaml
         src: ../files/overcloud/network.yaml
+    - name: push scale setting
+      tags:
+        - baremetal
+      template:
+        dest: /home/stack/overcloud-yml/scale.yaml
+        src: scale.yaml.j2
     - name: push basic deploy script
       tags:
         - baremetal
       copy:
-        dest: /home/stack/overcloud-deploy.sh
+        dest: /home/stack/deploy-overcloud.sh
         src: ../files/overcloud/deploy.sh
         mode: 0750
 
