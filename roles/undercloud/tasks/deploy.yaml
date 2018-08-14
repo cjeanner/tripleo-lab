@@ -2,8 +2,6 @@
 - name: run commands as stack user
   become: yes
   become_user: stack
-  when:
-    - deploy_undercloud|bool
   block:
     - name: deploy containerized undercloud
       when: containerized_undercloud|bool

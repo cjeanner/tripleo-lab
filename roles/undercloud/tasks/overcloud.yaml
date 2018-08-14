@@ -88,7 +88,6 @@
             creates: /home/stack/overcloud_imgs/overcloud-full.qcow2.done
         - name: upload images to glance (container)
           when:
-            - deploy_undercloud|bool
             - containerized_undercloud|bool
           shell: |
             source ~/stackrc
@@ -98,7 +97,6 @@
               --update-existing
         - name: upload images to glance (bm)
           when:
-            - deploy_undercloud|bool
             - not containerized_undercloud|bool
           shell: |
             source ~/stackrc
@@ -109,8 +107,6 @@
           tags:
             - baremetal
             - overcloud
-          when:
-            - deploy_undercloud|bool
           block:
             - name: check overcloud node import status
               shell: |
