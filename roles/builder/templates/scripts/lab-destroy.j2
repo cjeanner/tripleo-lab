@@ -3,7 +3,7 @@
 source /usr/local/bin/lab-helpers
 
 do_destroy() {
-  for i in $($VIRSH list --all --name); do
+  for i in $($VIRSH list --all --name | grep {{vm_prefix}}); do
     $VIRSH destroy $i;
     $VIRSH undefine $i;
     rm -f /home/{{virt_user}}/workload/${i}*

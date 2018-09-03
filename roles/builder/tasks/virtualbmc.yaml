@@ -54,14 +54,14 @@
       when: tripleo_version not in ['pike', 'queens']
 
     - name: Create the Virtual BMCs
-      command: "vbmc add {{ item.name }} --port 112{{item.interfaces.0.mac|replace('24:42:53:21:52:','')}} --libvirt-uri qemu:///system --username ADMIN --password ADMIN" 
+      command: "vbmc add {{vm_prefix}}-{{ item.name }} --port 112{{item.interfaces.0.mac|replace('24:42:53:21:52:','')}} --libvirt-uri qemu:///system --username ADMIN --password ADMIN" 
       args:
         creates: /root/.vbmc/{{ item.name }}/config
       with_items: "{{ vms }}"
       register: vbmc
 
     - name: Start the Virtual BMCs (virtualbmc >= 1.4.0+)
-      command: "vbmc start {{ item.name }}"
+      command: "vbmc start {{vm_prefix}}-{{ item.name }}"
       with_items: "{{ vms }}"
       when:
         - vbmc.changed

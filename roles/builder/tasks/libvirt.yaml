@@ -85,9 +85,9 @@
       tags:
         - images
       command: |
-        qemu-img create -o backing_file=../images/centos-7.qcow2,backing_fmt=qcow2 -f qcow2 "{{item.name}}".qcow2 "{{item.disksize|default ('100')}}"G
+        qemu-img create -o backing_file=../images/centos-7.qcow2,backing_fmt=qcow2 -f qcow2 "{{vm_prefix}}-{{item.name}}".qcow2 "{{item.disksize|default ('100')}}"G
       args:
-        creates: "{{basedir}}/workload/{{item.name}}.qcow2"
+        creates: "{{basedir}}/workload/{{vm_prefix}}-{{item.name}}.qcow2"
         chdir: "{{basedir}}/workload"
       loop: "{{vms}}"
       loop_control:
@@ -99,9 +99,9 @@
       tags:
         - images
       command: |
-        qemu-img create -o backing_file=../images/redhat-7.qcow2,backing_fmt=qcow2 -f qcow2 "{{item.name}}".qcow2 100G
+        qemu-img create -o backing_file=../images/redhat-7.qcow2,backing_fmt=qcow2 -f qcow2 "{{vm_prefix}}-{{item.name}}".qcow2 100G
       args:
-        creates: "{{basedir}}/workload/{{item.name}}.qcow2"
+        creates: "{{basedir}}/workload/{{vm_prefix}}{{item.name}}.qcow2"
         chdir: "{{basedir}}/workload"
       loop: "{{vms}}"
       loop_control:
@@ -110,11 +110,11 @@
     - name: create swap files when needed
       tags:
         - images
-      command: "qemu-img create -f raw {{item.name}}-swap.img {{item.swap}}"
+      command: "qemu-img create -f raw {{vm_prefix}}-{{item.name}}-swap.img {{item.swap}}"
       when:
         - item.swap is defined
       args:
-        creates: "{{basedir}}/workload/{{item.name}}-swap.img"
+        creates: "{{basedir}}/workload/{{vm_prefix}}-{{item.name}}-swap.img"
         chdir: "{{basedir}}/workload"
       loop: "{{vms}}"
       loop_control:

@@ -9,7 +9,7 @@
   block:
     - name: define nodes
       virt:
-        name: "{{ item.name }}"
+        name: "{{vm_prefix}}-{{ item.name }}"
         command: define
         xml: "{{ lookup('template', 'domain.xml.j2') }}"
         uri: "qemu:///system"
@@ -21,7 +21,7 @@
       tags:
         - start-domains
       virt:
-        name: "{{ item.name }}"
+        name: "{{vm_prefix}}-{{ item.name }}"
         state: running
         uri: "qemu:///system"
       loop: "{{ vms }}"
@@ -38,7 +38,7 @@
         - inventory
       shell: |
         sleep 10 && \
-        virsh --connect qemu:///system domifaddr "{{item.name}}" | \
+        virsh --connect qemu:///system domifaddr "{{vm_prefix}}-{{item.name}}" | \
         awk '/ipv4/ {print $4}'
       register: ip_address
       loop: "{{ vms }}"
@@ -78,7 +78,7 @@
     - start-domains
     - lab
   lineinfile:
-    line: "{{item.stdout|replace('/24','')}} {{item.item.name}}"
+    line: "{{item.stdout|replace('/24','')}} {{item.item.name}} {{vm_prefix}}-{{item.item.name}}"
     path: /etc/hosts
     regexp: "{{item.item.name}}$"
     state: present
