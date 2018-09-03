@@ -8,6 +8,8 @@ do_destroy() {
     $VIRSH undefine $i;
     rm -f /home/{{virt_user}}/workload/${i}*
   done
+  sudo rm -rf /root/.vbmc
+  sudo service virtualbmc stop
 }
 
 echo -n 'Destroy the lab? [Ny] ' 
