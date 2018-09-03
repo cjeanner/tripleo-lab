@@ -11,10 +11,10 @@
     - import_tasks: packages.yaml
     - import_tasks: user.yaml
     - import_tasks: prepare.yaml
+    - import_tasks: ci-tools.yaml
     - name: deploy undercloud and prepare overcloud
       when:
         - deploy_undercloud|bool
       block:
         - import_tasks: deploy.yaml
         - import_tasks: overcloud.yaml
-        - import_tasks: ci-tools.yaml
