@@ -37,7 +37,7 @@
         - gen-ssh-config
         - inventory
       shell: |
-        sleep 10 && \
+        sleep 30 && \
         virsh --connect qemu:///system domifaddr "{{item.name}}" | \
         awk '/ipv4/ {print $4}'
       register: ip_address
