@@ -26,6 +26,15 @@
         mode: 0750
         group: qemu
 
+    - name: push authorized_keys
+      copy:
+        src: /root/.ssh/authorized_keys
+        remote_src: yes
+        dest: "{{basedir}}/.ssh/authorized_keys"
+        group: "{{virt_user}}"
+        mode: 0600
+        owner: "{{virt_user}}"
+
     - name: push polkit config
       template:
         dest: /etc/polkit-1/rules.d/50-org.libvirt.unix.manage.rules
@@ -43,16 +52,23 @@
   tags:
     - lab
   block:
+    - name: export LIBVIRT_DEFAULT_URI
+      lineinfile:
+        path: "{{basedir}}/.bashrc"
+        line: "export LIBVIRT_DEFAULT_URI='qemu:///system'"
+
     - name: create some directories
       tags:
         - config
       file:
         state: directory
+        group: qemu
         path: "{{basedir}}/{{item}}"
         mode: 02770
       with_items:
         - images
         - workload
+        - configs
 
     - name: fetch centos base image
       tags:
@@ -63,10 +79,26 @@
         mode: 0664
 
     - name: create images based on centos
+      when:
+        base_image == "centos"
       tags:
         - images
       command: |
-        qemu-img create -o backing_file=../images/centos-7.qcow2,backing_fmt=qcow2 -f qcow2 "{{item.name}}".qcow2 100G
+        qemu-img create -o backing_file=../images/centos-7.qcow2,backing_fmt=qcow2 -f qcow2 "{{item.name}}".qcow2 "{{item.disksize|default ('100')}}"G
+      args:
+        creates: "{{basedir}}/workload/{{item.name}}.qcow2"
+        chdir: "{{basedir}}/workload"
+      loop: "{{vms}}"
+      loop_control:
+        label: "{{item.name}}"
+
+    - name: create images based on RHEL
+      when:
+        base_image == "rhel"
+      tags:
+        - images
+      command: |
+        qemu-img create -o backing_file=../images/redhat-7.qcow2,backing_fmt=qcow2 -f qcow2 "{{item.name}}".qcow2 100G
       args:
         creates: "{{basedir}}/workload/{{item.name}}.qcow2"
         chdir: "{{basedir}}/workload"
@@ -86,3 +118,10 @@
       loop: "{{vms}}"
       loop_control:
         label: "{{item.name}}"
+
+    - name: push proxy config id needed
+      template:
+        dest: "{{basedir}}/configs/http_proxy.sh"
+        src: http_proxy.j2
+      when:
+        - proxy_host is defined

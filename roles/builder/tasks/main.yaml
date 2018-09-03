@@ -1,7 +1,8 @@
 - import_tasks: packages.yaml
 - import_tasks: services.yaml
+- import_tasks: mirror.yaml
 - import_tasks: libvirt.yaml
-- import_tasks: virtualbmc.yaml
 - import_tasks: scripts.yaml
 - import_tasks: undercloud.yaml
 - import_tasks: lab.yaml
+- import_tasks: virtualbmc.yaml

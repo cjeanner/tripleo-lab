@@ -1,5 +1,4 @@
 virt_user: virtuser
-tripleo_repo_version: python2-tripleo-repos-0.0.1-0.20180418175107.ef4e12e.el7.centos.noarch.rpm
 tripleo_version: rocky
 overcloud_images:
   - file: ironic-python-agent.tar
@@ -9,3 +8,5 @@ overcloud_images:
 
 containerized_undercloud: yes
 ci_tools: yes
+deploy_undercloud: yes
+undercloud_sample: /usr/share/python-tripleoclient/undercloud.conf.sample

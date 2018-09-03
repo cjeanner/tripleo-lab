@@ -35,7 +35,9 @@
         - gen-ssh-config
         - inventory
       shell: |
-        virsh --connect qemu:///system domifaddr "{{item.name}}" | awk '/ipv4/ {print $4}'
+        sleep 10 && \
+        virsh --connect qemu:///system domifaddr "{{item.name}}" | \
+        awk '/ipv4/ {print $4}'
       register: ip_address
       loop: "{{ vms }}"
       loop_control:
@@ -43,6 +45,19 @@
       when:
         - item.autostart is defined
         - item.autostart|bool
+
+    - name: print out the ip_address
+      debug:
+        msg: "Retrieved ip_address value: {{ip_address.results[0]}}"
+
+    - name: ensure variable ip_address is not empty
+      tags:
+        - start-domains
+        - gen-ssh-config
+      fail:
+        msg: "No IP address for undercloud"
+      when:
+        - ip_address.results[0].stdout == ""
 
     - name: populate ssh_config
       tags:
@@ -97,7 +112,7 @@
     marker: "## {mark} {{item.item.name}}"
     block: |
       Host {{item.item.name}} {{item.stdout|replace('/24','')}}
-        ProxyCommand ssh -o 'ForwardAgent yes' root@{{ansible_host}} 'ssh-add && nc {{item.stdout|replace('/24','')}} %p'
+        ProxyCommand ssh -o 'ForwardAgent yes' {{virt_user}}@{{ansible_host}} 'ssh-add && nc {{item.stdout|replace('/24','')}} %p'
         User root
         StrictHostKeyChecking no
         UserKnownHostsFile /dev/null

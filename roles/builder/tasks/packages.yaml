@@ -3,6 +3,12 @@
     - builder-packages
     - builder-bootstrap
   block:
+    - name: set up proxy if any is provided (sh profile)
+      template:
+        dest: /etc/profile.d/http_proxy.sh
+        src: http_proxy.j2
+      when:
+        - proxy_host is defined
     - name: install rdo-trunk deps
       get_url:
         url: https://trunk.rdoproject.org/centos7-master/rdo-trunk-runtime-deps.repo
@@ -16,14 +22,14 @@
     - name: ensure packages are present
       package:
         name:
-          - docker
-          - libguestfs-tools
-          - libvirt
-          - libvirt-client
-          - libvirt-daemon
-          - libvirt-daemon-kvm
-          - python2-virtualbmc
-          - screen
-          - tmux
-          - vim
-        state: present
+        - bash-completion
+        - docker
+        - libguestfs-tools
+        - libvirt
+        - libvirt-client
+        - libvirt-daemon
+        - libvirt-daemon-kvm
+        - python2-setuptools
+        - python2-virtualbmc
+        - tmux
+        - vim

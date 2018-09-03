@@ -1,0 +1,17 @@
+---
+parameter_defaults:
+  InternalApiNetCidr: 172.17.0.0/24
+  StorageNetCidr: 172.18.0.0/24
+  StorageMgmtNetCidr: 172.19.0.0/24
+  TenantNetCidr: 172.16.0.0/24
+  ExternalNetCidr: 10.10.0.0/24
+  ControlPlaneSubnetCidr: '24'
+  InternalApiAllocationPools: [{'start': '172.17.0.10', 'end': '172.17.0.200'}]
+  StorageAllocationPools: [{'start': '172.18.0.10', 'end': '172.18.0.200'}]
+  StorageMgmtAllocationPools: [{'start': '172.19.0.10', 'end': '172.19.0.200'}]
+  TenantAllocationPools: [{'start': '172.16.0.10', 'end': '172.16.0.200'}]
+  ExternalAllocationPools: [{'start': '10.10.0.151', 'end': '10.10.0.250'}]
+  ExternalInterfaceDefaultRoute: 10.10.0.1
+  ControlPlaneDefaultRoute: 192.168.24.1
+  EC2MetadataIp: 192.168.24.1
+  DnsServers: ["8.8.8.8","8.8.4.4"]

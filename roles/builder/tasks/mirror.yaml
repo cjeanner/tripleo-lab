@@ -1,0 +1,86 @@
+---
+- name: create centos mirror
+  tags:
+    - mirror
+  when: centos_mirror|bool
+  block:
+    - name: install rsync
+      package:
+        name: rsync
+        state: present
+    - name: create directory
+      file:
+        path: /srv/mirror
+        state: directory
+        setype: httpd_var_lib_t
+    - name: create partition on dedicated device
+      parted:
+        device: "{{centos_mirror_device}}"
+        number: 1
+        state: present
+    - name: create XFS filesystem on mirror device
+      filesystem:
+        fstype: xfs
+        dev: "{{centos_mirror_device}}1"
+    - name: mount dedicated device
+      mount:
+        backup: yes
+        fstype: xfs
+        path: /srv/mirror
+        src: "{{centos_mirror_device}}1"
+        state: mounted
+    - name: push sync script
+      copy:
+        src: ../files/scripts/mirror
+        dest: /usr/local/sbin/mirror
+        mode: 0755
+        owner: root
+        group: root
+    - name: set up refresh cron
+      cron:
+        name: "refresh centos mirror"
+        minute: 0
+        hour: 21
+        job: /usr/local/sbin/mirror
+    - name: refresh on boot
+      cron:
+        name: "refresh centos mirror on boot"
+        special_time: reboot
+        job: /usr/local/sbin/mirror
+
+    - name: install epel-release
+      package:
+        name: epel-release
+        state: present
+    - name: install nginx
+      package:
+        name: nginx
+        state: present
+    - name: configure nginx
+      copy:
+        src: ../files/nginx/nginx.conf
+        dest: /etc/nginx/nginx.conf
+    - name: configure vhost
+      copy:
+        src: ../files/nginx/mirror.conf
+        dest: /etc/nginx/conf.d/mirror.conf
+    - name: activate nginx
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+
+    - name: mirror DLRN
+      command: /usr/local/sbin/mirror dlrn
+      args:
+        creates: /srv/mirror/dlrn
+
+    - name: mirror centos 7
+      command: /usr/local/sbin/mirror centos
+      args:
+        creates: /srv/mirror/CentOS/7
+
+    - name: mirror EPEL
+      command: /usr/local/sbin/mirror epel
+      args:
+        creates: /srv/mirror/EPEL/7

@@ -1,51 +1,126 @@
-- name: run commands as stack user
-  become: yes
-  become_user: stack
+
+- name: image management on non-RHEL system
+  tags:
+    - baremetal
+    - overcloud-images
+  when:
+    - base_image != 'rhel'
   block:
     - name: fetch images
-      tags:
-        - baremetal
-        - overcloud-images
       get_url:
         dest: "/home/stack/overcloud_imgs/{{item.file}}"
-        url: "https://images.rdoproject.org/master/rdo_trunk/current-tripleo/{{item.file}}"
+        group: stack
+        mode: 0644
+        owner: stack
+        url: "https://images.rdoproject.org/{{tripleo_version}}/rdo_trunk/current-tripleo/{{item.file}}"
       loop: "{{ overcloud_images }}"
       loop_control:
         label: "{{item.file}}"
-
-    - name: uncompress images
+    - name: run commands as stack user
+      become: yes
+      become_user: stack
       tags:
         - baremetal
         - overcloud-images
-      unarchive:
-        creates: "/home/stack/overcloud_imgs/{{item.content}}"
-        dest: "/home/stack/overcloud_imgs/"
-        remote_src: yes
-        src: "/home/stack/overcloud_imgs/{{item.file}}"
-      loop: "{{ overcloud_images }}"
-      loop_control:
-        label: "{{item.file}}"
+      block:
+        - name: uncompress images
+          unarchive:
+            creates: "/home/stack/overcloud_imgs/{{item.content}}"
+            dest: "/home/stack/overcloud_imgs/"
+            remote_src: yes
+            src: "/home/stack/overcloud_imgs/{{item.file}}"
+          loop: "{{ overcloud_images }}"
+          loop_control:
+            label: "{{item.file}}"
 
-    # FIXME: Use os_image for these tasks
-    - name: upload images to glance
-      when: containerized_undercloud|bool
+- name: manage image on RHEL
+  tags:
+    - baremetal
+    - overcloud-images
+  when:
+    - base_image == 'rhel'
+  block:
+    - name: install package
+      package:
+        name: rhosp-director-images
+        state: installed
+    - name: run commands as stack user
+      become: yes
+      become_user: stack
       tags:
         - baremetal
         - overcloud-images
-      shell: |
-        source ~/stackrc
-        openstack overcloud image upload \
-          --image-path /home/stack/overcloud_imgs \
-          --http-boot /var/lib/ironic/httpboot \
-          --update-existing
+      block:
+        - name: uncompress images
+          unarchive:
+            creates: "/home/stack/overcloud_imgs/{{item.content}}"
+            dest: "/home/stack/overcloud_imgs/"
+            remote_src: yes
+            src: "/usr/share/rhosp-director-images/{{item.file}}"
+          loop: "{{ overcloud_images }}"
+          loop_control:
+            label: "{{item.file}}"
+- name: common tag
+  tags:
+    - overcloud-images
+    - baremetal
+  block:
+    - name: install rhos-release on rhel image
+      set_fact:
+        rhos_install:
+          - "--firstboot-command 'yum install -y {{ rhos_release_repo_url }}/rhos-release-latest.noarch.rpm'"
+          - "--firstboot-command 'rhos-release {{ rhos_release_opts|default('') }} {{ rhos_release_version }}'"
+      when:
+        - base_image == 'rhel'
 
-    - name: upload images to glance
-      when: not containerized_undercloud|bool
-      tags:
-        - baremetal
-        - overcloud-images
-      shell: |
-        source ~/stackrc
-        openstack overcloud image upload \
-          --image-path /home/stack/overcloud_imgs \
-          --update-existing
+    - name: run commands as stack user
+      become: yes
+      become_user: stack
+      block:
+        - name: modify overcloud image
+          shell: |
+            virt-sysprep -a /home/stack/overcloud_imgs/overcloud-full.qcow2 \
+              --copy-in /etc/yum.conf:/etc/ \
+              --network {{rhos_install|default([''])|join(' ')}} \
+              && \
+              touch /home/stack/overcloud_imgs/overcloud-full.qcow2.done
+          args:
+            creates: /home/stack/overcloud_imgs/overcloud-full.qcow2.done
+        - name: upload images to glance (container)
+          when:
+            - containerized_undercloud|bool
+          shell: |
+            source ~/stackrc
+            openstack overcloud image upload \
+              --image-path /home/stack/overcloud_imgs \
+              --http-boot /var/lib/ironic/httpboot \
+              --update-existing
+        - name: upload images to glance (bm)
+          when:
+            - not containerized_undercloud|bool
+          shell: |
+            source ~/stackrc
+            openstack overcloud image upload \
+              --image-path /home/stack/overcloud_imgs \
+              --update-existing
+        - name: common condition and tags
+          tags:
+            - baremetal
+            - overcloud
+          block:
+            - name: check overcloud node import status
+              shell: |
+                source ~/stackrc
+                openstack baremetal node list -f value -c UUID | wc -l
+              register: known_bm
+            - name: debug value
+              debug:
+                msg: "Got {{known_bm.stdout}} instances"
+            - name: import nodes in ironic
+              when:
+                - known_bm.stdout == "0"
+              shell: |
+                source ~/stackrc
+                openstack overcloud node import \
+                  --introspect --provide \
+                  ~/baremetal.json

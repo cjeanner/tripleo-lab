@@ -6,6 +6,11 @@
     - undercloud
     - lab
   block:
+    - name: install acpid only on centos
+      set_fact: opt_pkg="--install acpid"
+      when:
+        - base_image == "centos"
+
     - name: undercloud image settings
       shell: |
         virt-sysprep -a "{{basedir}}/workload/undercloud.qcow2" \
@@ -16,8 +21,7 @@
           --firstboot-command "mkswap /dev/sdb" \
           --firstboot-command "swapon /dev/sdb" \
           --hostname undercloud.lain.internux.ch \
-          --network \
-          --install acpid \
+          --network {{ opt_pkg|default('') }} \
           --uninstall cloud-init \
           --selinux-relabel \
           --root-password "password:{{undercloud_password}}" \

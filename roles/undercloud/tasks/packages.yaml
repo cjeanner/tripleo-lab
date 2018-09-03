@@ -1,0 +1,16 @@
+---
+- name: install some tools
+  yum:
+    name: "{{item}}"
+    state: present
+  loop:
+    - git
+    - libguestfs-tools
+    - tmux
+    - vim
+
+- name: install tripleo client
+  yum:
+    name: python-tripleoclient
+    state: present
+
