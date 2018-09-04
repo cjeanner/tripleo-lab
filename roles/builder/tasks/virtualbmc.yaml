@@ -57,12 +57,18 @@
       command: "vbmc add {{vm_prefix}}-{{ item.name }} --port 112{{item.interfaces.0.mac|replace('24:42:53:21:52:','')}} --libvirt-uri qemu:///system --username ADMIN --password ADMIN" 
       args:
         creates: /root/.vbmc/{{ item.name }}/config
-      with_items: "{{ vms }}"
+      loop: "{{ vms }}"
+      loop_control:
+        label: "{{ item.name }}"
       register: vbmc
+      ignore_errors: yes
 
     - name: Start the Virtual BMCs (virtualbmc >= 1.4.0+)
       command: "vbmc start {{vm_prefix}}-{{ item.name }}"
-      with_items: "{{ vms }}"
+      loop: "{{ vms }}"
+      loop_control:
+        label: "{{ item.name }}"
+      ignore_errors: yes
       when:
         - vbmc.changed
         - tripleo_version not in ['pike', 'queens']
