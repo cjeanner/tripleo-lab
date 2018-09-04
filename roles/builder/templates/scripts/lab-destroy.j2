@@ -9,6 +9,7 @@ do_destroy() {
     rm -f /home/{{virt_user}}/workload/${i}*
   done
   sudo rm -rf /root/.vbmc
+  sudo rm -rf /home/{{virt_user}}/.vbmc
   sudo service virtualbmc stop
 }
 
