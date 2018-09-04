@@ -22,6 +22,7 @@
     section: ctlplane-subnet
     option: masquerade
     value: true
+    mode: 0640
     backup: yes
 - name: run commands as stack user
   become: yes
