@@ -124,3 +124,7 @@
                 openstack overcloud node import \
                   --introspect --provide \
                   ~/baremetal.json
+            - name: update the ctlplane-subnet dns server
+              shell: |
+                source ~/stackrc
+                openstack subnet set ctlplane-subnet --dns-nameserver {{ undercloud_dns }}
