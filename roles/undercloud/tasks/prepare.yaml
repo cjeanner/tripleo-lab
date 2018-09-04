@@ -16,6 +16,14 @@
     owner: stack
     group: stack
     mode: 0640
+- name: Enable masquerading in undercloud.conf
+  ini_file:
+    path: /home/stack/undercloud.conf
+    section: ctlplane-subnet
+    option: masquerade
+    value: true
+    mode: 0640
+    backup: yes
 - name: run commands as stack user
   become: yes
   become_user: stack
