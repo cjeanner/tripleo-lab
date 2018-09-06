@@ -8,10 +8,10 @@ openstack overcloud deploy \
   --templates /usr/share/openstack-tripleo-heat-templates/ \
   --environment-directory ~/overcloud-yml \
   -e /usr/share/openstack-tripleo-heat-templates/environments/disable-telemetry.yaml \
-  -e /usr/share/openstack-tripleo-heat-templates/environments/network-isolation.yaml \
-  -e /usr/share/openstack-tripleo-heat-templates/environments/docker.yaml \
-  --ntp-server pool.ntp.org \
-  --config-download
+  -e /usr/share/openstack-tripleo-heat-templates/environments/low-memory-usage.yaml \
+  -e /usr/share/openstack-tripleo-heat-templates/environments/enable-swap.yaml \
+  -e /usr/share/openstack-tripleo-heat-templates/environments/docker-ha.yaml \
+  --ntp-server pool.ntp.org --libvirt-type qemu
 ret_val=$?
 
 if [ $ret_val -ne 0 ] && [ -n $1 ] && [ $1 == '--delete-if-fail' ]; then
