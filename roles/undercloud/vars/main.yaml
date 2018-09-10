@@ -10,3 +10,4 @@ containerized_undercloud: yes
 ci_tools: yes
 deploy_undercloud: yes
 undercloud_sample: /usr/share/python-tripleoclient/undercloud.conf.sample
+undercloud_dns: 192.168.122.1

@@ -1,5 +1,5 @@
 <domain type='kvm'>
-  <name>{{item.name}}</name>
+  <name>{{vm_prefix}}-{{item.name}}</name>
   <memory unit='MB'>{{item.memory}}</memory>
   <vcpu>{{item.cpu}}</vcpu>
   <os>
@@ -13,13 +13,13 @@
   <devices>
     <disk type='file' device='disk'>
       <driver name='qemu' type='qcow2'/>
-      <source file='{{basedir}}/workload/{{item.name}}.qcow2'/>
+      <source file='{{basedir}}/workload/{{vm_prefix}}-{{item.name}}.qcow2'/>
       <target dev='hda'/>
     </disk>
     {% if item.swap is defined %}
     <disk type='file' device='disk'>
       <driver name='qemu' type='raw'/>
-      <source file='{{basedir}}/workload/{{item.name}}-swap.img'/>
+      <source file='{{basedir}}/workload/{{vm_prefix}}-{{item.name}}-swap.img'/>
       <target dev='hdb'/>
     </disk>
     {% endif %}
