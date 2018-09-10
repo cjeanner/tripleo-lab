@@ -35,20 +35,19 @@
         - gen-ssh-config
         - inventory
       shell: |
-        sleep 10 && \
         virsh --connect qemu:///system domifaddr "{{vm_prefix}}-{{item.name}}" | \
         awk '/ipv4/ {print $4}'
       register: ip_address
+      retries: 10
+      delay: 5
+      until:
+        - ip_address.stdout != ""
       loop: "{{ vms }}"
       loop_control:
         label: "{{item.name}}"
       when:
         - item.autostart is defined
         - item.autostart|bool
-
-    - name: print out the ip_address
-      debug:
-        msg: "Retrieved ip_address value: {{ip_address.results[0]}}"
 
     - name: ensure variable ip_address is not empty
       tags:
