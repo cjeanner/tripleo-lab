@@ -44,8 +44,9 @@
       tags:
         - baremetal
       copy:
-        dest: /home/stack/overcloud-yml/{{ item }}
-        with_fileglob: 'files/overcloud/*.yaml'
+        dest: /home/stack/overcloud-yml/
+        src: "{{ item }}"
+      with_fileglob: 'files/overcloud/*.yaml'
     - name: push scale setting
       tags:
         - baremetal

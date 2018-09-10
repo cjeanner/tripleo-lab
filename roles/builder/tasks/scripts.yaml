@@ -6,7 +6,7 @@
   block:
     - name: push helper scripts
       copy:
-        dest: /usr/local/bin/{{ item }}
+        dest: /usr/local/bin/
         group: root
         mode: '0755'
         owner: root
