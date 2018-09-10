@@ -1,4 +1,3 @@
----
 - name: run on undercloud node
   tags:
     - undercloud-bootstrap

@@ -1,4 +1,4 @@
----
+
 - name: image management on non-RHEL system
   tags:
     - baremetal

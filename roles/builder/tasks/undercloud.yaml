@@ -1,4 +1,3 @@
----
 - name: execute all as virt_user
   become: yes
   become_user: "{{ virt_user }}"

@@ -1,5 +1,3 @@
----
-
 - import_tasks: packages.yaml
 - import_tasks: services.yaml
 - import_tasks: mirror.yaml

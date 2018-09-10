@@ -1,5 +1,3 @@
----
-
 - name: all tasks run as virt_user
   become: yes
   become_user: "{{ virt_user }}"

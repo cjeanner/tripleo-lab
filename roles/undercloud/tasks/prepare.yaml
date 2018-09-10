@@ -1,9 +1,8 @@
----
 - name: copy root authorized_keys to stack user
   copy:
     dest: /home/stack/.ssh/authorized_keys
     group: stack
-    mode: 0644
+    mode: '0644'
     owner: stack
     remote_src: yes
     src: /root/.ssh/authorized_keys
@@ -33,7 +32,7 @@
         - baremetal
       template:
         dest: /home/stack/baremetal.json
-        mode: 0644
+        mode: '0644'
         src: baremetal.json.j2
     - name: create overcloud-yml directory
       tags:
@@ -41,24 +40,12 @@
       file:
         path: /home/stack/overcloud-yml
         state: directory
-    - name: push domain configuration
+    - name: push overcloud settings
       tags:
         - baremetal
       copy:
-        dest: /home/stack/overcloud-yml/domain.yaml
-        src: ../files/overcloud/domain.yaml
-    - name: push scheduler hint ninja trick
-      tags:
-        - baremetal
-      copy:
-        dest: /home/stack/overcloud-yml/node-placement.yaml
-        src: ../files/overcloud/node-placement.yaml
-    - name: push network settings
-      tags:
-        - baremetal
-      copy:
-        dest: /home/stack/overcloud-yml/network.yaml
-        src: ../files/overcloud/network.yaml
+        dest: /home/stack/overcloud-yml/{{ item }}
+        with_fileglob: 'files/overcloud/*.yaml'
     - name: push scale setting
       tags:
         - baremetal
@@ -70,9 +57,8 @@
         - baremetal
       copy:
         dest: /home/stack/deploy-overcloud.sh
-        src: ../files/overcloud/deploy.sh
+        src: overcloud/deploy.sh
         mode: 0750
-
     - name: create image directory
       tags:
         - baremetal
