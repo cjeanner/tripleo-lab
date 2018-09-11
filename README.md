@@ -86,3 +86,8 @@ This will start a lab with just 3 controllers and 1 compute.
 
 *proxy_host*
   Allows to use a proxy on the lab - put IP:PORT as value
+
+*patches*
+  List of hashes with the following entries:
+  - name (string) - package name
+  - refs (string) - patch reference
