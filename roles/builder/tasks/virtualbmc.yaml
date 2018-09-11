@@ -55,7 +55,7 @@
     - name: Create the Virtual BMCs
       command: "vbmc add {{vm_prefix}}-{{ item.name }} --port 112{{item.interfaces.0.mac|replace('24:42:53:21:52:','')}} --libvirt-uri qemu:///system --username ADMIN --password ADMIN" 
       args:
-        creates: /root/.vbmc/{{ item.name }}/config
+        creates: /root/.vbmc/{{vm_prefix}}-{{ item.name }}/config
       loop: "{{ vms }}"
       loop_control:
         label: "{{ item.name }}"
