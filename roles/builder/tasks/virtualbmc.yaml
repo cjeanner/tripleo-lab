@@ -5,52 +5,27 @@
     - builder-bootstrap
   block:
     - name: push virtualbmc script
-      template:
-        dest: /usr/local/sbin/vbmc-run
-        src: vbmc-run.j2
-        group: "{{virt_user}}"
-        mode: 0750
-        owner: root
-      register: vbmc_script
-      when: tripleo_version in ['pike', 'queens']
+      file:
+        path: /usr/local/sbin/vbmc-run
+        state: absent
 
-    - name: create systemd unit file
-      template:
-        dest: /etc/systemd/system/vbmc.service
-        src: vbmc.service.j2
-        group: root
-        mode: 0644
-        owner: root
-      register: install_vbmc_service
-      when: tripleo_version in ['pike', 'queens']
-
-    - name: reload systemd daemon if vbmc.service changed
-      command: systemctl daemon-reload
-      when:
-        - install_vbmc_service.changed
-        - tripleo_version in ['pike', 'queens']
-
-    - name: register vbmc.service
+    - name: deactivate custom vbmc service
       service:
         name: vbmc
-        enabled: yes
-        state: started
-      when: tripleo_version in ['pike', 'queens']
+        state: stopped
+        enabled: no
+      ignore_errors: yes
 
-    - name: restart vbmc if script changed
-      service:
-        name: vbmc
-        state: reloaded
-      when:
-        - install_vbmc_service.changed
-        - tripleo_version in ['pike', 'queens']
+    - name: remove custom systemd unit file
+      file:
+        path: /etc/systemd/system/vbmc.service
+        state: absent
 
     - name: start virtualbmc
       service:
         name: virtualbmc
         enabled: yes
         state: started
-      when: tripleo_version not in ['pike', 'queens']
 
     - name: Create the Virtual BMCs
       command: "vbmc add {{vm_prefix}}-{{ item.name }} --port 112{{item.interfaces.0.mac|replace('24:42:53:21:52:','')}} --libvirt-uri qemu:///system --username ADMIN --password ADMIN" 
@@ -70,7 +45,6 @@
       ignore_errors: yes
       when:
         - vbmc.changed
-        - tripleo_version not in ['pike', 'queens']
 
     - name: open firewall on libvirt link
       iptables:
