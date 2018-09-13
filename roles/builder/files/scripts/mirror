@@ -1,9 +1,9 @@
 #!/bin/bash
 
+basedir="/srv/mirror"
 
 function centos {
   version="7"
-  basedir="/srv/mirror"
   src="rsync://mirrors.ircam.fr/CentOS"
   dest="${basedir}/CentOS"
   mkdir -p $dest
@@ -67,15 +67,34 @@ function fedora {
   done
 }
 function dlrn {
-  for i in queens master; do
-    reposync -l --repoid delorean-${i} --download_path /srv/mirror/dlrn/
-    createrepo /srv/mirror/dlrn/delorean-${i}
+  for i in pike queens master; do
+    if [ $i == 'pike' ]; then
+      deps='https://buildlogs.centos.org/centos/7/cloud/$basearch/openstack-pike/'
+    else
+      deps="https://trunk.rdoproject.org/centos7-${i}/deps/latest/"
+    fi
+		cat << EOF > /etc/yum.repos.d/delorean-${i}.repo
+[delorean-${i}]
+name=dlrn-${i}
+baseurl=https://trunk.rdoproject.org/centos7-${i}/current
+enabled=0
+gpgcheck=0
+priority=1
 
-    reposync -l --repoid delorean-${i}-deps --download_path /srv/mirror/dlrn/
-    createrepo /srv/mirror/dlrn/delorean-${i}-deps
+[delorean-${i}-deps]
+name=dlrn-${i}-deps
+baseurl=$deps
+enabled=0
+gpgcheck=0
+EOF
+    reposync -l --repoid delorean-${i} --download_path ${basedir}/dlrn/
+    createrepo ${basedir}/dlrn/delorean-${i}
+
+    reposync -l --repoid delorean-${i}-deps --download_path ${basedir}/dlrn/
+    createrepo ${basedir}/dlrn/delorean-${i}-deps
   done
-  reposync -l --repoid rdo-qemu-ev --download_path /srv/mirror/dlrn/
-  createrepo /srv/mirror/dlrn/rdo-qemu-ev
+  reposync -l --repoid rdo-qemu-ev --download_path ${basedir}/dlrn/
+  createrepo ${basedir}/dlrn/rdo-qemu-ev
 }
 
 if [ -z $1 ]; then
