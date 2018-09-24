@@ -5,4 +5,4 @@ parameter_defaults:
   ComputeSchedulerHints:
     'capabilities:node': 'compute-%index%'
   CephStorageSchedulerHints:
-    'capabilities:node': 'ceph-storage-%index%'
+    'capabilities:node': 'ceph-%index%'
