@@ -119,7 +119,7 @@
       loop_control:
         label: "{{item.name}}"
 
-    - name: push proxy config id needed
+    - name: push proxy config if needed
       template:
         dest: "{{basedir}}/configs/http_proxy.sh"
         src: http_proxy.j2
