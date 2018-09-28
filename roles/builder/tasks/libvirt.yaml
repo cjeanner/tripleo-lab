@@ -57,6 +57,29 @@
         path: "{{basedir}}/.bashrc"
         line: "export LIBVIRT_DEFAULT_URI='qemu:///system'"
 
+    - name: get default network XML content
+      slurp:
+        src: /usr/share/libvirt/networks/default.xml
+      register: default_net_xml
+
+    - name: ensure default network is present
+      virt_net:
+        command: define
+        name: default
+        xml: "{{ default_net_xml['content'] }}"
+
+    - name: run default network
+      virt_net:
+        command: create
+        name: default
+      ignore_errors: yes
+
+    - name: ensure network is active and autostart
+      virt_net:
+        state: active
+        autostart: yes
+        name: default
+
     - name: create some directories
       tags:
         - config
