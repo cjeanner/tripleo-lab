@@ -6,6 +6,7 @@
     label: "{{ item.name }}"
   shell: |
     cd tripleo/
+    rm -rf {{ item.name }} delorean/rdoinfo
     git clone https://github.com/openstack/{{ item.name }}
     cd {{ item.name }}
     git fetch https://git.openstack.org/openstack/{{ item.name }} refs/changes/{{ item.refs }}
