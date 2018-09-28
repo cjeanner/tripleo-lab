@@ -9,9 +9,9 @@
     - import_tasks: rhos-release.yaml
     - import_tasks: packages.yaml
     - import_tasks: user.yaml
-    - import_tasks: prepare.yaml
     - import_tasks: ci-tools.yaml
     - import_tasks: custom-packages.yaml
+    - import_tasks: prepare.yaml
     - name: deploy undercloud and prepare overcloud
       when:
         - deploy_undercloud|bool
