@@ -67,6 +67,8 @@ virt_user: virtuser
 basedir: "/home/{{virt_user}}"
 undercloud_password: fooBar
 centos_mirror: no
+manage_mirror_device: yes
+mirror_base_directory: /srv/mirror
 centos_mirror_device: /dev/sdc
 base_image: centos
 vm_prefix: lab

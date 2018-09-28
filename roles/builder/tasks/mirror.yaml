@@ -10,28 +10,32 @@
         state: present
     - name: create directory
       file:
-        path: /srv/mirror
+        path: "{{ mirror_base_directory }}"
         state: directory
         setype: httpd_var_lib_t
-    - name: create partition on dedicated device
-      parted:
-        device: "{{centos_mirror_device}}"
-        number: 1
-        state: present
-    - name: create XFS filesystem on mirror device
-      filesystem:
-        fstype: xfs
-        dev: "{{centos_mirror_device}}1"
-    - name: mount dedicated device
-      mount:
-        backup: yes
-        fstype: xfs
-        path: /srv/mirror
-        src: "{{centos_mirror_device}}1"
-        state: mounted
+    - name: manage dedicated partition for mirror stuff
+      when:
+        - manage_mirror_device|bool
+      block:
+        - name: create partition on dedicated device
+          parted:
+            device: "{{centos_mirror_device}}"
+            number: 1
+            state: present
+        - name: create XFS filesystem on mirror device
+          filesystem:
+            fstype: xfs
+            dev: "{{centos_mirror_device}}1"
+        - name: mount dedicated device
+          mount:
+            backup: yes
+            fstype: xfs
+            path: "{{ mirror_base_directory }}"
+            src: "{{centos_mirror_device}}1"
+            state: mounted
     - name: push sync script
-      copy:
-        src: ../files/scripts/mirror
+      template:
+        src: scripts/mirror
         dest: /usr/local/sbin/mirror
         mode: 0755
         owner: root
@@ -58,11 +62,11 @@
         state: present
     - name: configure nginx
       copy:
-        src: ../files/nginx/nginx.conf
+        src: nginx/nginx.conf
         dest: /etc/nginx/nginx.conf
     - name: configure vhost
-      copy:
-        src: ../files/nginx/mirror.conf
+      template:
+        src: nginx/mirror.conf
         dest: /etc/nginx/conf.d/mirror.conf
     - name: activate nginx
       service:

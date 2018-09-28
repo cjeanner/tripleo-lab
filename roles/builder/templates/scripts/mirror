@@ -1,6 +1,6 @@
 #!/bin/bash
 
-basedir="/srv/mirror"
+basedir="{{ mirror_base_directory }}"
 
 function centos {
   version="7"
