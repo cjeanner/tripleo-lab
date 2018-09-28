@@ -51,7 +51,13 @@ This will start a lab with just 3 controllers and 1 compute.
   - swap (string, for example 10G)
 
 *centos_mirror*
-  Create a CentOS repository mirror (default to yes)
+  Create a CentOS repository mirror (default to no)
+
+*mirror_base_directory*
+  Location of the mirrors on your filesystem (default to /srv/mirror)
+
+*manage_mirror_device*
+  Toggle management of the dedicated device for the mirror content (default to yes)
 
 *centos_mirror_device*
   Block device name for mirror content.
