@@ -15,6 +15,7 @@
     owner: stack
     group: stack
     mode: 0640
+
 - name: Enable masquerading in undercloud.conf
   ini_file:
     path: /home/stack/undercloud.conf
@@ -23,6 +24,19 @@
     value: true
     mode: 0640
     backup: yes
+
+- name: custom configuration in undercloud.conf
+  ini_file:
+    path: /home/stack/undercloud.conf
+    section: "{{ item.section }}"
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+    mode: 0640
+    backup: yes
+  loop: "{{ undercloud_config |default([])}}"
+  loop_control:
+    label: "{{ item.option }}"
+
 - name: run commands as stack user
   become: yes
   become_user: stack
