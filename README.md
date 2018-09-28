@@ -74,7 +74,14 @@ This will start a lab with just 3 controllers and 1 compute.
   Root password on the undercloud VM (debug purpose)
 
 *undercloud_config*
-  Hash representing ini configuration for undercloud.conf file
+  List of hashes representing ini configuration for undercloud.conf file
+```YAML
+---
+undercloud_config:
+  - section: DEFAULT
+    option: container_cli
+    value: podman
+```
 
 *tripleo_repo_version*
   Tripleo-repos package name/version
