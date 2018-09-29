@@ -14,6 +14,6 @@ openstack overcloud deploy \
   --ntp-server pool.ntp.org --libvirt-type qemu
 ret_val=$?
 
-if [ $ret_val -ne 0 ] && [ -n $1 ] && [ $1 == '--delete-if-fail' ]; then
+if [ $ret_val -ne 0 ] && [ -n $1 ] && [ "$1" = '--delete-if-fail' ]; then
   openstack stack delete --yes --wait overcloud
 fi
