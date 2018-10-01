@@ -8,7 +8,7 @@ do_destroy() {
     $VIRSH undefine $i;
     rm -f /home/{{virt_user}}/workload/${i}*
   done
-  sudo service virtualbmc stop
+  sudo systemctl stop virtualbmc
   sleep 10 #ensure vbmc is down
   sudo killall vbmc # kill last things if needed
   sudo rm -rf /root/.vbmc
