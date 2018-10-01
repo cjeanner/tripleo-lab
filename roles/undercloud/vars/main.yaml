@@ -5,8 +5,7 @@ overcloud_images:
     content: ironic-python-agent.kernel
   - file: overcloud-full.tar
     content: overcloud-full.qcow2
-
-containerized_undercloud: yes
+use_heat: no
 ci_tools: yes
 deploy_undercloud: yes
 deploy_overcloud: no

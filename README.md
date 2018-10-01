@@ -91,8 +91,12 @@ undercloud_config:
   - file (string)
   - content (string)
 
-*containerized_undercloud*
+*containerized_undercloud* **DEPRECATED**
   Boolean
+
+*use_heat*
+  Whether to add `--use-heat` to undercloud install command (Boolean).
+  Defaults "no"
 
 *ci_tools*
   Install CI tools (Boolean)
