@@ -1,4 +1,9 @@
 ---
+- name: update all packages
+  yum:
+    name: '*'
+    state: latest
+
 - name: install some tools
   yum:
     name: "{{item}}"
