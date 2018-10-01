@@ -1,3 +1,8 @@
+- name: install custom RPM from remote link
+  yum:
+    name: "{{ custom_rpms|default('') }}"
+    state: installed
+
 - name: build custom packages and install them
   become: yes
   become_user: stack

@@ -114,3 +114,11 @@ undercloud_config:
   List of hashes with the following entries:
   - name (string) - package name
   - refs (string) - patch reference
+```YAML
+patches:
+  - name: 'tripleo-heat-templates'
+    refs: '33/600533/8'
+```
+
+*custom_rpms*
+  List of custom remote RPMS to install on your undercloud node
