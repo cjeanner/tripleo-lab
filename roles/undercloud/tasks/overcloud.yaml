@@ -128,3 +128,7 @@
               shell: |
                 source ~/stackrc
                 openstack subnet set ctlplane-subnet --dns-nameserver {{ undercloud_dns }}
+            - name: deploy the overcloud
+              shell: |
+                bash /home/stack/deploy-overcloud.sh | tee -a deploy-overcloud.log
+              when: deploy_overcloud|bool

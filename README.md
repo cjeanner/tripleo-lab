@@ -100,6 +100,9 @@ undercloud_config:
 *deploy_undercloud*
   Boolean
 
+*deploy_overcloud*
+  Boolean
+
 *proxy_host*
   Allows to use a proxy on the lab - put IP:PORT as value
 
