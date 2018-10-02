@@ -1,10 +1,10 @@
 ---
 parameter_defaults:
-  ControllerCount: 3
-  ComputeCount: 1
-  CephStorageCount: 0
-  BlockStorageCount: 0
-  ObjectStorageCount: 0
+  ControllerCount: {{ vms|map(attribute='name')|select("match", '^controller.+')|list|length}}
+  ComputeCount: {{ vms|map(attribute='name')|select("match", '^compute.+')|list|length}}
+  CephStorageCount: {{ vms|map(attribute='name')|select("match", '^ceph.+')|list|length}}
+  BlockStorageCount: {{ vms|map(attribute='name')|select("match", '^blk.+')|list|length}}
+  ObjectStorageCount: {{ vms|map(attribute='name')|select("match", '^obj.+')|list|length}}
 
   OvercloudControlFlavor: baremetal
   OvercloudComputeFlavor: baremetal
