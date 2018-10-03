@@ -10,10 +10,10 @@
     - import_tasks: packages.yaml
     - import_tasks: user.yaml
     - import_tasks: ci-tools.yaml
+    - import_tasks: custom-packages.yaml
     - name: deploy standard undercloud and stuff
       when: not standalone|bool
       block:
-        - import_tasks: custom-packages.yaml
         - import_tasks: prepare.yaml
         - name: deploy undercloud and prepare overcloud
           when:
