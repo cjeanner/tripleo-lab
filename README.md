@@ -122,3 +122,12 @@ patches:
 
 *custom_rpms*
   List of custom remote RPMS to install on your undercloud node
+
+*standalone*
+  Deploy "standalone" tripleo (Bool, default no)
+
+*standalone_ceph*
+  Deploy ceph in standalone tripleo (Bool, default no)
+
+*standalone_container_cli*
+  Deploy standalone using said container CLI (String, default docker)
