@@ -6,6 +6,7 @@
 - name: build custom packages and install them
   become: yes
   become_user: stack
+  when: ci_tools|bool
   loop: "{{ patches }}"
   loop_control:
     label: "{{ item.name }}"
