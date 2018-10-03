@@ -1,0 +1,14 @@
+---
+- name: basic parameters for standalone
+  template:
+    dest: /home/stack/standalone_parameters.yaml
+    src: standalone_params.yaml.j2
+  vars:
+    ip: '192.168.24.2'
+    interface: 'eth1'
+
+- name: ceph params if requested
+  when: standalone_ceph|bool
+  copy:
+    dest: /home/stack/ceph_parameters.yaml
+    src: standalone_ceph.yaml

@@ -1,0 +1,5 @@
+---
+- import_tasks: image-prepare.yaml
+- import_tasks: ceph.yaml
+- import_tasks: prepare.yaml
+- import_tasks: deploy.yaml

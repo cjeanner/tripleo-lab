@@ -1,0 +1,11 @@
+---
+- name: push deploy script
+  template:
+    dest: /home/stack/deploy.sh
+    src: deploy.sh.j2
+    mode: 0755
+  vars:
+    ip: '192.168.24.2'
+
+- name: deploy standalone
+  command: /home/stack/deploy.sh

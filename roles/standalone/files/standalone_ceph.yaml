@@ -1,0 +1,13 @@
+parameter_defaults:
+  CephAnsibleDisksConfig:
+    devices:
+      - /dev/loop3
+    journal_size: 1024
+  LocalCephAnsibleFetchDirectoryBackup: /root/ceph_ansible_fetch
+  CephAnsibleExtraConfig:
+    osd_scenario: collocated
+    osd_objectstore: filestore
+    cluster_network: 192.168.24.0/24
+    public_network: 192.168.24.0/24
+  CephPoolDefaultPgNum: 32
+  CephPoolDefaultSize: 1
