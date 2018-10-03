@@ -17,3 +17,12 @@
     group: root
     mode: '0440'
     owner: root
+
+- name: copy root authorized_keys to stack user
+  copy:
+    dest: /home/stack/.ssh/authorized_keys
+    group: stack
+    mode: '0644'
+    owner: stack
+    remote_src: yes
+    src: /root/.ssh/authorized_keys
