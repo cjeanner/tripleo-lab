@@ -1,6 +1,7 @@
 - name: install custom RPM from remote link
+  when: custom_rpms != ''
   yum:
-    name: "{{ custom_rpms|default('') }}"
+    name: "{{ custom_rpms }}"
     state: installed
 
 - name: build custom packages and install them
