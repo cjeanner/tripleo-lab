@@ -120,6 +120,23 @@ patches:
     refs: '33/600533/8'
 ```
 
+*synchronize*
+  List of hashes with the following entries:
+  - name
+  - base
+  - dest (defaults to /home/stack/tripleo/)
+  Synchronize with rsync from your ansible controller to remote
+```YAML
+synchronize:
+  - name: tripleo-heat-templates
+    base: /home/user/work
+    dest: /home/stack/tripleo/
+```
+
+*synchronize_default_dest*
+  String. Used if you don't set "dest" in the synchronize hash.
+  Default /home/stack/tripleo/
+
 *custom_rpms*
   List of custom remote RPMS to install on your undercloud node
 

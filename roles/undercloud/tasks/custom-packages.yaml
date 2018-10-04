@@ -4,6 +4,27 @@
     state: installed
   when: custom_rpms | length > 0
 
+- name: synchronize from controler to undercloud
+  local_action:
+    module: command
+    _raw_params: "rsync -a --delete {{ item.base  }}/{{ item.name }} stack@undercloud:{{ item.dest | default(synchronize_default_dest) }}"
+  loop: "{{ synchronize }}"
+  loop_control:
+    label: "{{ item.name }}"
+
+- name: build synchronized packages
+  become: yes
+  become_user: stack
+  loop: "{{ synchronize }}"
+  loop_control:
+    label: "{{ synchronize.name }}"
+  shell: |
+    rm -rf tripleo/delorean/rdoinfo
+    ./tripleo-ci/scripts/tripleo.sh --delorean-build {{ item.name }} > /home/stack/build_{{ item.name }}.log
+    sudo yum install -y $(find tripleo/delorean/ -name "*.rpm" -and -not -name "*.src.rpm")
+  args:
+    chdir: "/home/stack"
+
 - name: build custom packages and install them
   become: yes
   become_user: stack

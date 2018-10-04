@@ -16,3 +16,5 @@ custom_rpms: []
 standalone: no
 standalone_ceph: no
 containerized_undercloud: yes
+synchronize: []
+synchronize_default_dest: /home/stack/tripleo/
