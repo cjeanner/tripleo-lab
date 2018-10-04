@@ -15,3 +15,4 @@ patches: []
 custom_rpms: []
 standalone: no
 standalone_ceph: no
+containerized_undercloud: yes
