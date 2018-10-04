@@ -17,7 +17,7 @@
   become_user: stack
   loop: "{{ synchronize }}"
   loop_control:
-    label: "{{ synchronize.name }}"
+    label: "{{ item.name }}"
   shell: |
     rm -rf tripleo/delorean/rdoinfo
     ./tripleo-ci/scripts/tripleo.sh --delorean-build {{ item.name }} > /home/stack/build_{{ item.name }}.log
