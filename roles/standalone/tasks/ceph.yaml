@@ -1,21 +1,19 @@
 ---
 - name: if ceph is requested
   when: standalone_ceph|bool
+  become: yes
   block:
     - name: create loop devices
-      become: yes
       command: dd if=/dev/zero of=/var/lib/ceph-osd.img bs=1 count=0 seek=7G
       args:
         creates: /var/lib/ceph-osd.img
 
     - name: run losetup
-      become: yes
       command: losetup /dev/loop3 /var/lib/ceph-osd.img
       args:
         creates: /dev/loop3
 
     - name: create backup directory
-      become: yes
       file:
         path: /root/ceph_ansible_fetch
         state: directory

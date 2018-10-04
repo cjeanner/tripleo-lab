@@ -19,3 +19,9 @@
     name: python-tripleoclient
     state: present
 
+- name: install requested packages for ceph
+  when: standalone_ceph|bool
+  yum:
+    name: [ceph-ansible, util-linux]
+    state: installed
+

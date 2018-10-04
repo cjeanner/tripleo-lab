@@ -55,7 +55,13 @@
         name: "https://trunk.rdoproject.org/centos7/current/{{tripleo_repo_version.stdout}}"
         state: present
     - name: enable tripleo_version repository
+      when: not standalone_ceph|bool
       command: tripleo-repos -b "{{tripleo_version}}" current
+      args:
+        creates: "/etc/yum.repos.d/delorean-{{tripleo_version}}.repo"
+    - name: enable tripleo_version repository with ceph
+      when: standalone_ceph|bool
+      command: tripleo-repos -b "{{tripleo_version}}" current ceph
       args:
         creates: "/etc/yum.repos.d/delorean-{{tripleo_version}}.repo"
 
