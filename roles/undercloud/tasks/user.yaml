@@ -8,6 +8,14 @@
     ssh_key_bits: 4096
     state: present
 
+- name: create root keypair
+  user:
+    generate_ssh_key: yes
+    name: root
+    shell: "/bin/bash"
+    ssh_key_bits: 4096
+    state: present
+
 - name: give sudo accesses
   tags:
     - sudo
@@ -26,3 +34,33 @@
     owner: stack
     remote_src: yes
     src: /root/.ssh/authorized_keys
+
+- name: get stack pub key
+  slurp:
+    src: /home/stack/.ssh/id_rsa.pub
+  register: stack_pubkey
+
+- name: get root pub key
+  slurp:
+    src: /root/.ssh/id_rsa.pub
+  register: root_pubkey
+
+- name: authorize stack user on root via ssh
+  authorized_key:
+    user: root
+    key: "{{ stack_pubkey['content'] |b64decode }}"
+
+- name: authorize stack user on stack with ssh
+  authorized_key:
+    user: stack
+    key: "{{ stack_pubkey['content'] |b64decode }}"
+
+- name: authorize root user on stack via ssh
+  authorized_key:
+    user: stack
+    key: "{{ root_pubkey['content'] |b64decode }}"
+
+- name: authorize root user on root via ssh
+  authorized_key:
+    user: root
+    key: "{{ root_pubkey['content'] |b64decode }}"
