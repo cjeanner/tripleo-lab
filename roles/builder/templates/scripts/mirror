@@ -87,7 +87,7 @@ baseurl=$deps
 enabled=0
 gpgcheck=0
 EOF
-    reposync -l --repoid delorean-${i} --download_path ${basedir}/dlrn/
+    reposync -d -l --repoid delorean-${i} --download_path ${basedir}/dlrn/
     createrepo ${basedir}/dlrn/delorean-${i}
 
     reposync -l --repoid delorean-${i}-deps --download_path ${basedir}/dlrn/
