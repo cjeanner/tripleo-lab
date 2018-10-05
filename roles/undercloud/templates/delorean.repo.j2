@@ -15,3 +15,10 @@ name=RDO CentOS-$releasever - QEMU EV
 baseurl=http://{{ansible_default_ipv4.address}}/dlrn/rdo-qemu-ev/
 gpgcheck=0
 enabled=1
+
+[centos7-virt-container]
+name=centos7-virt-container
+baseurl=https://buildlogs.centos.org/centos/7/virt/$basearch/container/
+enabled=1
+gpgcheck=0
+skip_if_unavailable=1
