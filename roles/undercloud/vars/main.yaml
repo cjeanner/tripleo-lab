@@ -18,3 +18,4 @@ standalone_ceph: no
 containerized_undercloud: yes
 synchronize: []
 synchronize_default_dest: /home/stack/tripleo/
+ceph_version: luminous

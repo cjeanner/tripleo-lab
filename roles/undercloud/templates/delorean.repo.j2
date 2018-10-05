@@ -22,3 +22,9 @@ baseurl=https://buildlogs.centos.org/centos/7/virt/$basearch/container/
 enabled=1
 gpgcheck=0
 skip_if_unavailable=1
+
+[tripleo-centos-ceph-{{ ceph_version }}]
+name=tripleo-centos-ceph-{{ ceph_version }}
+baseurl=http://mirror.centos.org/centos/7/storage/x86_64/ceph-{{ ceph_version }}/
+gpgcheck=0
+enabled=1
