@@ -25,3 +25,21 @@
     name: [ceph-ansible, util-linux]
     state: installed
 
+- name: fetch tmate release from github
+  command: "curl -OL https://github.com/tmate-io/tmate/releases/download/{{tmate_release}}/tmate-{{tmate_release}}-static-linux-amd64.tar.gz"
+  args:
+    creates: "/usr/src/tmate-{{tmate_release}}-static-linux-amd64.tar.gz"
+    chdir: /usr/src
+
+- name: uncompress tmate release
+  unarchive:
+    creates: "/usr/src/tmate-{{tmate_release}}-static-linux-amd64"
+    dest: /usr/src/
+    src: "/usr/src/tmate-{{tmate_release}}-static-linux-amd64.tar.gz"
+    remote_src: yes
+
+- name: copy tmate binary in path
+  copy:
+    src: "/usr/src/tmate-{{tmate_release}}-static-linux-amd64/tmate"
+    dest: "/usr/local/bin/tmate"
+    remote_src: yes
