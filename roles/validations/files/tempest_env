@@ -1,0 +1,6 @@
+export OS_CLOUD=standalone
+export TEMPESTCONF="/usr/bin/discover-tempest-config"
+export OS_AUTH_URL=${OS_AUTH_URL:-$(openstack endpoint list --service=identity --interface=public -c URL -f value)}
+export OS_IDENTITY_API_VERSION=${OS_IDENTITY_API_VERSION:-3}
+export OS_AUTH_URL="$OS_AUTH_URL/v$OS_IDENTITY_API_VERSION"
+export OSTESTR='ostestr'

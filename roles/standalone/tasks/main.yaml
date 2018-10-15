@@ -3,4 +3,7 @@
 - import_tasks: ceph.yaml
 - import_tasks: prepare.yaml
 - import_tasks: deploy.yaml
-- import_tasks: validate.yaml
+- name: run tempest
+  import_role:
+    name: validations
+    tasks_from: standalone
