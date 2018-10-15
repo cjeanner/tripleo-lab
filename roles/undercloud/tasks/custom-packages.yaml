@@ -24,8 +24,9 @@
     sudo rpm -Uvh --force $(find tripleo/delorean/ -name "*.rpm" -and -not -name "*.src.rpm")
   args:
     chdir: "/home/stack"
+    creates: "/home/stack/build_{{ item.name }}.log"
 
-- name: build custom packages and install them
+- name: fetch and build gerrit changes
   become: yes
   become_user: stack
   when: ci_tools|bool
@@ -44,3 +45,4 @@
     sudo rpm -Uvh --force $(find tripleo/delorean/ -name "*.rpm" -and -not -name "*.src.rpm")
   args:
     chdir: "/home/stack"
+    creates: "/home/stack/build_{{ item.name }}.log"
