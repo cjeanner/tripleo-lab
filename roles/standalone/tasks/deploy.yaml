@@ -9,3 +9,5 @@
 
 - name: deploy standalone
   command: /home/stack/deploy.sh
+  args:
+    creates: /home/stack/install-standalone.log
