@@ -43,3 +43,4 @@
     src: "/usr/src/tmate-{{tmate_release}}-static-linux-amd64/tmate"
     dest: "/usr/local/bin/tmate"
     remote_src: yes
+    mode: 0755
