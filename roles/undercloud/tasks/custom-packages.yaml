@@ -46,3 +46,22 @@
   args:
     chdir: "/home/stack"
     creates: "/home/stack/build_{{ item.name }}.log"
+
+- name: push custom SELinux policies files
+  copy:
+    dest: "/usr/local/src/{{ item.name }}.te"
+    src: "{{ item.src }}"
+  loop: "{{ semodules }}"
+  loop_control:
+    label: "{{ item.name }}"
+
+- name: build and install custom policies
+  args:
+    chdir: /usr/local/src
+  shell: |
+    checkmodule -M -m -o {{ item.name }}.mod {{ item.name }}.te
+    semodule_package -o {{ item.name }}.pp -m {{ item.name }}.mod
+    semodule -i {{ item.name }}.pp
+  loop: "{{ semodules }}"
+  loop_control:
+    label: "{{ item.name }}"
