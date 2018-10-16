@@ -148,3 +148,11 @@ synchronize:
 
 *standalone_container_cli*
   Deploy standalone using said container CLI (String, default docker)
+
+*semodules*
+  Build modules based on .te files you can provide. List of dicts.
+```YAML
+semodules:
+  - name: foobar
+    src: /full/path/foobar.te
+```
