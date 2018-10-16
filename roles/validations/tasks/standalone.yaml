@@ -39,12 +39,6 @@
       get_url:
         dest: /home/stack/cirros.img
         url: https://download.cirros-cloud.net/0.3.5/cirros-0.3.5-x86_64-disk.img
-    - name: save current state
-      shell: |
-        source /home/stack/tempest_env
-        tempest cleanup --init-saved-state
-      args:
-        chdir: /home/stack/tempest
     - name: generate tempest configuration
       args:
         chdir: /home/stack/tempest
@@ -63,6 +57,12 @@
           network.build_timeout 500 \
           volume.build_timeout 500 \
           orchestration.stack_owner_role Member
+    - name: save current state
+      shell: |
+        source /home/stack/tempest_env
+        tempest cleanup --init-saved-state
+      args:
+        chdir: /home/stack/tempest
     - name: run tempest
       args:
         chdir: /home/stack/tempest
