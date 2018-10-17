@@ -69,3 +69,9 @@
       shell: |
         source /home/stack/tempest_env
         tempest run --regex '(tempest.api|tempest.scenario)' --subunit --concurrency 4
+    - name: generate tempest HTML
+      args:
+        chdir: /home/stack/tempest
+      shell: |
+        source /home/stack/tempest_env
+        subunit2html .stestr/0 tempest.html
