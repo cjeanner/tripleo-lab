@@ -127,6 +127,7 @@
             - name: update the ctlplane-subnet dns server
               shell: |
                 source ~/stackrc
+                openstack subnet show ctlplane-subnet -f json | jq '.dns_nameservers' | grep "{{ undercloud_dns }}" ||
                 openstack subnet set ctlplane-subnet --dns-nameserver {{ undercloud_dns }}
             - name: deploy the overcloud
               shell: |
