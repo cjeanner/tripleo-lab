@@ -58,6 +58,12 @@
       template:
         dest: /home/stack/overcloud-yml/scale.yaml
         src: scale.yaml.j2
+    - name: push container-cli setting
+      tags:
+        - baremetal
+      template:
+        dest: /home/stack/overcloud-yml/container-cli.yaml
+        src: container-cli.yaml.j2
     - name: push basic deploy script
       tags:
         - baremetal
