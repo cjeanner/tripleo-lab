@@ -24,6 +24,23 @@
         source /home/stack/tempest_env
         openstack role create --or-show Member > /dev/null
         openstack role create --or-show creator > /dev/null
+    - name: create base networks
+      shell: |
+        source /home/stack/tempest_env
+        openstack network create --external --provider-physical-network datacentre --provider-network-type flat public
+        openstack network create --internal private
+        openstack subnet create public-net \
+          --subnet-range $PUBLIC_NETWORK_CIDR \
+          --no-dhcp \
+          --gateway $GATEWAY \
+          --allocation-pool start=$PUBLIC_NET_START,end=$PUBLIC_NET_END \
+          --network public
+        openstack subnet create private-net \
+          --subnet-range $PRIVATE_NETWORK_CIDR \
+          --network private
+        openstack router create vrouter
+        openstack router set vrouter --external-gateway public
+        openstack router add subnet vrouter private-net
     - name: create tempest directory
       file:
         path: /home/stack/tempest
@@ -46,6 +63,7 @@
         source /home/stack/tempest_env
         $TEMPESTCONF --out etc/tempest.conf \
           --os-cloud standalone \
+          --network-id $public_net_id \
           --image /home/stack/cirros.img \
           --debug \
           --create \
