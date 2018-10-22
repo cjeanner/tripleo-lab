@@ -123,7 +123,7 @@
                 source ~/stackrc
                 openstack overcloud node import \
                   --introspect --provide \
-                  ~/baremetal.json
+                  ~/baremetal.json | tee -a import-nodes.log
             - name: update the ctlplane-subnet dns server
               shell: |
                 source ~/stackrc
