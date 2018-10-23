@@ -1,0 +1,2 @@
+source ~/stackrc
+export TEMPESTCONF="/usr/bin/discover-tempest-config"

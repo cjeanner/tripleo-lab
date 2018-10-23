@@ -1,0 +1,26 @@
+---
+tempest_undercloud_wl:
+  - 'neutron_tempest_plugin'
+  - 'tempest.api.identity'
+  - 'tempest.api.image.v2.test_images.BasicOperationsImagesTest'
+  - 'tempest.api.image.v2.test_images_tags_negative.ImagesTagsNegativeTest'
+  - 'tempest.api.image.v2.test_images_member_negative.ImagesMemberNegativeTest'
+  - 'tempest.api.compute.admin.test_flavors'
+  - 'tempest.api.compute.flavors'
+  - 'tempest.api.compute.keypairs'
+  - 'tempest.api.compute.admin.test_quotas'
+  - 'tempest.api.compute.admin.test_aggregates_negative'
+  - 'tempest.api.compute.security_groups'
+  - 'tempest.api.network.test_networks'
+  - 'tempest.api.network.test_networks_negative'
+  - 'tempest.api.network.test_security_groups_negative'
+  - 'tempest.api.network.test_ports'
+  - 'tempest.api.network.test_routers_negative'
+
+tempest_undercloud_bl:
+  - 'mistral_tempest_tests.tests.scenario.engine.actions.v2.test_openstack_actions.OpenStackActionsTestsV2.test_cinder_actions'
+  - 'mistral_tempest_tests.tests.scenario.engine.actions.v2.test_ssh_actions.SSHActionsTestsV2.test_run_ssh_action'
+  - 'mistral_tempest_tests.tests.scenario.engine.actions.v2.test_ssh_actions.SSHActionsTestsV2.test_run_ssh_proxied_action'
+  - 'mistral_tempest_tests.tests.scenario.engine.actions.v2.test_openstack_actions.OpenStackActionsTestsV2.test_swift_actions'
+  - 'mistral_tempest_tests.tests.scenario.engine.actions.v2.test_multi_vim_authentication.MultiVimActionsTests.test_multi_vim_support_target_headers'
+

@@ -1,0 +1,78 @@
+---
+- name: install tempest packages
+  tags:
+    - lab
+    - validations
+  package:
+    name: ['python2-tempestconf', 'openstack-tempest-all']
+    state: present
+
+- name: run as stack user
+  become: yes
+  become_user: stack
+  tags:
+    - lab
+    - validations
+  block:
+    - name: push env file for tempest and friends
+      copy:
+        src: undercloud_tempest_env
+        dest: /home/stack/tempest_env
+        mode: 0644
+    - name: create base roles
+      shell: |
+        source /home/stack/tempest_env
+        openstack role create --or-show Member > /dev/null
+        openstack role create --or-show creator > /dev/null
+    - name: create tempest directory
+      file:
+        path: /home/stack/tempest
+        state: directory
+    - name: init tempest
+      shell: |
+        source /home/stack/tempest_env
+        tempest init /home/stack/tempest
+      args:
+        chdir: /home/stack/tempest
+        creates: /home/stack/tempest/logs
+    - name: fetch CirrOS
+      get_url:
+        dest: /home/stack/cirros.img
+        url: https://download.cirros-cloud.net/0.3.5/cirros-0.3.5-x86_64-disk.img
+    - name: generate tempest configuration
+      args:
+        chdir: /home/stack/tempest
+      shell: |
+        source /home/stack/tempest_env
+        $TEMPESTCONF --out etc/tempest.conf \
+          --image /home/stack/cirros.img \
+          --debug \
+          --create \
+          auth.use_dynamic_credentials true \
+          auth.tempest_roles Member \
+          network-feature-enabled.port_security true \
+          compute.build_timeout 500 \
+          network.build_timeout 500 \
+          volume.build_timeout 500 \
+          orchestration.stack_owner_role Member
+    - name: save current state
+      shell: |
+        source /home/stack/tempest_env
+        tempest cleanup --init-saved-state
+      args:
+        chdir: /home/stack/tempest
+    - name: run tempest
+      args:
+        chdir: /home/stack/tempest
+      shell: |
+        source /home/stack/tempest_env
+        tempest run \
+          --regex '({{ tempest_undercloud_wl | join("|") }})' \
+          --black-regex='({{ tempest_undercloud_bl | join ("|") }})' \
+          --subunit --concurrency 4
+    - name: generate tempest HTML
+      args:
+        chdir: /home/stack/tempest
+      shell: |
+        source /home/stack/tempest_env
+        subunit2html .stestr/0 tempest.html
