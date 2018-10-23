@@ -16,7 +16,7 @@
   block:
     - name: push env file for tempest and friends
       copy:
-        src: tempest_env
+        src: standalone_tempest_env
         dest: /home/stack/tempest_env
         mode: 0644
     - name: create base roles
