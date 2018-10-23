@@ -39,6 +39,13 @@ ansible-playbook builder.yaml --skip-tags overcloud-images --tags lab -e @enviro
 ```
 This will start a lab with just 3 controllers and 1 compute.
 
+### Validations
+You can run tempest validations against standalone and undercloud deploy. In order to run
+just the validations and avoid having to wait to much time, you can run the following command:
+```Bash
+ansible-playbook builder.yaml -t inventory -t validations
+```
+
 #### Variables
 *vms*
   Hash with the following entries:
