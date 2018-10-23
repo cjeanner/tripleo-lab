@@ -29,6 +29,7 @@
         - libvirt-client
         - libvirt-daemon
         - libvirt-daemon-kvm
+        - python-lxml
         - python2-setuptools
         - python2-virtualbmc
         - tmux
