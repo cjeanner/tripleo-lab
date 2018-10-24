@@ -5,6 +5,10 @@
     {
       "name": "{{node.name}}",
       "pm_type": "ipmi",
+      "arch": "x86_64",
+      "cpu": "{{node.cpu}}",
+      "memory": "{{node.memory}}",
+      "disk": "{{node.disksize | default('100')}}",
       {% if tripleo_version not in ['rocky', 'master'] %}
       "mac": ["{{node.interfaces[0].mac}}"],
       {% else %}
