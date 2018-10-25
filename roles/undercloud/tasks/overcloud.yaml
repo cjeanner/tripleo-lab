@@ -67,14 +67,6 @@
     - overcloud-images
     - baremetal
   block:
-    - name: install rhos-release on rhel image
-      set_fact:
-        rhos_install:
-          - "--firstboot-command 'yum install -y {{ rhos_release_repo_url }}/rhos-release-latest.noarch.rpm'"
-          - "--firstboot-command 'rhos-release {{ rhos_release_opts|default('') }} {{ rhos_release_version }}'"
-      when:
-        - base_image == 'rhel'
-
     - name: run commands as stack user
       become: yes
       become_user: stack
@@ -83,7 +75,14 @@
           shell: |
             virt-sysprep -a /home/stack/overcloud_imgs/overcloud-full.qcow2 \
               --copy-in /etc/yum.conf:/etc/ \
-              --network {{rhos_install|default([''])|join(' ')}} \
+              {% if base_image == 'rhel' %}
+              --firstboot-command 'yum install -y {{ rhos_release_repo_url }}/rhos-release-latest.noarch.rpm'
+              --firstboot-command 'rhos-release {{ rhos_release_opts|default('') }} {{ rhos_release_version }}'
+              {% else %}
+              --copy-in /etc/yum.repos.d/:/etc/ \
+              {% endif %}
+              --network \
+              --firstboot-command "yum update -y" \
               && \
               touch /home/stack/overcloud_imgs/overcloud-full.qcow2.done
           args:
