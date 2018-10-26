@@ -16,6 +16,22 @@
     mode: 0640
     backup: yes
 
+- name: Enable undercloud hieradata for low memory
+  ini_file:
+    path: /home/stack/undercloud.conf
+    section: DEFAULT
+    option: hieradata_override
+    value: /home/stack/hieradata_undercloud_low_memory.yaml
+    mode: 0640
+    backup: yes
+  when: undercloud_low_memory|bool
+
+- name: Create hieradata_undercloud_low_memory.yaml
+  template:
+    dest: /home/stack/hieradata_undercloud_low_memory.yaml
+    src: hieradata_undercloud_low_memory.yaml.j2
+  when: undercloud_low_memory|bool
+
 - name: custom configuration in undercloud.conf
   ini_file:
     path: /home/stack/undercloud.conf

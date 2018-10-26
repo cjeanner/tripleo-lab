@@ -23,3 +23,4 @@ tmate_release: 2.2.1
 semodules: []
 overcloud_container_cli: docker
 overcloud_image_update: yes
+undercloud_low_memory: no
