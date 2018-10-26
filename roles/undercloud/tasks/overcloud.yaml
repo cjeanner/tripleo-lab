@@ -142,5 +142,5 @@
                 openstack subnet set ctlplane-subnet --dns-nameserver {{ undercloud_dns }}
             - name: deploy the overcloud
               shell: |
-                bash /home/stack/deploy-overcloud.sh 2>&1 > ~/deploy-overcloud.log
+                bash /home/stack/deploy-overcloud.sh
               when: deploy_overcloud|bool
