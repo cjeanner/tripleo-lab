@@ -83,11 +83,20 @@
               {% endif %}
               --network \
               && \
-              virt-customize -a /home/stack/overcloud_imgs/overcloud-full.qcow2 --update --selinux-relabel --network \
-              && \
               touch /home/stack/overcloud_imgs/overcloud-full.qcow2.done
           args:
             creates: /home/stack/overcloud_imgs/overcloud-full.qcow2.done
+        - name: update overcloud image
+          when: overcloud_image_update|bool
+          shell: |
+              virt-customize -a /home/stack/overcloud_imgs/overcloud-full.qcow2 <
+                --update
+                --selinux-relabel
+                --network \
+              && \
+              touch /home/stack/overcloud_imgs/overcloud-full.qcow2.updated
+          args:
+            creates: /home/stack/overcloud_imgs/overcloud-full.qcow2.updated
         - name: upload images to glance (container)
           when:
             - containerized_undercloud|bool

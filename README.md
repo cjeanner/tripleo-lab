@@ -174,3 +174,7 @@ semodules:
   - name: foobar
     src: /full/path/foobar.te
 ```
+
+*overcloud_image_update*
+  Whether you want to get a `yum update` on the overcloud-full prior its
+  upload into Glance. (Bool, default to yes)

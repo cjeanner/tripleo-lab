@@ -22,3 +22,4 @@ ceph_version: luminous
 tmate_release: 2.2.1
 semodules: []
 overcloud_container_cli: docker
+overcloud_image_update: yes
