@@ -82,7 +82,8 @@
               --copy-in /etc/yum.repos.d/:/etc/ \
               {% endif %}
               --network \
-              --firstboot-command "yum update -y" \
+              && \
+              virt-customize -a /home/stack/overcloud_imgs/overcloud-full.qcow2 --update --selinux-relabel --network \
               && \
               touch /home/stack/overcloud_imgs/overcloud-full.qcow2.done
           args:
