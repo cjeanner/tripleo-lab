@@ -35,10 +35,13 @@ lab:
 ansible-playbook builder.yaml --tags lab
 ```
 
-### I have my undercloud - may I deploy the overcloud images
-Yes !
+### I have my undercloud and want to replay only specific tasks on it
+Just limit with the tags, and be sure to have the ```inventory``` tag. For
+example, in order to just manage the overcloud images:
 ```Bash
-ansible-playbook builder.yaml --tags overcloud-images
+ansible-playbook builder.yaml -t inventory -t overcloue-images
+```
+
 ```
 ### Extend the lab
 You can pass variables and environment files using the ```-e``` option, like:
