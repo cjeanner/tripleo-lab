@@ -1,0 +1,20 @@
+parameter_defaults:
+  UndercloudExtraConfig:
+    # The following are configurations for the different workers for the undercloud
+    # services.
+    undercloud_workers: 1
+    glance::api::workers: "%{hiera('undercloud_workers')}"
+    glance::registry::workers: "%{hiera('undercloud_workers')}"
+    heat::api::workers: "%{hiera('undercloud_workers')}"
+    heat::api_cfn::workers: "%{hiera('undercloud_workers')}"
+    heat::engine::num_engine_workers: "%{hiera('undercloud_workers')}"
+    ironic::api::workers: "%{hiera('undercloud_workers')}"
+    ironic::wsgi::apache::workers: "%{hiera('undercloud_workers')}"
+    keystone::wsgi::apache::workers: "%{hiera('undercloud_workers')}"
+    neutron::agents::metadata::metadata_workers: "%{hiera('undercloud_workers')}"
+    neutron::server::api_workers: "%{hiera('undercloud_workers')}"
+    nova::api::metadata_workers: "%{hiera('undercloud_workers')}"
+    nova::api::osapi_compute_workers: "%{hiera('undercloud_workers')}"
+    nova::conductor::workers: "%{hiera('undercloud_workers')}"
+    nova::scheduler::workers: "%{hiera('undercloud_workers')}"
+    swift::proxy::workers: "%{hiera('undercloud_workers')}"

@@ -178,3 +178,8 @@ semodules:
 *overcloud_image_update*
   Whether you want to get a `yum update` on the overcloud-full prior its
   upload into Glance. (Bool, default to yes)
+
+*undercloud_low_memory*
+  Creates a hieradata file to configure 1 worker per OpenStack
+  service. This hieradata file is consummed by the Undercloud.
+  (Bool, default no)
