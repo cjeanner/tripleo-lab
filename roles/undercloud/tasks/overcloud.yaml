@@ -89,9 +89,9 @@
         - name: update overcloud image
           when: overcloud_image_update|bool
           shell: |
-              virt-customize -a /home/stack/overcloud_imgs/overcloud-full.qcow2 <
-                --update
-                --selinux-relabel
+              virt-customize -a /home/stack/overcloud_imgs/overcloud-full.qcow2 \
+                --update \
+                --selinux-relabel \
                 --network \
               && \
               touch /home/stack/overcloud_imgs/overcloud-full.qcow2.updated
