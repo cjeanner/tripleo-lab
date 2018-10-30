@@ -64,3 +64,11 @@
   authorized_key:
     user: root
     key: "{{ root_pubkey['content'] |b64decode }}"
+
+- name: ensure free access to the overcloud nodes
+  copy:
+    dest: /home/stack/.ssh/config
+    src: ssh_config
+    owner: stack
+    group: stack
+    mode: 0640
