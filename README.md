@@ -204,3 +204,8 @@ semodules:
   Creates a hieradata file to configure 1 worker per OpenStack
   service. This hieradata file is consummed by the Undercloud.
   (Bool, default no)
+
+*disable_selinux*
+  Allows to disable selinux on the undercloud, setting it to "permissive" while
+  still logging what would have been blocked.
+  (Bool, default no)

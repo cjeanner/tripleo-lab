@@ -1,3 +1,10 @@
+- name: Set selinux to permissive
+  selinux:
+    state: permissive
+    policy: targeted
+  when:
+    - disable_selinux|bool
+
 - name: set hostname properly
   lineinfile:
     dest: /etc/hosts
