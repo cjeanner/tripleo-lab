@@ -39,10 +39,31 @@ ansible-playbook builder.yaml --tags lab
 Just limit with the tags, and be sure to have the ```inventory``` tag. For
 example, in order to just manage the overcloud images:
 ```Bash
-ansible-playbook builder.yaml -t inventory -t overcloue-images
+ansible-playbook builder.yaml -t inventory -t overcloud-images
 ```
 
+### I want to add a new instance to my current lab
+Just add the requested information in the yaml you used for the initial deploy,
+then:
+```Bash
+ansible-playbook builder.yaml -t domains -t baremetal -t vbmc
 ```
+
+Domain tag will create the instance disk image and add it to libvirt. The vbmc
+tag will add the new to vbmc, and enable it. The baremetal tag will take care of
+the different configuration on the undercloud.
+
+One note though: you might want to delete the already-existing node(s) from the
+baremetal.json on the undercloud, in order to avoid useless error output from
+the import task.
+
+Also, this ansible will NOT run the import task once more, it doesn't ensure
+all nodes are present. You will need to run, on your own:
+```Bash
+source ~/stackrc
+openstack overcloud node import --provide baremetal.json
+```
+
 ### Extend the lab
 You can pass variables and environment files using the ```-e``` option, like:
 ```Bash
