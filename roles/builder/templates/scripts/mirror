@@ -33,7 +33,7 @@ function epel {
     "$epel_dest"
 }
 function fedora {
-  fedora_version="27 28"
+  fedora_version="27 28 29"
   fedora_dest="${basedir}/Fedora"
   fedora_src="rsync://fedora.tu-chemnitz.de/ftp/pub/linux/fedora/linux"
 
