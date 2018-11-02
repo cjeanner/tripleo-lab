@@ -142,6 +142,19 @@
       loop_control:
         label: "{{item.name}}"
 
+    - name: create OSD for ceph instances if any
+      tags:
+        - images
+      when:
+        - item.name is match('^ceph-.*')
+      command: "qemu-img create -f raw {{vm_prefix}}-{{item.name}}-osd.img 50G"
+      args:
+        creates:  "{{basedir}}/workload/{{vm_prefix}}-{{item.name}}-osd.img"
+        chdir: "{{basedir}}/workload"
+      loop: "{{vms}}"
+      loop_control:
+        label: "{{item.name}}"
+
     - name: push proxy config if needed
       template:
         dest: "{{basedir}}/configs/http_proxy.sh"

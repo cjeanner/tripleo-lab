@@ -23,6 +23,13 @@
       <target dev='hdb'/>
     </disk>
     {% endif %}
+    {% if item.name is match('^ceph-.*') %}
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='{{basedir}}/workload/{{vm_prefix}}-{{item.name}}-osd.img'/>
+      <target dev='hdb'/>
+    </disk>
+    {% endif %}
     {% for interface in item.interfaces %}
     <interface type='network'>
       <source network='default'/>

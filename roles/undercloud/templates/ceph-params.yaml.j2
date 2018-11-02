@@ -1,0 +1,8 @@
+---
+parameter_defaults:
+  CephConfigOverrides:
+    CephPoolDefaultSize: {{ vms|map(attribute='name')|select("match", '^ceph.+')|list|length }}
+    CephPoolDefaultPgNum: 256
+  CephAnsibleDisksConfig:
+    devices:
+      - /dev/sdb

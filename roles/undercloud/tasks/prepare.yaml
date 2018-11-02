@@ -74,6 +74,12 @@
       template:
         dest: /home/stack/overcloud-yml/scale.yaml
         src: scale.yaml.j2
+    - name: push ceph settings
+      tags:
+        - baremetal
+      template:
+        dest: /home/stack/overcloud-yml/ceph-params.yaml
+        src: ceph-params.yaml.j2
     - name: push container-cli setting
       tags:
         - baremetal
