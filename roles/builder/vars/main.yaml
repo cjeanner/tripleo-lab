@@ -41,21 +41,21 @@ vms:
       - mac: "24:42:53:21:52:65"
       - mac: "24:42:53:21:52:66"
     autostart: no
-  - name: ceph-storage-0
+  - name: ceph-0
     cpu: 2
     memory: 8192
     interfaces:
       - mac: "24:42:53:21:52:75"
       - mac: "24:42:53:21:52:76"
     autostart: no
-  - name: ceph-storage-1
+  - name: ceph-1
     cpu: 2
     memory: 8192
     interfaces:
       - mac: "24:42:53:21:52:85"
       - mac: "24:42:53:21:52:86"
     autostart: no
-  - name: ceph-storage-2
+  - name: ceph-2
     cpu: 2
     memory: 8192
     interfaces:
