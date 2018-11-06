@@ -101,19 +101,38 @@
         dest: "{{basedir}}/images/centos-7.qcow2"
         mode: 0664
 
-    - name: create images based on centos
+    - name: centos based images
       when:
-        base_image == "centos"
-      tags:
-        - images
-      command: |
-        qemu-img create -o backing_file=../images/centos-7.qcow2,backing_fmt=qcow2 -f qcow2 "{{vm_prefix}}-{{item.name}}".qcow2 "{{item.disksize|default ('100')}}"G
-      args:
-        creates: "{{basedir}}/workload/{{vm_prefix}}-{{item.name}}.qcow2"
-        chdir: "{{basedir}}/workload"
-      loop: "{{vms}}"
-      loop_control:
-        label: "{{item.name}}"
+        - base_image == "centos"
+      block:
+        - name: create undercloud image based on centos
+          when:
+            - item.name is match('^undercloud')
+          tags:
+            - images
+          command: |
+            qemu-img create -o backing_file=../images/centos-7.qcow2,backing_fmt=qcow2 -f qcow2 "{{vm_prefix}}-{{item.name}}".qcow2 "{{item.disksize|default ('100')}}"G
+          args:
+            creates: "{{basedir}}/workload/{{vm_prefix}}-{{item.name}}.qcow2"
+            chdir: "{{basedir}}/workload"
+          loop: "{{vms}}"
+          loop_control:
+            label: "{{item.name}}"
+
+        - name: create empty image based on centos
+          when:
+            - base_image == "centos"
+            - item.name is not match('^undercloud')
+          tags:
+            - images
+          command: |
+            qemu-img create -f qcow2 "{{vm_prefix}}-{{item.name}}".qcow2 "{{item.disksize|default ('100')}}"G
+          args:
+            creates: "{{basedir}}/workload/{{vm_prefix}}-{{item.name}}.qcow2"
+            chdir: "{{basedir}}/workload"
+          loop: "{{vms}}"
+          loop_control:
+            label: "{{item.name}}"
 
     - name: create images based on RHEL
       when:
