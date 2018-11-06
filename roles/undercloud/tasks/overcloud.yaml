@@ -1,3 +1,7 @@
+- name: install guestfs
+  package:
+    name: libguestfs-tools
+    state: present
 
 - name: image management on non-RHEL system
   tags:
