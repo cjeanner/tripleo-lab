@@ -2,7 +2,7 @@
 sudo openstack tripleo deploy \
   --templates \
   --local-ip={{ ip }}/24 \
-  -e /usr/share/openstack-tripleo-heat-templates/environments/standalone.yaml \
+  -e /usr/share/openstack-tripleo-heat-templates/environments/standalone/standalone-tripleo.yaml \
 {% if standalone_ceph|bool %}
   -e /usr/share/openstack-tripleo-heat-templates/environments/ceph-ansible/ceph-ansible.yaml \
 {% endif %}
