@@ -1,0 +1,9 @@
+[Unit]
+Description={{ct_name}} container
+[Service]
+Restart=always
+ExecStart=/usr/bin/podman start -a {{ct_name}}
+ExecStop=/usr/bin/podman stop -t 10 {{ct_name}}
+KillMode=process
+[Install]
+WantedBy=multi-user.target

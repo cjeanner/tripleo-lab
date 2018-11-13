@@ -1,0 +1,28 @@
+- name: "is {{ct_name}} already created"
+  shell: |
+    podman ps --all | grep -c "{{ct_name}}"
+  register: is_created
+  ignore_errors: yes
+
+- name: "create {{ct_name}} if needed"
+  when: is_created.stdout|int == 0
+  command: |
+    podman run -d --name {{ct_name}} \
+    {{volumes|join(' ')}} \
+    {{ports|join(' ')}} \
+    --cpus 4 \
+    --memory 4g \
+    {{image}}
+
+- name: "create {{ct_name}} systemd unit"
+  template:
+    dest: "/etc/systemd/system/container-{{ct_name}}.service"
+    src: container.service
+    mode: 0644
+
+- name: "enable {{ct_name}} container unit"
+  systemd:
+    daemon_reload: yes
+    enabled: yes
+    name: "container-{{ct_name}}.service"
+    state: started
