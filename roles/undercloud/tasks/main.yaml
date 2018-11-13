@@ -6,6 +6,10 @@
   delegate_facts: false
   block:
     - import_tasks: config.yaml
+    - name: configure metrics
+      when: enable_metrics|bool
+      import_role:
+        name: metrics
     - import_tasks: rhos-release.yaml
     - import_tasks: packages.yaml
     - import_tasks: user.yaml
