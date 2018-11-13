@@ -1,3 +1,4 @@
+enable_metrics: no
 vms:
   - name: undercloud
     cpu: 4
