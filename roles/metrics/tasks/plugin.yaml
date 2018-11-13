@@ -1,0 +1,10 @@
+- name: "push plugin {{ plugin_name }}"
+  lineinfile:
+    path: /etc/collectd.conf.d/plugins.conf
+    line: "LoadPlugin {{ plugin_name }}"
+    create: yes
+
+- name: "push plugin configuration for {{ plugin_name }}"
+  template:
+    dest: "/etc/collectd.conf.d/plugins/{{ plugin_name }}.conf"
+    src: plugin.conf

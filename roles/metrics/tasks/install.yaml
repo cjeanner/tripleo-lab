@@ -1,0 +1,95 @@
+- name: common tag and condition
+  when: enable_metrics|bool
+  tags:
+    - metrics
+
+  block:
+    - name: install epel release
+      package:
+        name: epel-release
+        state: installed
+
+    - name: deactivate epel repo
+      command: yum-config-manager --disable epel
+
+    - name: install collectd things
+      yum:
+        enablerepo: epel
+        state: installed
+        name:
+          - collectd
+          - collectd-virt
+          - collectd-amqp
+
+    - name: push custom SELinux policy for collectd
+      copy:
+        dest: /usr/local/src/collectd-cgroup.te
+        src: collectd-cgroup.te
+      register: semodule
+
+    - name: build and load custom policy
+      shell: |
+        checkmodule -M -m -o collectd-cgroup.mod collectd-cgroup.te
+        semodule_package -o collectd-cgroup.pp -m collectd-cgroup.mod
+        semodule -i collectd-cgroup.pp
+      args:
+        chdir: /usr/local/src
+      when:
+        - semodule is changed
+
+    - name: create collectd configuration directories
+      file:
+        path: "/etc/{{item}}"
+        state: directory
+        mode: 0755
+      with_items:
+        - collectd.conf.d
+        - collectd.conf.d/plugins
+
+    - name: override collectd configuration file
+      copy:
+        dest: /etc/collectd.conf
+        src: collectd.conf
+
+    - name: set some globals for collectd
+      template:
+        dest: /etc/collectd.conf.d/globals.conf
+        src: globals.conf
+
+    - name: load and configure plugins
+      include_tasks: plugin.yaml
+      vars:
+        plugin_name: "{{item.name}}"
+        plugin_config: "{{item.config}}"
+      with_items:
+        - name: 'cpu'
+          config:
+            - 'ReportByCpu true'
+            - 'ReportByState true'
+        - name: 'cgroups'
+          config:
+            - 'CGroup "/^docker/"'
+            - 'CGroup "/^podman/"'
+        - name: 'load'
+          config: []
+        - name: 'memory'
+          config: []
+        - name: 'processes'
+          config:
+            - 'CollectFileDescriptor true'
+            - 'CollectContextSwitch true'
+            - 'CollectMemoryMaps true'
+            - 'Process "podman"'
+            - 'Process "docker"'
+        - name: 'write_graphite'
+          config:
+            - '<Node "undercloud">'
+            - 'Host "192.168.122.1"'
+            - 'Port "2023"'
+            - '</Node>'
+
+    - name: enable and restart collectd
+      systemd:
+        name: collectd
+        state: restarted
+        enabled: yes
