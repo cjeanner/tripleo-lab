@@ -1,5 +1,7 @@
 [Unit]
 Description={{ct_name}} container
+Wants=network.target network-online.target
+After=network.target network-online.target
 [Service]
 Restart=always
 ExecStart=/usr/bin/podman start -a {{ct_name}}
