@@ -7,15 +7,6 @@
     group: stack
     mode: 0640
 
-- name: Setting NTP server in undercloud.conf
-  ini_file:
-    path: /home/stack/undercloud.conf
-    section: DEFAULT
-    option: undercloud_ntp_servers
-    value: "{{ undercloud_ntp_server }}"
-    mode: 0640
-    backup: yes
-
 - name: Enable masquerading in undercloud.conf
   ini_file:
     path: /home/stack/undercloud.conf
