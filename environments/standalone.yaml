@@ -1,0 +1,11 @@
+---
+standalone: yes
+vms:
+  - name: undercloud
+    cpu: 10
+    memory: 32000
+    disksize: 100
+    interfaces:
+      - mac: "24:42:53:21:52:15"
+      - mac: "24:42:53:21:52:16"
+    autostart: yes
