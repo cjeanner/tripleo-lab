@@ -9,21 +9,25 @@
       "cpu": "{{node.cpu}}",
       "memory": "{{node.memory}}",
       "disk": "{{node.disksize | default('100')}}",
-      {% if tripleo_version not in ['rocky', 'master'] %}
+{% if node.name is match('^ceph') %}
+      "root_device": {"name": "sda,hda,vda"},
+{% endif %}
+{% if tripleo_version not in ['rocky', 'master'] %}
       "mac": ["{{node.interfaces[0].mac}}"],
-      {% else %}
+{% else %}
       "ports": [
         {
           "address": "{{node.interfaces[0].mac}}"
         }
       ],
-      {% endif %}
+{% endif %}
       "pm_user": "ADMIN",
       "pm_password": "ADMIN",
       "pm_addr": "192.168.122.1",
       "pm_port": "112{{node.interfaces.0.mac|replace('24:42:53:21:52:','')}}",
       "capabilities": "node:{{node.name}},boot_option:local"
-    }{% if not loop.last %}, {% endif %}
+    }{% if not loop.last %},
+{% endif %}
 {% endif %}
 {% endfor %}
   ]

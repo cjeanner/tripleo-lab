@@ -26,6 +26,7 @@
     {% if item.name is match('^ceph-.*') %}
     <disk type='file' device='disk'>
       <driver name='qemu' type='raw'/>
+      <vendor>cephosd</vendor>
       <source file='{{basedir}}/workload/{{vm_prefix}}-{{item.name}}-osd.img'/>
       <target dev='hdb'/>
     </disk>
