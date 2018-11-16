@@ -22,6 +22,4 @@ parameter_defaults:
   StandaloneHomeDir: /home/stack
   StandaloneLocalMtu: 1500
   # Needed if running in a VM, not needed if on baremetal
-  StandaloneExtraConfig:
-    nova::compute::libvirt::services::libvirt_virt_type: qemu
-    nova::compute::libvirt::libvirt_virt_type: qemu
+  NovaComputeLibvirtType: kvm
