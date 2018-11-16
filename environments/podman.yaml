@@ -1,0 +1,7 @@
+---
+undercloud_config:
+  - section: DEFAULT
+    option: container_cli
+    value: podman
+standalone_container_cli: podman
+overcloud_container_cli: podman
