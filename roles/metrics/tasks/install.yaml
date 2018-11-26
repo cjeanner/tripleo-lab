@@ -171,6 +171,7 @@
             - ProcessMatch "swift-object-server" "python.+swift-object-server"                      # 10,11,12,13
             - ProcessMatch "swift-object-updater" "python.+swift-object-updater"                    # 10,11,12,13
             - ProcessMatch "swift-proxy-server" "python.+swift-proxy-server"                        # 10,11,12,13
+            - ProcessMatch "tempest" "tempest"
             - ProcessMatch "zaqar-server" "python.+zaqar-server"                                    # 10,11,12,13
             - ProcessMatch "zaqar_wsgi" "zaqar_wsgi.*-DFOREGROUND"                                  # 12,13
         - name: 'write_graphite'
