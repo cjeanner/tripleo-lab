@@ -121,3 +121,14 @@
   loop_control:
     label: "{{item.item.name}}"
   when: item.stdout is defined
+
+- name: wait for undercloud to be up
+  tags:
+    - domains
+    - start-domains
+    - inventory
+    - gen-ssh-config
+    - lab
+  wait_for_connection:
+    delay: 10
+    timeout: 120
