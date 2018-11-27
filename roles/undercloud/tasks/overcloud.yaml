@@ -147,4 +147,7 @@
             - name: deploy the overcloud
               shell: |
                 bash /home/stack/deploy-overcloud.sh
+              args:
+                chdir: /home/stack
+                creates: /home/stack/overcloudrc.v3
               when: deploy_overcloud|bool
