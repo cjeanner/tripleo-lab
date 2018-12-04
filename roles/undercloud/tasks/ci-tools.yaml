@@ -6,6 +6,8 @@
     - name: install pip
       package:
         name: python-pip
+    - name: install rdopkg
+      command: pip install rdopkg
 - name: common tags
   tags:
     - deploy-ci
@@ -25,6 +27,3 @@
         /home/stack/tripleo-ci/scripts/tripleo.sh --delorean-setup > /home/stack/deploy-ci.log
       args:
         creates: /home/stack/tripleo/delorean
-
-    - name: install rdopkg
-      command: pip install --user rdopkg
