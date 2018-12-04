@@ -31,9 +31,8 @@
         label: "{{ item.name }}"
       shell: |
         rm -rf tripleo/delorean/rdoinfo
-        ./tripleo-ci/scripts/tripleo.sh --delorean-build {{ item.name }} > /home/stack/build_{{ item.name }}.log
-        sudo rpm -Uvh --force $(find tripleo/delorean/ -name "*.rpm" -and -not -name "*.src.rpm")
-        find tripleo/delorean/ -name "*.rpm" -and -not -name "*.src.rpm" -exec cp '{}' ~/custom-rpms/ \;
+        ./tripleo-ci/scripts/tripleo.sh --delorean-build {{ item.name }} &> /home/stack/build_{{ item.name }}.log
+        find ~/tripleo/delorean/ -name "*.rpm" -and -not -name "*.src.rpm" -and -not -name "*-test*" -exec cp '{}' ~/custom-rpms/ \;
       args:
         chdir: "/home/stack"
         creates: "/home/stack/build_{{ item.name }}.log"
@@ -53,12 +52,14 @@
         git fetch https://git.openstack.org/openstack/{{ item.name }} refs/changes/{{ item.refs }}
         git checkout FETCH_HEAD
         cd /home/stack
-        ./tripleo-ci/scripts/tripleo.sh --delorean-build {{ item.name }} > /home/stack/build_{{ item.name }}.log
-        sudo rpm -Uvh --force $(find tripleo/delorean/ -name "*.rpm" -and -not -name "*.src.rpm")
-        find tripleo/delorean/ -name "*.rpm" -and -not -name "*.src.rpm" -exec cp '{}' ~/custom-rpms/ \;
+        ./tripleo-ci/scripts/tripleo.sh --delorean-build {{ item.name }} &> /home/stack/build_{{ item.name }}.log
+        find ~/tripleo/delorean/ -name "*.rpm" -and -not -name "*.src.rpm" -and -not -name "*-test*" -exec cp '{}' ~/custom-rpms/ \;
       args:
         chdir: "/home/stack"
         creates: "/home/stack/build_{{ item.name }}.log"
+
+    - name: install custom RPMs
+      command: rpm -Uvh --force /home/stack/custom-rpms/*.rpm
 
     - name: push custom SELinux policies files
       copy:
@@ -71,6 +72,7 @@
     - name: build and install custom policies
       args:
         chdir: /usr/local/src
+        creates: "{{ item.name }}.pp"
       shell: |
         checkmodule -M -m -o {{ item.name }}.mod {{ item.name }}.te
         semodule_package -o {{ item.name }}.pp -m {{ item.name }}.mod
