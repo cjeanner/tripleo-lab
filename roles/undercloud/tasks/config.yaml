@@ -48,6 +48,14 @@
     - centos_mirror|bool
     - base_image != 'rhel'
 
+- name: set CentOS mirror if we have a mirror
+  when:
+    - centos_mirror|bool
+    - base_image != 'rhel'
+  template:
+    dest: "/etc/yum.repos.d/CentOS-Base.repo"
+    src: centos.repo.j2
+
 - name: set delorean repository from upstream if no mirror
   when:
     - not centos_mirror|bool
