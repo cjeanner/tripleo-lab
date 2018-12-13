@@ -6,6 +6,8 @@
     - name: install pip
       package:
         name: python-pip
+        enablerepo: epel
+
     - name: install rdopkg
       command: pip install rdopkg
 - name: common tags

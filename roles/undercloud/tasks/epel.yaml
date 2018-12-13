@@ -1,0 +1,15 @@
+---
+- name: install epel-release
+  package:
+    name: epel-release
+    state: installed
+
+- name: use mirror for epel if requested
+  when:
+    - centos_mirror|bool
+  template:
+    dest: /etc/yum.repos.d/epel.repo
+    src: epel.repo.j2
+
+- name: ensure epel is deactivated
+  command: yum-config-manager --disable epel

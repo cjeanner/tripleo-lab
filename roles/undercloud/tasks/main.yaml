@@ -6,6 +6,7 @@
   delegate_facts: false
   block:
     - import_tasks: config.yaml
+    - import_tasks: epel.yaml
     - name: configure metrics
       when: enable_metrics|bool
       import_role:
