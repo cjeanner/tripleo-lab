@@ -58,7 +58,15 @@
         chdir: "/home/stack"
         creates: "/home/stack/build_{{ item.name }}.log"
 
+    - name: ensure we have RPMs to install
+      find:
+        path: /home/stack/custom-rpms
+        patterns: '*.rpm'
+        recurse: no
+      register: rpm_to_install
+
     - name: install custom RPMs
+      when: rpm_to_install['files'] !=  []
       command: rpm -Uvh --force /home/stack/custom-rpms/*.rpm
 
     - name: push custom SELinux policies files
