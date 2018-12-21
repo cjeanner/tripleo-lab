@@ -1,10 +1,10 @@
 #!/bin/bash
 
 source ~/stackrc
-openstack overcloud container image prepare \
+stdbuf -i0 -o0 -e0 openstack overcloud container image prepare \
   --output-env-file ~/overcloud-yml/containers-env-file.yaml
 
-openstack overcloud deploy \
+stdbuf -i0 -o0 -e0 openstack overcloud deploy \
   --templates /usr/share/openstack-tripleo-heat-templates/ \
   --environment-directory ~/overcloud-yml \
   -e /usr/share/openstack-tripleo-heat-templates/environments/disable-telemetry.yaml \
