@@ -207,6 +207,9 @@ synchronize:
 *standalone_container_cli*
   Deploy standalone using said container CLI (String, default docker)
 
+*deploy_standalone*
+  Run the deploy script (Bool, default yes)
+
 *semodules*
   Build modules based on .te files you can provide. List of dicts.
 ```YAML
