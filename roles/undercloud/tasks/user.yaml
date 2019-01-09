@@ -8,6 +8,14 @@
     ssh_key_bits: 4096
     state: present
 
+- name: create ansible temp dir for stack user
+  file:
+    path: /home/stack/.ansible/tmp
+    state: directory
+    group: stack
+    mode: 0700
+    owner: stack
+
 - name: create root keypair
   user:
     generate_ssh_key: yes
