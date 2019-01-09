@@ -142,7 +142,7 @@
       command: |
         qemu-img create -o backing_file=../images/redhat-7.qcow2,backing_fmt=qcow2 -f qcow2 "{{vm_prefix}}-{{item.name}}".qcow2 100G
       args:
-        creates: "{{basedir}}/workload/{{vm_prefix}}{{item.name}}.qcow2"
+        creates: "{{basedir}}/workload/{{vm_prefix}}-{{item.name}}.qcow2"
         chdir: "{{basedir}}/workload"
       loop: "{{vms}}"
       loop_control:
