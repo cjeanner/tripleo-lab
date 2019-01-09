@@ -22,7 +22,9 @@
       when: not local_rhos_release_repo.stat.exists
 
     - name: ensure rhos-release is latest
-      package: name=rhos-release state=latest
+      package:
+        name: rhos-release
+        state: latest
 
     - name: run rhos-release
       command: rhos-release {{ rhos_release_opts|default('') }} {{ rhos_release_version }}
