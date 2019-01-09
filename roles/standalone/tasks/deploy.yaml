@@ -8,6 +8,7 @@
     ip: '192.168.24.2'
 
 - name: deploy standalone
+  when: deploy_standalone|bool
   command: /home/stack/deploy.sh
   args:
     creates: /home/stack/install-standalone.log
