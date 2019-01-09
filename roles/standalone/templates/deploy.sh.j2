@@ -12,5 +12,8 @@ stdbuf -i0 -o0 -e0 sudo openstack tripleo deploy \
 {% if standalone_ceph|bool %}
   -e /home/stack/ceph_parameters.yaml \
 {% endif %}
+{% for env in additional_envs %}
+  -e {{ env }} \
+{% endfor %}
   --output-dir /home/stack \
   --standalone &> /home/stack/install-standalone.log

@@ -15,6 +15,9 @@ stdbuf -i0 -o0 -e0 openstack overcloud deploy \
   {% else -%}
   -e /usr/share/openstack-tripleo-heat-templates/environments/docker.yaml \
   {% endif -%}
+  {% for env in additional_envs %}
+  -e {{ env }} \
+  {% endfor %}
   --ntp-server pool.ntp.org --libvirt-type qemu 2>&1 | tee -a ~/deploy-overcloud.log
 ret_val=$?
 

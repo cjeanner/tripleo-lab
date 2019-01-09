@@ -198,6 +198,9 @@ synchronize:
 *custom_rpms*
   List of custom remote RPMS to install on your undercloud node
 
+*additional_envs*
+  List of additional env you want to pass to either standalone or overcloud deploy
+
 *standalone*
   Deploy "standalone" tripleo (Bool, default no)
 

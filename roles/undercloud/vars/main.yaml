@@ -25,3 +25,4 @@ overcloud_container_cli: docker
 overcloud_image_update: yes
 undercloud_low_memory: no
 disable_selinux: no
+additional_envs: []
