@@ -1,5 +1,6 @@
 # Dedicated sudoers for stack
 Defaults:stack        !authenticate
+Defaults    env_keep += "http_proxy https_proxy no_proxy"
 stack ALL = NOPASSWD:ALL
 
 ## tripleoclient/v1/undercloud.py
