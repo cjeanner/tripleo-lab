@@ -22,6 +22,16 @@
         option: proxy
         section: main
         value: "http://{{proxy_host}}"
+    - name: inject proxy in env
+      blockinfile:
+        path: /etc/environment
+        block: |
+          export http_proxy=http://{{ proxy_host }}
+          export https_proxy=http://{{ proxy_host }}
+          export no_proxy={{ no_proxy }}
+          export HTTP_HOST=http://{{ proxy_host }}
+          export HTTPS_HOST=http://{{ proxy_host }}
+          export NO_PROXY={{ no_proxy }}
     - name: create base dir
       file:
         group: root
@@ -34,7 +44,8 @@
         content: |
           [Service]
           Environment="HTTP_PROXY=http://{{proxy_host}}/"
-          Environment="NO_PROXY=localhost,127.0.0.0/8"
+          Environment="HTTPS_PROXY=http://{{proxy_host}}/"
+          Environment="NO_PROXY={{no_proxy}}"
         dest: /etc/systemd/system/docker.service.d/http-proxy.conf
         group: root
         mode: 0755

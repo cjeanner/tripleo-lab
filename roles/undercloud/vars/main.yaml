@@ -26,3 +26,6 @@ overcloud_image_update: yes
 undercloud_low_memory: no
 disable_selinux: no
 additional_envs: []
+rhos_containers_registry: ''
+container_registry_ip: ''
+no_proxy: "localhost,127.0.0.0/8,172.16.0.0/12,192.168.0.0/16"
