@@ -67,6 +67,9 @@ ci_tools: false
 rhos_release_repo_url: http://xxxxxx
 proxy_host: xx.yy.zz.aa:PORT
 undercloud_sample: /usr/share/instack-undercloud/undercloud.conf.sample
+# Set up container things
+rhos_containers_registry: <some address>
+container_registry_ip: <some IP>
 ```
 3. Run the playbook with the following options:
 ```Bash
