@@ -56,6 +56,10 @@
       lineinfile:
         path: "{{basedir}}/.bashrc"
         line: "export LIBVIRT_DEFAULT_URI='qemu:///system'"
+    - name: export LIBGUESTFS_BACKEND
+      lineinfile:
+        path: "{{basedir}}/.bashrc"
+        line: "export LIBGUESTFS_BACKEND=direct"
 
     - name: get default network XML content
       slurp:
@@ -101,6 +105,18 @@
         dest: "{{basedir}}/images/centos-7.qcow2"
         mode: 0664
 
+    - name: update image in-place
+      tags:
+        - images
+        - image-update
+      shell: |
+        export LIBGUESTFS_BACKEND=direct
+        virt-sysprep -a "{{basedir}}/images/centos-7.qcow2" \
+          --network \
+          --uninstall cloud-init \
+          --selinux-relabel \
+          --update
+
     - name: centos based images
       when:
         - base_image == "centos"
@@ -140,7 +156,7 @@
       tags:
         - images
       command: |
-        qemu-img create -o backing_file=../images/redhat-7.qcow2,backing_fmt=qcow2 -f qcow2 "{{vm_prefix}}-{{item.name}}".qcow2 100G
+        qemu-img create -o backing_file=../images/{{ rhel_image_name }},backing_fmt=qcow2 -f qcow2 "{{vm_prefix}}-{{item.name}}".qcow2 100G
       args:
         creates: "{{basedir}}/workload/{{vm_prefix}}-{{item.name}}.qcow2"
         chdir: "{{basedir}}/workload"
