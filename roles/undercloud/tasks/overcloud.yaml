@@ -82,7 +82,7 @@
               {% if base_image == 'rhel' %}
               --firstboot-command 'yum install -y {{ rhos_release_repo_url }}/rhos-release-latest.noarch.rpm'
               --firstboot-command 'rhos-release {{ rhos_release_opts|default('') }} {{ rhos_release_version }}'
-              --firstboot-command: 'pushd /usr/local/src/; for i in *.pp; do semodule -t $i; done; popd'
+              --firstboot-command 'pushd /usr/local/src/; for i in *.pp; do semodule -t $i; done; popd'
               {% else %}
               --copy-in /etc/yum.repos.d/:/etc/ \
               {% endif %}
