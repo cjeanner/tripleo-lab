@@ -117,38 +117,20 @@
           --selinux-relabel \
           --update
 
-    - name: centos based images
+    - name: create undercloud image based on centos
       when:
         - base_image == "centos"
-      block:
-        - name: create undercloud image based on centos
-          when:
-            - item.name is match('^undercloud')
-          tags:
-            - images
-          command: |
-            qemu-img create -o backing_file=../images/centos-7.qcow2,backing_fmt=qcow2 -f qcow2 "{{vm_prefix}}-{{item.name}}.qcow2" "{{item.disksize|default ('100')}}G"
-          args:
-            creates: "{{basedir}}/workload/{{vm_prefix}}-{{item.name}}.qcow2"
-            chdir: "{{basedir}}/workload"
-          loop: "{{vms}}"
-          loop_control:
-            label: "{{item.name}}"
-
-        - name: create empty image based on centos
-          when:
-            - base_image == "centos"
-            - item.name is not match('^undercloud')
-          tags:
-            - images
-          command: |
-            qemu-img create -f qcow2 "{{vm_prefix}}-{{item.name}}".qcow2 "{{item.disksize|default ('100')}}"G
-          args:
-            creates: "{{basedir}}/workload/{{vm_prefix}}-{{item.name}}.qcow2"
-            chdir: "{{basedir}}/workload"
-          loop: "{{vms}}"
-          loop_control:
-            label: "{{item.name}}"
+        - item.name is match('^undercloud')
+      tags:
+        - images
+      command: |
+        qemu-img create -o backing_file=../images/centos-7.qcow2,backing_fmt=qcow2 -f qcow2 "{{vm_prefix}}-{{item.name}}.qcow2" "{{item.disksize|default ('100')}}G"
+      args:
+        creates: "{{basedir}}/workload/{{vm_prefix}}-{{item.name}}.qcow2"
+        chdir: "{{basedir}}/workload"
+      loop: "{{vms}}"
+      loop_control:
+        label: "{{item.name}}"
 
     - name: create images based on RHEL
       when:
@@ -158,6 +140,20 @@
         - images
       command: |
         qemu-img create -o backing_file=../images/{{ rhel_image_name }},backing_fmt=qcow2 -f qcow2 "{{vm_prefix}}-{{item.name}}.qcow2" "{{item.disksize|default ('100')}}G"
+      args:
+        creates: "{{basedir}}/workload/{{vm_prefix}}-{{item.name}}.qcow2"
+        chdir: "{{basedir}}/workload"
+      loop: "{{vms}}"
+      loop_control:
+        label: "{{item.name}}"
+
+    - name: create empty image for non-undercloud
+      when:
+        - item.name is not match('^undercloud')
+      tags:
+        - images
+      command: |
+        qemu-img create -f qcow2 "{{vm_prefix}}-{{item.name}}".qcow2 "{{item.disksize|default ('100')}}"G
       args:
         creates: "{{basedir}}/workload/{{vm_prefix}}-{{item.name}}.qcow2"
         chdir: "{{basedir}}/workload"
