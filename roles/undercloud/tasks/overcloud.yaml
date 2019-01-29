@@ -75,19 +75,21 @@
       become: yes
       become_user: stack
       block:
+        - name: copy overcloud firstboot script
+          template:
+            dest: /tmp/overcloud-firstboot
+            src: overcloud-firstboot.j2
+            mode: 0755
         - name: modify overcloud image
           shell: |
             virt-sysprep -a /home/stack/overcloud_imgs/overcloud-full.qcow2 \
               --copy-in /etc/yum.conf:/etc/ \
-              {% if base_image == 'rhel' %}
-              --firstboot-command 'yum install -y {{ rhos_release_repo_url }}/rhos-release-latest.noarch.rpm'
-              --firstboot-command 'rhos-release {{ rhos_release_opts|default('') }} {{ rhos_release_version }}'
-              --firstboot-command 'pushd /usr/local/src/; for i in *.pp; do semodule -t $i; done; popd'
-              {% else %}
-              --copy-in /etc/yum.repos.d/:/etc/ \
-              {% endif %}
               --copy-in /etc/selinux/config:/etc/selinux/ \
               --copy-in /usr/local/src/:/usr/local/ \
+              --firstboot /tmp/overcloud-firstboot \
+              {% if base_image == 'centos' %}
+              --copy-in /etc/yum.repos.d/:/etc/ \
+              {% endif %}
               --network \
               && \
               touch /home/stack/overcloud_imgs/overcloud-full.qcow2.done
@@ -96,12 +98,12 @@
         - name: update overcloud image
           when: overcloud_image_update|bool
           shell: |
-              virt-customize -a /home/stack/overcloud_imgs/overcloud-full.qcow2 \
-                --update \
-                --selinux-relabel \
-                --network \
-              && \
-              touch /home/stack/overcloud_imgs/overcloud-full.qcow2.updated
+            virt-customize -a /home/stack/overcloud_imgs/overcloud-full.qcow2 \
+              --update \
+              --selinux-relabel \
+              --network \
+            && \
+            touch /home/stack/overcloud_imgs/overcloud-full.qcow2.updated
           args:
             creates: /home/stack/overcloud_imgs/overcloud-full.qcow2.updated
         - name: upload images to glance (container)

@@ -1,0 +1,13 @@
+#!/bin/sh
+{% if base_image == 'rhel' %}
+yum install -y {{ rhos_release_repo_url }}/rhos-release-latest.noarch.rpm
+rhos-release {{ rhos_release_opts|default('') }} {{ rhos_release_version }}
+{% endif %}
+pushd /usr/local/src/
+for i in *.te; do
+  n=$(basename $i .te)
+  checkmodule -M -m -o ${n}.mod $i
+  semodule_package -o ${n}.pp -m ${n}.mod
+  semodule -i ${n}.pp
+done
+popd
