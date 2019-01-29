@@ -6,6 +6,7 @@
   delegate_facts: false
   block:
     - import_tasks: config.yaml
+    - import_tasks: user.yaml
     - import_tasks: rhos-release.yaml
     - name: install epel only on centos
       when: base_image == 'centos'
@@ -15,7 +16,6 @@
       import_role:
         name: metrics
     - import_tasks: packages.yaml
-    - import_tasks: user.yaml
     - name: deploy ci only on centos
       when: base_image == 'centos'
       import_tasks: ci-tools.yaml
