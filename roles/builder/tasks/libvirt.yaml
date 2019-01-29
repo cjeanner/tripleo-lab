@@ -127,7 +127,7 @@
           tags:
             - images
           command: |
-            qemu-img create -o backing_file=../images/centos-7.qcow2,backing_fmt=qcow2 -f qcow2 "{{vm_prefix}}-{{item.name}}".qcow2 "{{item.disksize|default ('100')}}"G
+            qemu-img create -o backing_file=../images/centos-7.qcow2,backing_fmt=qcow2 -f qcow2 "{{vm_prefix}}-{{item.name}}.qcow2" "{{item.disksize|default ('100')}}G"
           args:
             creates: "{{basedir}}/workload/{{vm_prefix}}-{{item.name}}.qcow2"
             chdir: "{{basedir}}/workload"
@@ -152,11 +152,12 @@
 
     - name: create images based on RHEL
       when:
-        base_image == "rhel"
+        - base_image == "rhel"
+        - item.name is match('^undercloud')
       tags:
         - images
       command: |
-        qemu-img create -o backing_file=../images/{{ rhel_image_name }},backing_fmt=qcow2 -f qcow2 "{{vm_prefix}}-{{item.name}}".qcow2 100G
+        qemu-img create -o backing_file=../images/{{ rhel_image_name }},backing_fmt=qcow2 -f qcow2 "{{vm_prefix}}-{{item.name}}.qcow2" "{{item.disksize|default ('100')}}G"
       args:
         creates: "{{basedir}}/workload/{{vm_prefix}}-{{item.name}}.qcow2"
         chdir: "{{basedir}}/workload"
