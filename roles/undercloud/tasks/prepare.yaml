@@ -44,12 +44,6 @@
   loop_control:
     label: "{{ item.option }}"
 
-- name: "inject {{ container_registry_ip }} for {{ rhos_containers_registry }}"
-  when: base_image == 'rhel'
-  lineinfile:
-    path: /etc/hosts
-    line: "{{ container_registry_ip }} {{ rhos_containers_registry }}"
-
 - name: run commands as stack user
   become: yes
   become_user: stack
