@@ -131,5 +131,6 @@
     - gen-ssh-config
     - lab
   wait_for_connection:
-    delay: 10
-    timeout: 120
+    timeout: 300
+    delay: 30
+    sleep: 3
