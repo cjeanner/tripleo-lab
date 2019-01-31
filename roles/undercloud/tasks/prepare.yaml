@@ -48,22 +48,10 @@
   become: yes
   become_user: stack
   block:
-    - name: generate containers-prepare-parameter.yaml if using container
-      when:
-        - containerized_undercloud|bool
-      args:
-        creates: /home/stack/containers-prepare-parameter.yaml
-      command: |
-        openstack tripleo container image prepare default \
-        --local-push-destination \
-        --output-env-file /home/stack/containers-prepare-parameter.yaml
-    - name: update registry if needed
-      when:
-        rhos_containers_registry != ''
-      replace:
-        path: /home/stack/containers-prepare-parameter.yaml
-        regexp: "registry.access.redhat.com"
-        replace: "{{ rhos_containers_registry }}"
+    - name: "set up registry - mainly used for rhel"
+      template:
+        src: containers-prepare-parameter.yaml.j2
+        dest: /home/stack/containers-prepare-parameter.yaml
     - name: generate baremetal.json file
       tags:
         - baremetal

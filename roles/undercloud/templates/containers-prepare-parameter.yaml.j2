@@ -1,0 +1,13 @@
+parameter_defaults:
+  ContainerImagePrepare:
+  - push_destination: 192.168.24.1:8787
+    set:
+      ceph_image: daemon
+      ceph_namespace: docker.io/ceph
+      ceph_tag: {{ ceph_container_tag }}
+      name_prefix: {{ container_name_prefix }}
+      name_suffix: {{ container_name_suffix }}
+      namespace: {{ container_namespace }}
+      neutron_driver: null
+      tag: {{ container_tag }}
+    tag_from_label: rdo_version
