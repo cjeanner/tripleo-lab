@@ -24,6 +24,11 @@
   when:
     - proxy_host is defined
   block:
+    - name: check dnf presence
+      stat:
+        path: /etc/dnf/dnf.conf
+      register: dnf_state
+
     - name: set proxy for yum
       ini_file:
         backup: yes
@@ -31,6 +36,17 @@
         option: proxy
         section: main
         value: "http://{{proxy_host}}"
+
+    - name: inject proxy for dnf
+      when:
+        - dnf_state.stat.exists
+      ini_file:
+        backup: yes
+        path: /etc/dnf/dnf.conf
+        option: proxy
+        section: main
+        value: "http://{{proxy_host}}"
+
     - name: inject proxy in env
       blockinfile:
         path: /etc/environment
@@ -41,6 +57,7 @@
           export HTTP_HOST=http://{{ proxy_host }}
           export HTTPS_HOST=http://{{ proxy_host }}
           export NO_PROXY={{ no_proxy }}
+
     - name: create base dir
       file:
         group: root
@@ -57,7 +74,7 @@
           Environment="NO_PROXY={{no_proxy}}"
         dest: /etc/systemd/system/docker.service.d/http-proxy.conf
         group: root
-        mode: 0755
+        mode: 0644
         owner: root
 
 - name: set delorean repository if we have a mirror
