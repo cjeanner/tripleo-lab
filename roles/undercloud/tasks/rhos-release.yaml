@@ -3,28 +3,31 @@
   when:
     - base_image == 'rhel'
   block:
-    - name: check for rhos-release repo file
-      stat:
-        path: /etc/yum.repos.d/rhos-release.repo
-      register: local_rhos_release_repo
+    - name: ensure rhos-release is installed via proxy
+      when:
+        - proxy_host is defined
+      yum:
+        name: "{{ rhos_release_repo_url }}/rhos-release-latest.noarch.rpm"
+        state: installed
+      register: rhos_release
+      environment:
+        http_proxy: "http://{{ proxy_host }}"
+        https_proxy: "http://{{ proxy_host }}"
 
-    - block:
-        - name: add rhos-release repository
-          yum_repository:
-            name: rhos-release
-            description: RHOS Release
-            baseurl: "{{ rhos_release_repo_url }}"
-            gpgcheck: no
-        - name: yum-clean-metadata
-          command: yum clean metadata
-          args:
-            warn: no
-      when: not local_rhos_release_repo.stat.exists
+    - name: ensure rhos-release is installed
+      when:
+        - proxy_host is not defined
+      yum:
+        name: "{{ rhos_release_repo_url }}/rhos-release-latest.noarch.rpm"
+        state: installed
+      register: rhos_release
 
-    - name: ensure rhos-release is latest
-      package:
-        name: rhos-release
-        state: latest
+    - name: yum-clean-metadata
+      when:
+        - rhos_release is changed
+      command: yum clean metadata
+      args:
+        warn: no
 
     - name: run rhos-release
       command: rhos-release {{ rhos_release_opts|default('') }} {{ rhos_release_version }}
