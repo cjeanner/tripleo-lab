@@ -73,3 +73,7 @@ mirror_base_directory: /srv/mirror
 centos_mirror_device: /dev/sdc
 base_image: centos
 vm_prefix: lab
+root_device: 1
+growfs_part: /dev/sda1
+guestfs_appliance: "appliance-1.38.0.tar.xz"
+python_interpreter: /usr/bin/python

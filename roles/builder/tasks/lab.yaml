@@ -36,7 +36,7 @@
         - inventory
       shell: |
         virsh --connect qemu:///system domifaddr "{{vm_prefix}}-{{item.name}}" | \
-        awk '/ipv4/ {print $4}'
+        awk '/ipv4/ {print $4}' | head -n1
       register: ip_address
       retries: 10
       delay: 5
@@ -93,6 +93,7 @@
   add_host:
     hostname: "{{item.item.name}}"
     ansible_host: "{{item.stdout|replace('/24','')}}"
+    ansible_python_interpreter: "{{ python_interpreter }}"
   loop: "{{ ip_address.results }}"
   loop_control:
     label: "{{item.item.name}}"

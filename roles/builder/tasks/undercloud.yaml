@@ -14,8 +14,8 @@
     - name: undercloud image settings
       shell: |
         virt-sysprep -a "{{basedir}}/workload/{{vm_prefix}}-undercloud.qcow2" \
-          --firstboot-command "growpart /dev/sda 1" \
-          --firstboot-command "xfs_growfs /dev/sda1" \
+          --firstboot-command "growpart /dev/sda {{ root_device }}" \
+          --firstboot-command "xfs_growfs {{ growfs_part }}" \
           --firstboot-command "systemctl enable acpid" \
           --firstboot-command "systemctl start acpid" \
           --firstboot-command "mkswap /dev/sdb" \
