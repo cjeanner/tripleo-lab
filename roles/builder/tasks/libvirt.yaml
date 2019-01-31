@@ -98,6 +98,8 @@
         - configs
 
     - name: fetch centos base image
+      when:
+        - base_image == 'centos'
       tags:
         - images
       get_url:
@@ -106,6 +108,8 @@
         mode: 0664
 
     - name: update image in-place
+      when:
+        - base_image == 'centos'
       tags:
         - images
         - image-update
