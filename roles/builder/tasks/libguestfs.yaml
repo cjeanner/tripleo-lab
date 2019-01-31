@@ -1,0 +1,16 @@
+---
+- name: fetch and uncompress libguestfs appliance
+  tags:
+    - builder-bootstrap
+  unarchive:
+    creates: /usr/local/src/appliance
+    src: "http://download.libguestfs.org/binaries/appliance/{{ guestfs_appliance }}"
+    dest: "/usr/local/src/"
+    remote_src: yes
+
+- name: inject appliance in env
+  tags:
+    - builder-bootstrap
+  lineinfile:
+    path: /etc/environment
+    line: "export LIBGUESTFS_PATH=/usr/local/src/appliance"
