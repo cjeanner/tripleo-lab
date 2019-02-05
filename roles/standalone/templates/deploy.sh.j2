@@ -16,4 +16,4 @@ stdbuf -i0 -o0 -e0 sudo openstack tripleo deploy \
   -e {{ env }} \
 {% endfor %}
   --output-dir /home/stack \
-  --standalone &> /home/stack/install-standalone.log
+  --standalone 2>&1 | tee /home/stack/install-standalone.log
