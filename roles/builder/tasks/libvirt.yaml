@@ -107,9 +107,15 @@
         dest: "{{basedir}}/images/centos-7.qcow2"
         mode: 0664
 
+    - name: are we re-deploying upon existing deploy
+      find:
+        path: "{{ basedir }}/workload/"
+      register: deploy_exists
+
     - name: update image in-place
       when:
         - base_image == 'centos'
+        - deploy_exists['files'] == []
       tags:
         - images
         - image-update
