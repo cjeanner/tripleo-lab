@@ -67,7 +67,7 @@
 
     - name: install custom RPMs
       when: rpm_to_install['files'] !=  []
-      command: rpm -Uvh --force /home/stack/custom-rpms/*.rpm
+      command: "yum install -y {{ rpm_to_install['files'] |map(attribute='path') | join(' ') }}"
 
     - name: push custom SELinux policies files
       copy:
