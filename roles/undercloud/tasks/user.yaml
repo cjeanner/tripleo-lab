@@ -80,3 +80,11 @@
     owner: stack
     group: stack
     mode: 0640
+
+- name: copy env-cleanup script to stack hope
+  copy:
+    dest: /home/stack/env-cleanup.sh
+    src: env-cleanup.sh
+    group: root
+    mode: 0755
+    owner: root
