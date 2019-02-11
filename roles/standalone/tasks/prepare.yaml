@@ -12,3 +12,8 @@
   copy:
     dest: /home/stack/ceph_parameters.yaml
     src: standalone_ceph.yaml
+
+- name: octavia param
+  copy:
+    dest: /home/stack/octavia-param.yaml
+    src: standalone_octavia.yaml
