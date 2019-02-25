@@ -133,3 +133,12 @@
   when:
     - swap_on.stat.exists
     - swap_on.stat.isblk
+
+- name: set up custom repositories
+  yum_repository:
+    name: "{{ item.name }}"
+    description: "{{ item.name }}"
+    baseurl: "{{ item.uri }}"
+    repo_gpgcheck: "{{ item.gpg |default(omit) }}"
+    priority: "{{ item.priority |default(omit) }}"
+  loop: "{{ custom_repositories }}"
