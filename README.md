@@ -238,3 +238,17 @@ semodules:
 *enable_metrics*
   Allows to set up metrics gathering, using collectd, graphite and grafana.
   (Bool, default no)
+
+*custom_repositories*
+  List of custom repositories dicts
+```YAML
+custom_repositories:
+  - name: foo
+    uri: https://foo.bar
+    gpg: (bool, optional)
+    priority: (int, optional)
+```
+
+*tripleoclient_pkgname*
+  Allows to set a custom name for the python-tripleoclient.
+  (Str, default python-tripleoclient)
