@@ -2,8 +2,8 @@ parameter_defaults:
   ContainerImagePrepare:
   - push_destination: 192.168.24.1:8787
     set:
-      ceph_image: daemon
-      ceph_namespace: docker.io/ceph
+      ceph_image: {{ ceph_image |default('daemon') }}
+      ceph_namespace: {{ ceph_namespace |default('docker.io/ceph') }}
       ceph_tag: {{ ceph_container_tag }}
       name_prefix: {{ container_name_prefix }}
       name_suffix: {{ container_name_suffix }}
