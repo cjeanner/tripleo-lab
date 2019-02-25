@@ -26,7 +26,6 @@ overcloud_image_update: yes
 undercloud_low_memory: no
 disable_selinux: no
 additional_envs: []
-rhos_containers_registry: ''
 container_registry_ip: ''
 ceph_container_namespace: 'docker.io/ceph'
 ceph_container_tag: 'v3.2.0-stable-3.2-luminous-centos-7-x86_64'
