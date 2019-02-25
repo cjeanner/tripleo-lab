@@ -252,3 +252,6 @@ custom_repositories:
 *tripleoclient_pkgname*
   Allows to set a custom name for the python-tripleoclient.
   (Str, default python-tripleoclient)
+
+*unmanage_iface*
+  Point to the interface we want to unmanage from NetworkManager

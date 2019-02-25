@@ -2,8 +2,8 @@
 - name: Some hacks specificy for RHEL
   when: base_image == 'rhel'
   block:
-    - name: unmanage ens3
-      command: nmcli dev set ens3 managed no
+    - name: "unmanage {{ unmanage_iface }}"
+      command: nmcli dev set {{ unmanage_iface }} managed no
 
     - name: ensure we do have DNS resolution
       copy:
