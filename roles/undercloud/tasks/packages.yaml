@@ -15,7 +15,7 @@
 
 - name: install tripleo client
   yum:
-    name: python-tripleoclient
+    name: "{{ tripleoclient_pkgname }}"
     state: present
 
 - name: install requested packages for ceph
