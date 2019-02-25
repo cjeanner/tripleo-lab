@@ -139,6 +139,6 @@
     name: "{{ item.name }}"
     description: "{{ item.name }}"
     baseurl: "{{ item.uri }}"
-    repo_gpgcheck: "{{ item.gpg |default(omit) }}"
+    gpgcheck: "{{ item.gpg |default(omit) }}"
     priority: "{{ item.priority |default(omit) }}"
   loop: "{{ custom_repositories }}"
