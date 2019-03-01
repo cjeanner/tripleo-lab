@@ -48,10 +48,6 @@
   become: yes
   become_user: stack
   block:
-    - name: "set up registry - mainly used for rhel"
-      template:
-        src: containers-prepare-parameter.yaml.j2
-        dest: /home/stack/containers-prepare-parameter.yaml
     - name: generate baremetal.json file
       tags:
         - baremetal

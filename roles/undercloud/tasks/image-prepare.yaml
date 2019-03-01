@@ -1,0 +1,6 @@
+- name: "set up registry - mainly used for rhel"
+  template:
+    src: containers-prepare-parameter.yaml.j2
+    dest: /home/stack/containers-prepare-parameter.yaml
+    owner: stack
+    group: stack

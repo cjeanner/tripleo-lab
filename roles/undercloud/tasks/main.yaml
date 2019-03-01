@@ -23,6 +23,7 @@
     - name: custom packages only on centos
       when: base_image == 'centos'
       import_tasks: custom-packages.yaml
+    - import_tasks: image-prepare.yaml
     - name: deploy standard undercloud and stuff
       when: not standalone|bool
       block:
