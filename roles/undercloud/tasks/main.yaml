@@ -6,9 +6,9 @@
   delegate_facts: false
   block:
     - import_tasks: config.yaml
-    - import_tasks: rhel.yaml
     - import_tasks: user.yaml
     - import_tasks: rhos-release.yaml
+    - import_tasks: rhel.yaml
     - name: install epel only on centos
       when: base_image == 'centos'
       import_tasks: epel.yaml
