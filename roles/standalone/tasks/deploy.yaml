@@ -14,3 +14,12 @@
   command: /home/stack/deploy.sh
   args:
     creates: /home/stack/install-standalone.log
+
+- name: ensure we have a success
+  command: grep -q 'Deployment Failed!' /home/stack/install-standalone.log
+  ignore_errors: yes
+  register: deploy_is_failed
+
+- name: fail if deploy failed
+  assert:
+    that: deploy_is_failed.rc != 0
