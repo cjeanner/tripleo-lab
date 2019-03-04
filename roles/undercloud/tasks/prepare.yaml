@@ -39,7 +39,7 @@
     option: "{{ item.option }}"
     value: "{{ item.value }}"
     mode: 0640
-    backup: yes
+    backup: no
   loop: "{{ undercloud_config |default([])}}"
   loop_control:
     label: "{{ item.option }}"
