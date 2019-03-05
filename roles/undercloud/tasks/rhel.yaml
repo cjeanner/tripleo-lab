@@ -11,3 +11,18 @@
         content: |
           nameserver 1.1.1.1
           nameserver 8.8.8.8
+
+    - name: install some packages
+      package:
+        name:
+          - iptables-services
+          - network-scripts
+
+    - name: some hiera override
+      copy:
+        dest: /home/stack/undercloud_hiera.yaml
+        content: |
+          glance_backend: 'file'
+          tripleo::profile::base::nova::enable_cache: false
+        owner: stack
+        group: stack
