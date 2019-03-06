@@ -17,11 +17,4 @@
 
 - name: ensure we have a success
   when: deploy_standalone|bool
-  command: grep -q 'Deployment Failed!' /home/stack/install-standalone.log
-  ignore_errors: yes
-  register: deploy_is_failed
-
-- name: fail if deploy failed
-  when: deploy_standalone|bool
-  assert:
-    that: deploy_is_failed.rc != 0
+  command: grep -q 'Deployment successful!' /home/stack/install-standalone.log
