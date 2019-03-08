@@ -1,11 +1,11 @@
 ---
 - name: update all packages
-  yum:
+  package:
     name: '*'
     state: latest
 
 - name: install some tools
-  yum:
+  package:
     name: "{{item}}"
     state: present
   loop:
@@ -14,13 +14,13 @@
     - vim
 
 - name: install tripleo client
-  yum:
+  package:
     name: "{{ tripleoclient_pkgname }}"
     state: present
 
 - name: install requested packages for ceph
   when: standalone_ceph|bool
-  yum:
+  package:
     name: [ceph-ansible, util-linux]
     state: installed
 

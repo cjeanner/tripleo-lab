@@ -103,7 +103,7 @@
         curl -s https://trunk.rdoproject.org/centos7/current/ | awk '/python2-tripleo-repos/ { print $6}' | cut -d '"' -f 2
       register: tripleo_repo_version
     - name: install tripleo repository
-      yum:
+      package:
         name: "https://trunk.rdoproject.org/centos7/current/{{tripleo_repo_version.stdout}}"
         state: present
     - name: enable tripleo_version repository

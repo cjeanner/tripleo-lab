@@ -6,7 +6,7 @@
     - name: ensure rhos-release is installed via proxy
       when:
         - proxy_host is defined
-      yum:
+      package:
         name: "{{ rhos_release_repo_url }}/rhos-release-latest.noarch.rpm"
         state: installed
       register: rhos_release
@@ -17,7 +17,7 @@
     - name: ensure rhos-release is installed
       when:
         - proxy_host is not defined
-      yum:
+      package:
         name: "{{ rhos_release_repo_url }}/rhos-release-latest.noarch.rpm"
         state: installed
       register: rhos_release

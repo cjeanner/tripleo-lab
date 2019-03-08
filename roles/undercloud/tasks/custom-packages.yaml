@@ -10,7 +10,7 @@
         group: stack
 
     - name: install custom RPM from remote link
-      yum:
+      package:
         name: "{{ custom_rpms }}"
         state: installed
       when: custom_rpms | length > 0
