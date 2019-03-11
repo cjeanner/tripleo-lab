@@ -48,7 +48,7 @@
   block:
     - name: install package
       package:
-        name: rhosp-director-images
+        name: rhosp-director-images-x86_64
         state: installed
     - name: run commands as stack user
       become: yes
