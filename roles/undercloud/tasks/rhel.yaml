@@ -18,6 +18,8 @@
         name:
           - iptables-services
           - network-scripts
+          - lvm2
+          - libvirt-client
 
     - name: some hiera override
       copy:
