@@ -9,8 +9,9 @@
       copy:
         dest: /etc/resolv.conf
         content: |
-          nameserver 1.1.1.1
-          nameserver 8.8.8.8
+          {% for nameserver in nameservers %}
+          nameserver {{ nameserver }}
+          {% endfor %}
 
     - name: install some packages
       package:
@@ -26,3 +27,24 @@
           tripleo::profile::base::nova::enable_cache: false
         owner: stack
         group: stack
+
+    - name: install custom CA if provided
+      when: custom_ca != ''
+      block:
+        - name: fetch CA via proxy
+          when: proxy_host is defined
+          environment:
+            - http_proxy: "http://{{ proxy_host }}"
+            - https_proxy: "http://{{ proxy_host }}"
+          get_url:
+            url: "{{ custom_ca }}"
+            dest: /etc/pki/ca-trust/source/anchors/custom-ssl-ca.crt
+
+        - name: fetch CA without proxy
+          when: proxy_host is not defined
+          get_url:
+            url: "{{ custom_ca }}"
+            dest: /etc/pki/ca-trust/source/anchors/custom-ssl-ca.crt
+
+        - name: install custom CA
+          command: update-ca-trust
