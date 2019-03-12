@@ -41,12 +41,14 @@
           get_url:
             url: "{{ custom_ca }}"
             dest: /etc/pki/ca-trust/source/anchors/custom-ssl-ca.crt
+            validate_certs: no
 
         - name: fetch CA without proxy
           when: proxy_host is not defined
           get_url:
             url: "{{ custom_ca }}"
             dest: /etc/pki/ca-trust/source/anchors/custom-ssl-ca.crt
+            validate_certs: no
 
         - name: install custom CA
           command: update-ca-trust
