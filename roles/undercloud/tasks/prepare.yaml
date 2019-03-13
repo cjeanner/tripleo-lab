@@ -40,7 +40,7 @@
     value: "{{ item.value }}"
     mode: 0640
     backup: no
-  loop: "{{ undercloud_config |default([])}}"
+  loop: "{{ undercloud_config }}"
   loop_control:
     label: "{{ item.option }}"
 
@@ -86,6 +86,12 @@
       template:
         dest: /home/stack/overcloud-yml/container-cli.yaml
         src: container-cli.yaml.j2
+    - name: push local_image.yaml setting
+      tags:
+        - baremetal
+      template:
+        dest: /home/stack/local_image.yaml
+        src: local_image.yaml
     - name: push basic deploy script
       tags:
         - baremetal
