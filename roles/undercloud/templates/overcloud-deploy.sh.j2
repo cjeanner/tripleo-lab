@@ -1,7 +1,8 @@
 #!/bin/bash
 
 source ~/stackrc
-stdbuf -i0 -o0 -e0 openstack overcloud container image prepare \
+stdbuf -i0 -o0 -e0 openstack tripleo container image prepare \
+  -e ~/local_images.yaml \
   --output-env-file ~/overcloud-yml/containers-env-file.yaml
 
 stdbuf -i0 -o0 -e0 openstack overcloud deploy \
