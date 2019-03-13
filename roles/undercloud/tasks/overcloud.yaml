@@ -140,13 +140,26 @@
               debug:
                 msg: "Got {{known_bm.stdout}} instances"
             - name: import nodes in ironic
+              register: import_node
               when:
                 - known_bm.stdout == "0"
               shell: |
                 source ~/stackrc
-                openstack overcloud node import \
-                  --provide \
-                  ~/baremetal.json 2>&1 > ~/import-nodes.log
+                openstack overcloud node import  ~/baremetal.json 2>&1 > ~/import-nodes.log
+            - name: introspect nodes
+              when:
+                - import_node is defined
+                - import_node is changed
+              shell: |
+                source ~/stackrc
+                openstack overcloud node introspect --all-manageable >&1 > ~/introspect-nodes.log
+            - name: provide nodes
+              when:
+                - import_node is defined
+                - import_node is changed
+              shell: |
+                source ~/stackrc
+                openstack overcloud node provide --all-manageable >&1 > ~/provide-nodes.log
             - name: update the ctlplane-subnet dns server
               shell: |
                 source ~/stackrc
