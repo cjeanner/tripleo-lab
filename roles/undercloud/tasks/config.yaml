@@ -51,12 +51,12 @@
       blockinfile:
         path: /etc/environment
         block: |
-          export http_proxy=http://{{ proxy_host }}
-          export https_proxy=http://{{ proxy_host }}
-          export no_proxy={{ no_proxy }}
-          export HTTP_PROXY=http://{{ proxy_host }}
-          export HTTPS_PROXY=http://{{ proxy_host }}
-          export NO_PROXY={{ no_proxy }}
+          http_proxy=http://{{ proxy_host }}
+          https_proxy=http://{{ proxy_host }}
+          no_proxy={{ no_proxy }}
+          HTTP_PROXY=http://{{ proxy_host }}
+          HTTPS_PROXY=http://{{ proxy_host }}
+          NO_PROXY={{ no_proxy }}
 
     - name: create base dir
       file:
