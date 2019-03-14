@@ -30,6 +30,10 @@
         owner: stack
         group: stack
 
+    - name: enforce TZ
+      timezone:
+        name: UTC
+
     - name: install custom CA if provided
       when: custom_ca != ''
       block:
