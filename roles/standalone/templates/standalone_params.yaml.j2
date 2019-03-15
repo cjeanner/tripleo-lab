@@ -1,5 +1,5 @@
 parameter_defaults:
-  ContainerCli: {{ standalone_container_cli|default('docker') }}
+  ContainerCli: {{ standalone_container_cli|default('podman') }}
   CloudName: {{ ip }}
   ControlPlaneStaticRoutes: []
   Debug: true

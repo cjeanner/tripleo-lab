@@ -21,7 +21,7 @@ synchronize_default_dest: /home/stack/tripleo/
 ceph_version: luminous
 tmate_release: 2.2.1
 semodules: []
-overcloud_container_cli: docker
+overcloud_container_cli: podman
 overcloud_image_update: yes
 undercloud_low_memory: no
 disable_selinux: no
