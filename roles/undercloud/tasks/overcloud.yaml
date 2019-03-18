@@ -76,11 +76,13 @@
       become_user: stack
       block:
         - name: copy overcloud firstboot script
+          when: overcloud_image_update|bool
           template:
             dest: /tmp/overcloud-firstboot
             src: overcloud-firstboot.j2
             mode: 0755
         - name: modify overcloud image
+          when: overcloud_image_update|bool
           shell: |
             virt-sysprep -a /home/stack/overcloud_imgs/overcloud-full.qcow2 \
               --copy-in /etc/yum.conf:/etc/ \
