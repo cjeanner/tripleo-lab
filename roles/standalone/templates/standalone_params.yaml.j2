@@ -1,5 +1,8 @@
 parameter_defaults:
   ContainerCli: {{ standalone_container_cli|default('podman') }}
+  {% if disable_selinux|bool %}
+  SELinuxMode: permissive
+  {% endif %}
   CloudName: {{ ip }}
   ControlPlaneStaticRoutes: []
   Debug: true
