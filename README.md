@@ -105,7 +105,7 @@ tracks of older deploy for comparaison purpose.
   - memory (int, MB)
   - interfaces (list)
     - mac (MAC address)
-    - network (network name, default 'default')
+    - network (network name, default 'ctlplane')
   - autostart (bool)
   - swap (string, for example 10G)
 ```YAML
@@ -116,9 +116,17 @@ vms:
     disksize: 100
     interfaces:
       - mac: "24:42:53:21:52:15"
+        network: default
       - mac: "24:42:53:21:52:25"
-        network: ctlplane
     autostart: yes
+  - name: controller-0
+    cpu: 8
+    memory: 20000
+    disksize: 100
+    interfaces:
+      - mac: "24:42:53:21:53:15"
+      - mac: "24:42:53:21:53:25"
+    autostart: no
 ```
 
 *centos_mirror*

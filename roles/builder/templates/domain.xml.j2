@@ -39,7 +39,7 @@
     {% endif %}
     {% for interface in item.interfaces %}
     <interface type='network'>
-      <source network='{{ interface.network | default('default') }}'/>
+      <source network='{{ interface.network | default('ctlplane') }}'/>
       <mac address='{{ interface.mac }}'/>
       <model type="virtio"/>
     </interface>
