@@ -1,0 +1,5 @@
+<network ipv6='yes'>
+  <name>ctlplane</name>
+  <bridge name="vir-nodhcp"/>
+  <mac address='24:42:53:99:99:99'/>
+</network>

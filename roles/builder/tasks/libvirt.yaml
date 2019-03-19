@@ -84,6 +84,25 @@
         autostart: yes
         name: default
 
+    - name: load ctlplane network
+      virt_net:
+        command: define
+        name: ctlplane
+        xml: '{{ lookup("file", "virsh/networks/ctlplane.xml") }}'
+      register: ctlplane_create
+
+    - name: create ctlplane network
+      when: ctlplane_create is changed
+      virt_net:
+        command: create
+        name: ctlplane
+
+    - name: ensure ctlplane is active and autostart
+      virt_net:
+        state: active
+        autostart: yes
+        name: ctlplane
+
     - name: create some directories
       tags:
         - config

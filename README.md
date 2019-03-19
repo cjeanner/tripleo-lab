@@ -105,8 +105,21 @@ tracks of older deploy for comparaison purpose.
   - memory (int, MB)
   - interfaces (list)
     - mac (MAC address)
+    - network (network name, default 'default')
   - autostart (bool)
   - swap (string, for example 10G)
+```YAML
+vms:
+  - name: undercloud
+    cpu: 16
+    memory: 20000
+    disksize: 100
+    interfaces:
+      - mac: "24:42:53:21:52:15"
+      - mac: "24:42:53:21:52:25"
+        network: ctlplane
+    autostart: yes
+```
 
 *centos_mirror*
   Create a CentOS repository mirror (default to no)
