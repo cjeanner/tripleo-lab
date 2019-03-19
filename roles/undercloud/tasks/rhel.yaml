@@ -26,7 +26,6 @@
         dest: /home/stack/undercloud_hiera.yaml
         content: |
           glance_backend: 'file'
-          tripleo::profile::base::nova::enable_cache: false
         owner: stack
         group: stack
 
