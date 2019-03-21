@@ -276,3 +276,6 @@ custom_repositories:
 
 *unmanage_iface*
   Point to the interface we want to unmanage from NetworkManager
+
+*run_validations*
+  Activate tempest runs (bool, default yes)

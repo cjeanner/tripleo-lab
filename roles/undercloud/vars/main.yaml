@@ -43,3 +43,4 @@ nameservers:
   - 1.1.1.1
   - 8.8.8.8
 undercloud_config: []
+run_validations: yes

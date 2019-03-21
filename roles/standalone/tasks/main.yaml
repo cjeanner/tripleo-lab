@@ -3,7 +3,9 @@
 - import_tasks: prepare.yaml
 - import_tasks: deploy.yaml
 - name: run tempest
-  when: deploy_standalone|bool
+  when:
+    - deploy_standalone|bool
+    - run_validations|bool
   import_role:
     name: validations
     tasks_from: standalone

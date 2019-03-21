@@ -1,3 +1,4 @@
 ---
 deploy_standalone: yes
 additional_envs: []
+run_validations: yes
