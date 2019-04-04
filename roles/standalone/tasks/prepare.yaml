@@ -1,4 +1,9 @@
 ---
+- name: install lvm2 needed by cinder
+  package:
+    name: lvm2
+    state: installed
+
 - name: basic parameters for standalone
   template:
     dest: /home/stack/standalone_parameters.yaml
