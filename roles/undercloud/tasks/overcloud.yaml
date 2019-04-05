@@ -3,6 +3,19 @@
     name: libguestfs-tools
     state: present
 
+# iscsi is a dependency of libguestfs-tools
+# but can conflict with the iscsi container on the undercloud
+- name: stat /lib/systemd/system/iscsid.socket
+  stat:
+    path: /lib/systemd/system/iscsid.socket
+  register: stat_iscsid_socket
+- name: Stop and disable iscsid.socket service
+  service:
+    name: iscsid.socket
+    state: stopped
+    enabled: no
+  when: stat_iscsid_socket.stat.exists
+
 - name: image management on non-RHEL system
   tags:
     - baremetal
