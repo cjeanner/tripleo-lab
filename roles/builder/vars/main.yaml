@@ -66,7 +66,8 @@ vms:
     autostart: no
 
 virt_user: virtuser
-basedir: "/home/{{virt_user}}"
+base_home_dir: "/home"
+basedir: "{{ base_home_dir }}/{{virt_user}}"
 undercloud_password: fooBar
 centos_mirror: no
 manage_mirror_device: yes

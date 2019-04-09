@@ -3,25 +3,25 @@
 source /usr/local/bin/lab-helpers
 
 do_destroy() {
-  for i in $($VIRSH list --all --name | grep {{vm_prefix}}); do
-    $VIRSH destroy $i;
-    $VIRSH undefine $i;
-    rm -f /home/{{virt_user}}/workload/${i}*
-  done
-  sudo systemctl stop virtualbmc
-  sleep 10 #ensure vbmc is down
-  sudo killall vbmc # kill last things if needed
-  sudo rm -rf /root/.vbmc
-  sudo rm -rf /home/{{virt_user}}/.vbmc
+    for i in $($VIRSH list --all --name | grep {{vm_prefix}}); do
+        $VIRSH destroy $i;
+        $VIRSH undefine $i;
+        rm -f {{ base_home_dir }}{{ virt_user }}/workload/${i}*
+    done
+    sudo systemctl stop virtualbmc
+    sleep 10 #ensure vbmc is down
+    sudo killall vbmc # kill last things if needed
+    sudo rm -rf /root/.vbmc
+    sudo rm -rf {{ base_home_dir }}{{virt_user}}/.vbmc
 }
 
-echo -n 'Destroy the lab? [Ny] ' 
+echo -n 'Destroy the lab? [Ny] '
 read -r destroy
 case $destroy in
-  y|Y)
-    do_destroy
-    ;;
-  *)
-    echo 'Aborting on user request'
-    ;;
+    y|Y)
+        do_destroy
+        ;;
+    *)
+        echo 'Aborting on user request'
+        ;;
 esac
