@@ -23,5 +23,5 @@ stdbuf -i0 -o0 -e0 openstack overcloud deploy \
 ret_val=$?
 
 if [ $ret_val -ne 0 ] && [ -n $1 ] && [ "$1" = '--delete-if-fail' ]; then
-  openstack stack delete --yes --wait overcloud
+  openstack overcloud delete overcloud --yes
 fi
