@@ -2,7 +2,7 @@
 parameter_defaults:
   NeutronMechanismDrivers: ovn
   ContainerImagePrepare:
-    - set:
+  - set:
       name_prefix: {{ container_name_prefix }}
       namespace: {{ container_namespace }}
       tag: {{ container_tag }}
