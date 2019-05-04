@@ -10,7 +10,7 @@
       "memory": "{{node.memory}}",
       "disk": "{{node.disksize | default('100')}}",
 {% if node.name is match('^ceph') %}
-      "root_device": {"name": "sda,hda,vda"},
+      "root_device": {"size": "{{node.disksize | default('100')}}"},
 {% endif %}
 {% if tripleo_version not in ['rocky', 'master'] %}
       "mac": ["{{node.interfaces[0].mac}}"],
