@@ -1,5 +1,5 @@
 virt_user: virtuser
-tripleo_version: rocky
+tripleo_version: stein
 overcloud_images:
   - file: ironic-python-agent.tar
     content: ironic-python-agent.kernel
@@ -18,7 +18,7 @@ standalone_ceph: no
 containerized_undercloud: yes
 synchronize: []
 synchronize_default_dest: /home/stack/tripleo/
-ceph_version: luminous
+ceph_version: nautilus
 tmate_release: 2.2.1
 semodules: []
 overcloud_container_cli: podman
@@ -28,7 +28,7 @@ disable_selinux: no
 additional_envs: []
 container_registry_ip: ''
 ceph_container_namespace: 'docker.io/ceph'
-ceph_container_tag: 'v3.2.0-stable-3.2-luminous-centos-7-x86_64'
+ceph_container_tag: 'v4.0.0-stable-4.0-nautilus-centos-7-x86_64'
 container_name_prefix: 'centos-binary'
 container_name_suffix: "''"
 container_namespace: 'docker.io/tripleomaster'
