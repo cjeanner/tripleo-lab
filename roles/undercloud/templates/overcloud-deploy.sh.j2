@@ -22,7 +22,7 @@ stdbuf -i0 -o0 -e0 openstack overcloud deploy \
   {% for env in additional_envs %}
   -e {{ env }} \
   {% endfor %}
-  --ntp-server pool.ntp.org --libvirt-type qemu 2>&1 | tee -a ~/deploy-overcloud.log
+  --ntp-server pool.ntp.org --libvirt-type qemu 2>&1 | tee -a ~/install-overcloud.log
 ret_val=$?
 
 if [ $ret_val -ne 0 ] && [ -n $1 ] && [ "$1" = '--delete-if-fail' ]; then
