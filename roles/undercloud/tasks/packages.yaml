@@ -19,7 +19,6 @@
     state: present
 
 - name: install requested packages for ceph
-  when: standalone_ceph|bool
   package:
     name: [ceph-ansible, util-linux]
     state: installed
