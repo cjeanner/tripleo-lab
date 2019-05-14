@@ -1,0 +1,4 @@
+undercloud_config:
+  - section: DEFAULT
+    option: clean_nodes
+    value: true
