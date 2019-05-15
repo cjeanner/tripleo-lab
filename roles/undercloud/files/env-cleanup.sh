@@ -5,4 +5,5 @@ sudo rm -rf /var/lib/config-data/ \
   /var/lib/docker-puppet/ \
   /var/lib/rabbitmq \
   /var/lib/mysql/ \
-  /var/lib/pacemaker/*
+  /var/lib/pacemaker/* \
+  /var/lib/image-serve/*
