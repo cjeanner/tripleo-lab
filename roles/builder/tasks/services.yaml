@@ -9,3 +9,21 @@
   loop:
     - libvirtd
     - docker
+
+- name: ensure sshd does not rely on gssapi
+  tags:
+    - builder-services
+    - builder-bootstrap
+  replace:
+    path: /etc/ssh/sshd_config
+    regexp: '^GSSAPIAuthentication yes$'
+    replace: 'GSSAPIAuthentication no'
+  register: sshd-config
+
+- name: restart sshd upon config change
+  tags:
+    - builder-services
+    - builder-bootstrap
+  service:
+    name: sshd
+    state: restarted
