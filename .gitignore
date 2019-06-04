@@ -1,4 +1,5 @@
 .*.swp
 ansible_facts_cache
 local_env
+inventory.yaml
 TODO
