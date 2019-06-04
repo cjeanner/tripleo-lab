@@ -8,9 +8,7 @@ parameter_defaults:
   Debug: true
   ContainerImagePrepareDebug: true
   DeploymentUser: stack
-  DnsServers:
-    - 1.1.1.1
-    - 8.8.8.8
+  DnsServers: {{ nameservers | to_yaml }}
   DockerInsecureRegistryAddress:
     - {{ ip }}:8787
   PythonInterpreter: {{ python_interpreter }}
