@@ -99,12 +99,14 @@
           shell: |
             virt-sysprep -a /home/stack/overcloud_imgs/overcloud-full.qcow2 \
               --copy-in /etc/yum.conf:/etc/ \
+              --copy-in /etc/environment:/etc/ \
               --copy-in /etc/selinux/config:/etc/selinux/ \
               --copy-in /usr/local/src/:/usr/local/ \
               --firstboot /tmp/overcloud-firstboot \
               {% if base_image == 'centos' %}
               --copy-in /etc/yum.repos.d/:/etc/ \
               {% else %}
+              --copy-in /etc/dnf/dnf.conf:/etc/dnf/ \
               --install {{ rhos_release_repo_url }}/rhos-release-latest.noarch.rpm \
               --run-command "rhos-release {{ rhos_release_opts|default('') }} {{ rhos_release_version }}" \
               {% endif %}
