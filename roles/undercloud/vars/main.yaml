@@ -37,10 +37,11 @@ no_proxy: "localhost,127.0.0.1,192.168.24.0,192.168.24.1,192.168.24.2,192.168.24
 custom_repositories: []
 tripleoclient_pkgname: python-tripleoclient
 unmanage_iface: ens3
-local_registry: 192.168.24.2:8787
+local_registry: true
 custom_ca: ''
 nameservers:
   - 1.1.1.1
   - 8.8.8.8
 undercloud_config: []
 run_validations: yes
+modify_container: {}

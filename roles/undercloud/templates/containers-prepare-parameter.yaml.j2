@@ -10,3 +10,17 @@ parameter_defaults:
       namespace: {{ container_namespace }}
       neutron_driver: null
       tag: {{ container_tag }}
+{% for project in modify_container %}
+  - push_destination: {{ local_registry }}
+    includes:
+      - {{ project }}
+    modify_role: tripleo-modify-image
+    modify_append_tag: "-devel"
+    modify_vars:
+      tasks_from: dev_install.yml
+      source: {{ container_namespace }}/{{ container_name_prefix }}-{{ modify_container[project]['container'] }}:{{ container_tag }}
+      refspecs:
+        -
+          project: {{ project }}
+          refspec: {{ modify_container[project]['ref'] }}
+{% endfor %}
