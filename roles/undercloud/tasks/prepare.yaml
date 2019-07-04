@@ -55,50 +55,73 @@
         dest: /home/stack/baremetal.json
         mode: '0644'
         src: baremetal.json.j2
-    - name: create overcloud-yml directory
+
+    - name: create per overcloud yml directory
       tags:
         - baremetal
       file:
-        path: /home/stack/overcloud-yml
+        path: "/home/stack/overcloud-{{ item }}-yml"
         state: directory
-    - name: push overcloud settings
+      loop: "{{ range(0, overclouds)|list }}"
+
+    - name: push common overcloud settings
       tags:
         - baremetal
       copy:
-        dest: /home/stack/overcloud-yml/
+        dest: "/home/stack/"
         src: "{{ item }}"
       with_fileglob: 'files/overcloud/*.yaml'
+
     - name: push scale setting
       tags:
         - baremetal
       template:
-        dest: /home/stack/overcloud-yml/scale.yaml
+        dest: "/home/stack/overcloud-{{ item }}-yml/scale.yaml"
         src: scale.yaml.j2
+      loop: "{{ range(0, overclouds)|list }}"
+
+    - name: push per-overcloud network data
+      tags:
+        - baremetal
+      template:
+        dest: "/home/stack/oc{{ item }}-network-data.yaml"
+        src: oc-network-data.yaml.j2
+      loop: "{{ range(0, overclouds)|list }}"
+
     - name: push ceph settings
       tags:
         - baremetal
       template:
-        dest: /home/stack/overcloud-yml/ceph-params.yaml
+        dest: "/home/stack/overcloud-{{ item }}-yml/ceph-params.yaml"
         src: ceph-params.yaml.j2
+      loop: "{{ range(0, overclouds)|list }}"
+      when:
+        - vms|map(attribute='name')|select("match", '^ceph')|list|length > 0
+
     - name: push container-cli setting
       tags:
         - baremetal
       template:
-        dest: /home/stack/overcloud-yml/container-cli.yaml
+        dest: "/home/stack/overcloud-{{ item }}-yml/container-cli.yaml"
         src: container-cli.yaml.j2
+      loop: "{{ range(0, overclouds)|list }}"
+
     - name: push local_images.yaml setting
       tags:
         - baremetal
       template:
         dest: /home/stack/local_images.yaml
         src: local_images.yaml
+
     - name: push basic deploy script
       tags:
         - baremetal
       template:
-        dest: /home/stack/deploy-overcloud.sh
+        dest: "/home/stack/deploy-overcloud-{{ item }}.sh"
         src: overcloud-deploy.sh.j2
         mode: 0750
+      loop: "{{ range(0, overclouds)|list }}"
+
     - name: create image directory
       tags:
         - baremetal

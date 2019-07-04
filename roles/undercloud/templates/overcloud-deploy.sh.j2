@@ -3,10 +3,12 @@
 source ~/stackrc
 stdbuf -i0 -o0 -e0 openstack tripleo container image prepare \
   -e ~/local_images.yaml \
-  --output-env-file ~/overcloud-yml/containers-env-file.yaml
+  --output-env-file ~/containers-env-file.yaml
 
 stdbuf -i0 -o0 -e0 openstack overcloud deploy \
   --templates /usr/share/openstack-tripleo-heat-templates/ \
+  --stack overcloud-{{ item }} \
+  -n /home/stack/oc{{ item }}-network-data.yaml \
   -e /usr/share/openstack-tripleo-heat-templates/environments/disable-telemetry.yaml \
   -e /usr/share/openstack-tripleo-heat-templates/environments/low-memory-usage.yaml \
   -e /usr/share/openstack-tripleo-heat-templates/environments/enable-swap.yaml \
@@ -20,11 +22,16 @@ stdbuf -i0 -o0 -e0 openstack overcloud deploy \
   {% endif -%}
   {% for env in additional_envs %}
   -e {{ env }} \
-  {% endfor %}
-  --environment-directory ~/overcloud-yml \
-  --ntp-server pool.ntp.org --libvirt-type qemu 2>&1 | tee -a ~/install-overcloud.log
+  {% endfor -%}
+  -e /home/stack/domain.yaml \
+  -e /home/stack/node-placement.yaml \
+  -e /home/stack/containers-env-file.yaml \
+  --environment-directory ~/overcloud-{{ item }}-yml \
+  --ntp-server pool.ntp.org --libvirt-type qemu 2>&1 | tee -a ~/install-overcloud-{{ item }}.log
 ret_val=$?
 
 if [ $ret_val -ne 0 ] && [ -n $1 ] && [ "$1" = '--delete-if-fail' ]; then
-  openstack overcloud delete overcloud --yes
+  openstack overcloud delete overcloud-{{ item }} --yes
 fi
+
+exit $ret_val

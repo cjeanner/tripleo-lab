@@ -183,9 +183,15 @@
                 openstack subnet show ctlplane-subnet -f json | jq '.dns_nameservers' | grep "{{ undercloud_dns }}" ||
                 openstack subnet set ctlplane-subnet --dns-nameserver {{ undercloud_dns }}
             - name: deploy the overcloud
+              when: deploy_overcloud|bool
               shell: |
-                bash /home/stack/deploy-overcloud.sh
+                bash /home/stack/deploy-overcloud-{{ item }}.sh
               args:
                 chdir: /home/stack
                 creates: /home/stack/overcloudrc.v3
+              loop: "{{ range(0, overclouds)|list }}"
+
+            - name: ensure we have success
               when: deploy_overcloud|bool
+              command: grep -q 'Deployment successful!' /home/stack/install-overcloud-{{ item }}.log
+              loop: "{{ range(0, overclouds)|list }}"

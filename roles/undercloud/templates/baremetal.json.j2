@@ -1,33 +1,36 @@
 {
   "nodes": [
-{% for node in vms %}
-{% if node.name != 'undercloud' %}
+{% set count = namespace(index=2) %}
+{% for node in vms|product(overclouds_range)|list %}
+{% if node.0.name != 'undercloud' %}
+{% set vm_name = "oc" ~ node.1 ~ "-" ~ node.0.name %}
     {
-      "name": "{{node.name}}",
+      "name": "oc{{ node.1 }}-{{node.0.name}}",
       "pm_type": "ipmi",
       "arch": "x86_64",
-      "cpu": "{{node.cpu}}",
-      "memory": "{{node.memory}}",
-      "disk": "{{node.disksize | default('100')}}",
-{% if node.name is match('^ceph') %}
-      "root_device": {"size": "{{node.disksize | default('100')}}"},
+      "cpu": "{{node.0.cpu}}",
+      "memory": "{{node.0.memory}}",
+      "disk": "{{node.0.disksize | default('100')}}",
+{% if node.0.name is match('^ceph') %}
+      "root_device": {"size": "{{node.0.disksize | default('100')}}"},
 {% endif %}
-{% if tripleo_version not in ['rocky', 'master'] %}
-      "mac": ["{{node.interfaces[0].mac}}"],
+{% if tripleo_version not in ['rocky'] %}
+      "mac": ["{{ oc_mac_addresses.results|selectattr('_ansible_item_label', 'equalto', vm_name)|map(attribute='stdout')|first }}"],
 {% else %}
       "ports": [
         {
-          "address": "{{node.interfaces[0].mac}}"
+          "address": "{{ oc_mac_addresses.results|selectattr('_ansible_item_label', 'equalto', vm_name)|map(attribute='stdout')|first}}"
         }
       ],
 {% endif %}
       "pm_user": "ADMIN",
       "pm_password": "ADMIN",
       "pm_addr": "192.168.122.1",
-      "pm_port": "112{{node.interfaces.0.mac|replace('24:42:53:21:52:','')}}",
-      "capabilities": "node:{{node.name}},boot_option:local"
+      "pm_port": "10{{ '%02d'|format(node.1) }}{{ count.index }}",
+      "capabilities": "node:{{node.0.name}},boot_option:local"
     }{% if not loop.last %},
 {% endif %}
+{% set count.index = count.index+1 %}
 {% endif %}
 {% endfor %}
   ]

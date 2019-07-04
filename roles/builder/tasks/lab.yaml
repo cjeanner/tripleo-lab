@@ -5,29 +5,49 @@
     - domains
     - lab
   block:
-    - name: define nodes
+    - name: define undecloud node
+      when: item.name is match('^undercloud')
       virt:
-        name: "{{vm_prefix}}-{{ item.name }}"
+        name: "{{ vm_prefix }}-{{ item.name }}"
         command: define
-        xml: "{{ lookup('template', 'domain.xml.j2') }}"
+        xml: "{{ lookup('template', 'undercloud.xml.j2') }}"
         uri: "qemu:///system"
       loop: "{{ vms }}"
       loop_control:
-        label: "{{item.name}}"
+        label: "{{ item.name }}"
 
-    - name: start domains
+    - name: define overcloud node
+      when:
+        - item.0.name is not match('^undercloud')
+      virt:
+        name: "{{ vm_prefix }}-oc{{ item.1 }}-{{ item.0.name }}"
+        command: define
+        xml: "{{ lookup('template', 'domain.xml.j2') }}"
+        uri: "qemu:///system"
+      loop: "{{ vms|product(overclouds_range)|list }}"
+      loop_control:
+        label: "oc{{ item.1 }}-{{ item.0.name }}"
+
+    - name: fetch all MAC addresses
+      when: item.0.name is not match('^undercloud')
+      shell: |
+        virsh -c 'qemu:///system' domiflist {{ vm_prefix }}-oc{{ item.1 }}-{{ item.0.name }} | awk 'NR==3 {print $5}'
+      register: oc_mac_addresses
+      loop:  "{{ vms|product(overclouds_range)|list }}"
+      loop_control:
+        label: "oc{{ item.1 }}-{{ item.0.name }}"
+
+    - name: start undercloud
       tags:
         - start-domains
       virt:
-        name: "{{vm_prefix}}-{{ item.name }}"
+        name: "{{ vm_prefix }}-{{ item.name }}"
         state: running
         uri: "qemu:///system"
       loop: "{{ vms }}"
       loop_control:
-        label: "{{item.name}}"
-      when:
-        - item.autostart is defined
-        - item.autostart|bool
+        label: "{{ item.name }}"
+      when: item.name is match('^undercloud')
 
     - name: fetch associated IP address for running domains
       tags:
@@ -35,7 +55,7 @@
         - gen-ssh-config
         - inventory
       shell: |
-        virsh --connect qemu:///system domifaddr "{{vm_prefix}}-{{item.name}}" | \
+        virsh --connect qemu:///system domifaddr "{{ vm_prefix }}-{{ item.name }}" | \
         awk '/ipv4/ {print $4}' | head -n1
       register: ip_address
       retries: 10
@@ -44,10 +64,8 @@
         - ip_address.stdout != ""
       loop: "{{ vms }}"
       loop_control:
-        label: "{{item.name}}"
-      when:
-        - item.autostart is defined
-        - item.autostart|bool
+        label: "{{ item.name }}"
+      when: item.name is match('^undercloud')
 
     - name: ensure variable ip_address is not empty
       tags:
@@ -63,11 +81,11 @@
         - start-domains
         - gen-ssh-config
       template:
-        dest: "{{basedir}}/.ssh/config"
+        dest: "{{ basedir }}/.ssh/config"
         src: ssh_config.j2
-        group: "{{virt_user}}"
+        group: "{{ virt_user }}"
         mode: 0644
-        owner: "{{virt_user}}"
+        owner: "{{ virt_user }}"
 
 - name: provision hosts file
   tags:
@@ -75,13 +93,13 @@
     - start-domains
     - lab
   lineinfile:
-    line: "{{item.stdout|replace('/24','')}} {{item.item.name}} {{vm_prefix}}-{{item.item.name}}"
+    line: "{{ item.stdout|replace('/24','') }} {{ item.item.name }} {{ vm_prefix }}-{{ item.item.name }}"
     path: /etc/hosts
-    regexp: "{{item.item.name}}$"
+    regexp: "{{ item.item.name }}$"
     state: present
   loop: "{{ ip_address.results }}"
   loop_control:
-    label: "{{item.item.name}}"
+    label: "{{ item.item.name }}"
   when: item.stdout is defined
 
 - name: inject domains in inventory
@@ -91,12 +109,12 @@
     - inventory
     - lab
   add_host:
-    hostname: "{{item.item.name}}"
-    ansible_host: "{{item.stdout|replace('/24','')}}"
+    hostname: "{{ item.item.name }}"
+    ansible_host: "{{ item.stdout|replace('/24','') }}"
     ansible_python_interpreter: "{{ python_interpreter }}"
   loop: "{{ ip_address.results }}"
   loop_control:
-    label: "{{item.item.name}}"
+    label: "{{ item.item.name }}"
   when: item.stdout is defined
 
 - name: inject config on ansible host
@@ -109,18 +127,18 @@
   local_action:
     module: blockinfile
     path: ~/.ssh/config
-    marker: "## {mark} {{item.item.name}}"
+    marker: "## {mark} {{ item.item.name }}"
     create: yes
     mode: 0600
     block: |
-      Host {{item.item.name}} {{item.stdout|replace('/24','')}}
-        ProxyCommand ssh -o 'ForwardAgent yes' {{virt_user}}@{{ansible_host}} 'ssh-add && nc {{item.stdout|replace('/24','')}} %p'
+      Host {{ item.item.name }} {{ item.stdout|replace('/24','') }}
+        ProxyCommand ssh -o 'ForwardAgent yes' {{ virt_user }}@{{ ansible_host }} 'ssh-add && nc {{ item.stdout|replace('/24','') }} %p'
         User root
         StrictHostKeyChecking no
         UserKnownHostsFile /dev/null
   loop: "{{ ip_address.results }}"
   loop_control:
-    label: "{{item.item.name}}"
+    label: "{{ item.item.name }}"
   when: item.stdout is defined
 
 - name: wait for undercloud to be up

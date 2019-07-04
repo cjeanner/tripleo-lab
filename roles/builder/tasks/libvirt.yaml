@@ -13,8 +13,8 @@
           - libvirt
           - kvm
           - qemu
-        home: "{{basedir}}"
-        name: "{{virt_user}}"
+        home: "{{ basedir }}"
+        name: "{{ virt_user }}"
         shell: "/bin/bash"
         ssh_key_bits: 4096
         state: present
@@ -22,7 +22,7 @@
     - name: set virt_user home rights
       file:
         state: directory
-        path: "{{basedir}}"
+        path: "{{ basedir }}"
         mode: 0750
         group: qemu
 
@@ -30,10 +30,10 @@
       copy:
         src: /root/.ssh/authorized_keys
         remote_src: yes
-        dest: "{{basedir}}/.ssh/authorized_keys"
-        group: "{{virt_user}}"
+        dest: "{{ basedir }}/.ssh/authorized_keys"
+        group: "{{ virt_user }}"
         mode: 0600
-        owner: "{{virt_user}}"
+        owner: "{{ virt_user }}"
 
     - name: push polkit config
       template:
@@ -54,11 +54,11 @@
   block:
     - name: export LIBVIRT_DEFAULT_URI
       lineinfile:
-        path: "{{basedir}}/.bashrc"
+        path: "{{ basedir }}/.bashrc"
         line: "export LIBVIRT_DEFAULT_URI='qemu:///system'"
     - name: export LIBGUESTFS_BACKEND
       lineinfile:
-        path: "{{basedir}}/.bashrc"
+        path: "{{ basedir }}/.bashrc"
         line: "export LIBGUESTFS_BACKEND=direct"
 
     - name: get default network XML content
@@ -109,7 +109,7 @@
       file:
         state: directory
         group: qemu
-        path: "{{basedir}}/{{item}}"
+        path: "{{ basedir }}/{{ item }}"
         mode: 02770
       with_items:
         - images
@@ -123,7 +123,7 @@
         - images
       get_url:
         url: "http://cloud.centos.org/centos/7/images/CentOS-7-x86_64-GenericCloud.qcow2"
-        dest: "{{basedir}}/images/centos-7.qcow2"
+        dest: "{{ basedir }}/images/centos-7.qcow2"
         mode: 0664
 
     - name: are we re-deploying upon existing deploy
@@ -140,7 +140,7 @@
         - image-update
       shell: |
         export LIBGUESTFS_BACKEND=direct
-        virt-sysprep -a "{{basedir}}/images/centos-7.qcow2" \
+        virt-sysprep -a "{{ basedir }}/images/centos-7.qcow2" \
           --network \
           --uninstall cloud-init \
           --selinux-relabel \
@@ -153,13 +153,13 @@
       tags:
         - images
       command: |
-        qemu-img create -o backing_file=../images/centos-7.qcow2,backing_fmt=qcow2 -f qcow2 "{{vm_prefix}}-{{item.name}}.qcow2" "{{item.disksize|default ('100')}}G"
+        qemu-img create -o backing_file=../images/centos-7.qcow2,backing_fmt=qcow2 -f qcow2 "{{ vm_prefix }}-{{ item.name }}.qcow2" "{{ item.disksize|default ('100') }}G"
       args:
-        creates: "{{basedir}}/workload/{{vm_prefix}}-{{item.name}}.qcow2"
-        chdir: "{{basedir}}/workload"
-      loop: "{{vms}}"
+        creates: "{{ basedir }}/workload/{{ vm_prefix }}-{{ item.name }}.qcow2"
+        chdir: "{{ basedir }}/workload"
+      loop: "{{ vms }}"
       loop_control:
-        label: "{{item.name}}"
+        label: "{{ item.name }}"
 
     - name: create images based on RHEL
       when:
@@ -168,57 +168,61 @@
       tags:
         - images
       command: |
-        qemu-img create -o backing_file=../images/{{ rhel_image_name }},backing_fmt=qcow2 -f qcow2 "{{vm_prefix}}-{{item.name}}.qcow2" "{{item.disksize|default ('100')}}G"
+        qemu-img create -o backing_file=../images/{{ rhel_image_name }},backing_fmt=qcow2 -f qcow2 "{{ vm_prefix }}-{{ item.name }}.qcow2" "{{ item.disksize|default ('100') }}G"
       args:
-        creates: "{{basedir}}/workload/{{vm_prefix}}-{{item.name}}.qcow2"
-        chdir: "{{basedir}}/workload"
-      loop: "{{vms}}"
+        creates: "{{ basedir }}/workload/{{ vm_prefix }}-{{ item.name }}.qcow2"
+        chdir: "{{ basedir }}/workload"
+      loop: "{{ vms }}"
       loop_control:
-        label: "{{item.name}}"
+        label: "{{ item.name }}"
+
+    - name: create overclouds range
+      set_fact:
+        overclouds_range: "{{ range(0, overclouds)|list }}"
 
     - name: create empty image for non-undercloud
       when:
-        - item.name is not match('^undercloud')
+        - item.0.name is not match('^undercloud')
       tags:
         - images
       command: |
-        qemu-img create -f qcow2 "{{vm_prefix}}-{{item.name}}".qcow2 "{{item.disksize|default ('100')}}"G
+        qemu-img create -f qcow2 "{{ vm_prefix }}-oc{{ item.1 }}-{{ item.0.name }}".qcow2 "{{ item.0.disksize|default ('100') }}"G
       args:
-        creates: "{{basedir}}/workload/{{vm_prefix}}-{{item.name}}.qcow2"
-        chdir: "{{basedir}}/workload"
-      loop: "{{vms}}"
+        creates: "{{ basedir }}/workload/{{ vm_prefix }}-oc{{ item.1 }}-{{ item.0.name }}.qcow2"
+        chdir: "{{ basedir }}/workload"
+      loop: "{{ vms|product(overclouds_range)|list }}"
       loop_control:
-        label: "{{item.name}}"
+        label: "oc{{ item.1 }}-{{ item.0.name }}"
 
     - name: create swap files when needed
       tags:
         - images
-      command: "qemu-img create -f raw {{vm_prefix}}-{{item.name}}-swap.img {{item.swap}}"
+      command: "qemu-img create -f raw {{ vm_prefix }}-oc{{ item.1 }}-{{ item.0.name }}-swap.img {{ item.0.swap }}"
       when:
         - item.swap is defined
       args:
-        creates: "{{basedir}}/workload/{{vm_prefix}}-{{item.name}}-swap.img"
-        chdir: "{{basedir}}/workload"
-      loop: "{{vms}}"
+        creates: "{{ basedir }}/workload/{{ vm_prefix }}-oc{{ item.1 }}-{{ item.0.name }}-swap.img"
+        chdir: "{{ basedir }}/workload"
+      loop: "{{ vms|product(overclouds_range)|list }}"
       loop_control:
-        label: "{{item.name}}"
+        label: "{{ item.0.name }}"
 
     - name: create OSD for ceph instances if any
       tags:
         - images
       when:
-        - item.name is match('^ceph-.*')
-      command: "qemu-img create -f raw {{vm_prefix}}-{{item.name}}-osd.img 50G"
+        - item.0.name is match('^ceph-.*')
+      command: "qemu-img create -f raw {{ vm_prefix }}-oc{{ item.1 }}-{{ item.0.name }}-osd.img 50G"
       args:
-        creates:  "{{basedir}}/workload/{{vm_prefix}}-{{item.name}}-osd.img"
-        chdir: "{{basedir}}/workload"
-      loop: "{{vms}}"
+        creates:  "{{ basedir }}/workload/{{ vm_prefix }}-oc{{ item.1 }}-{{ item.0.name }}-osd.img"
+        chdir: "{{ basedir }}/workload"
+      loop: "{{ vms|product(overclouds_range)|list }}"
       loop_control:
-        label: "{{item.name}}"
+        label: "{{ item.0.name }}"
 
     - name: push proxy config if needed
       template:
-        dest: "{{basedir}}/configs/http_proxy.sh"
+        dest: "{{ basedir }}/configs/http_proxy.sh"
         src: http_proxy.j2
       when:
         - proxy_host is defined

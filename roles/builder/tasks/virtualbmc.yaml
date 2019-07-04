@@ -27,24 +27,32 @@
         enabled: yes
         state: started
 
+    - name: get all defined VMs
+      virt:
+        command: list_vms
+      register: list_vms
+
     - name: Create the Virtual BMCs
-      command: "vbmc add {{vm_prefix}}-{{ item.name }} --port 112{{item.interfaces.0.mac|replace('24:42:53:21:52:','')}} --libvirt-uri qemu:///system --username ADMIN --password ADMIN" 
+      when: item.0.name is not match('^undercloud')
+      command: "vbmc add {{vm_prefix}}-oc{{ item.1 }}-{{ item.0.name }} --port 10{{'%02d'|format(item.1)}}{{ vm_idx }} --libvirt-uri qemu:///system --username ADMIN --password ADMIN"
       args:
-        creates: /root/.vbmc/{{vm_prefix}}-{{ item.name }}/config
-      loop: "{{ vms }}"
+        creates: "/root/.vbmc/{{vm_prefix}}-oc{{ item.1 }}-{{ item.0.name }}/config"
+      loop: "{{ vms|product(overclouds_range)|list }}"
       loop_control:
-        label: "{{ item.name }}"
+        label: "oc{{ item.1 }}-{{ item.0.name }}"
+        index_var: vm_idx
       register: vbmc
       ignore_errors: yes
 
     - name: Start the Virtual BMCs (virtualbmc >= 1.4.0+)
-      command: "vbmc start {{vm_prefix}}-{{ item.name }}"
-      loop: "{{ vms }}"
+      command: "vbmc start {{vm_prefix}}-oc{{ item.1 }}-{{ item.0.name }}"
+      loop: "{{ vms|product(overclouds_range)|list }}"
       loop_control:
-        label: "{{ item.name }}"
+        label: "oc{{ item.1 }}-{{ item.0.name }}"
       ignore_errors: yes
       when:
         - vbmc.changed
+        - item.0.name is not match('^undercloud')
 
     - name: open firewall on libvirt link
       iptables:
@@ -52,6 +60,5 @@
         chain: INPUT
         comment: "allow vbmc access from undercloud"
         destination: "192.168.122.1"
-        destination_port: "11200:11299"
         jump: ACCEPT
         protocol: udp

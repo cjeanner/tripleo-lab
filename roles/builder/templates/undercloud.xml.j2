@@ -1,7 +1,7 @@
 <domain type='kvm'>
-  <name>{{vm_prefix}}-oc{{ item.1 }}-{{item.0.name}}</name>
-  <memory unit='MB'>{{item.0.memory}}</memory>
-  <vcpu placement='static'>{{item.0.cpu}}</vcpu>
+  <name>{{vm_prefix}}-{{item.name}}</name>
+  <memory unit='MB'>{{item.memory}}</memory>
+  <vcpu placement='static'>{{item.cpu}}</vcpu>
   <os>
     <type arch="x86_64">hvm</type>
     <bios useserial='yes' rebootTimeout='0'/>
@@ -19,27 +19,27 @@
     <emulator>/usr/libexec/qemu-kvm</emulator>
     <disk type='file' device='disk'>
       <driver name='qemu' type='qcow2'/>
-      <source file='{{basedir}}/workload/{{vm_prefix}}-oc{{item.1}}-{{item.0.name}}.qcow2'/>
+      <source file='{{basedir}}/workload/{{vm_prefix}}-{{item.name}}.qcow2'/>
       <target dev='hda'/>
     </disk>
-    {% if item.0.swap is defined %}
+    {% if item.swap is defined %}
     <disk type='file' device='disk'>
       <driver name='qemu' type='raw'/>
-      <source file='{{basedir}}/workload/{{vm_prefix}}-oc{{item.1}}-{{item.0.name}}-swap.img'/>
+      <source file='{{basedir}}/workload/{{vm_prefix}}-{{item.name}}-swap.img'/>
       <target dev='hdb'/>
     </disk>
     {% endif %}
-    {% if item.0.name is match('^ceph-.*') %}
+    {% if item.name is match('^ceph-.*') %}
     <disk type='file' device='disk'>
       <driver name='qemu' type='raw'/>
-      <source file='{{basedir}}/workload/{{vm_prefix}}-oc{{item.1}}-{{item.0.name}}-osd.img'/>
+      <source file='{{basedir}}/workload/{{vm_prefix}}-{{item.name}}-osd.img'/>
       <target dev='hdb'/>
     </disk>
     {% endif %}
-    {% for interface in item.0.interfaces %}
+    {% for interface in item.interfaces %}
     <interface type='network'>
       <source network='{{ interface.network | default('ctlplane') }}'/>
-      <mac address='{{ '24:42:%02i'|format(item.1|int) |random_mac }}'/>
+      <mac address='{{ interface.mac }}'/>
       <model type="virtio"/>
     </interface>
     {% endfor %}
