@@ -188,7 +188,7 @@
                 bash /home/stack/deploy-overcloud-{{ item }}.sh
               args:
                 chdir: /home/stack
-                creates: /home/stack/overcloudrc.v3
+                creates: "/home/stack/overcloud-{{ item }}rc"
               loop: "{{ range(0, overclouds)|list }}"
 
             - name: ensure we have success
