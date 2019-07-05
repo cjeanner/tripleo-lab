@@ -193,5 +193,5 @@
 
             - name: ensure we have success
               when: deploy_overcloud|bool
-              command: grep -q 'Deployment successful!' /home/stack/install-overcloud-{{ item }}.log
+              command: grep -q 'Overcloud configuration completed.' /home/stack/install-overcloud-{{ item }}.log
               loop: "{{ range(0, overclouds)|list }}"
