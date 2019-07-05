@@ -1,6 +1,6 @@
 {
   "nodes": [
-{% set count = namespace(index=2) %}
+{% set count = namespace(index=overclouds) %}
 {% for node in vms|product(overclouds_range)|list %}
 {% if node.0.name != 'undercloud' %}
 {% set vm_name = "oc" ~ node.1 ~ "-" ~ node.0.name %}
