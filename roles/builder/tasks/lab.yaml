@@ -132,7 +132,8 @@
     mode: 0600
     block: |
       Host {{ item.item.name }} {{ item.stdout|replace('/24','') }}
-        ProxyCommand ssh -o 'ForwardAgent yes' {{ virt_user }}@{{ ansible_host }} 'ssh-add && nc {{ item.stdout|replace('/24','') }} %p'
+        #ProxyCommand ssh -o 'ForwardAgent yes' {{ virt_user }}@{{ ansible_host }} 'ssh-add && nc {{ item.stdout|replace('/24','') }} %p'
+        ProxyJump {{ virt_user }}@{{ ansible_host }}
         User root
         StrictHostKeyChecking no
         UserKnownHostsFile /dev/null
