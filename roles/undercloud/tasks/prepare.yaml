@@ -130,6 +130,15 @@
         mode: 0750
       loop: "{{ range(0, overclouds)|list }}"
 
+    - name: push config-download script
+      tags:
+        - baremetal
+      template:
+        dest: "/home/stack/config-download-oc{{ item }}.sh"
+        src: overcloud-configdl.sh.j2
+        mode: 0750
+      loop: "{{ range(0, overclouds)|list }}"
+
     - name: create image directory
       tags:
         - baremetal
