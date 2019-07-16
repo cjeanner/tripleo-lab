@@ -6,11 +6,11 @@ parameter_defaults:
     - 10.0.0.1
     EC2MetadataIp: 192.168.24.1
     ExternalAllocationPools:
-    -   start: '10.0.1{{ base_ip }}.4'
-        end: '10.0.1{{ base_ip }}.250'
-    ExternalInterfaceDefaultRoute: 10.0.1{{ base_ip }}.1
-    ExternalNetCidr: 10.0.1{{ base_ip }}.0/24
-    ExternalNetworkVlanID: 0
+    -   start: '10.10.0.151'
+        end: '10.10.0.250'
+    ExternalInterfaceDefaultRoute: 192.168.24.1
+    ExternalNetCidr: 10.10.0.0/24
+    ExternalNetworkVlanID: {{ base_ip }}9
     ExternalMtu: 1300
     InternalApiAllocationPools:
     -   start: '172.16.{{ base_ip }}3.4'

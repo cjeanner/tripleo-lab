@@ -1,51 +1,52 @@
+{% set base_ip = 1+ item|int %}
 - name: Storage
   vip: true
-  vlan: {{ item }}1
+  vlan: {{ base_ip }}1
   name_lower: storage_cloud_{{ item }}
   service_net_map_replace: storage
-  ip_subnet: '172.16.{{ item }}1.0/24'
-  allocation_pools: [{'start': '172.16.{{ item }}1.4', 'end': '172.16.{{ item }}1.250'}]
-  ipv6_subnet: 'fd00:fd00:fd00:{{ item }}001::/64'
-  ipv6_allocation_pools: [{'start': 'fd00:fd00:fd00:{{ item }}001::10', 'end': 'fd00:fd00:fd00:{{ item }}001:ffff:ffff:ffff:fffe'}]
+  ip_subnet: '172.16.{{ base_ip }}1.0/24'
+  allocation_pools: [{'start': '172.16.{{ base_ip }}1.4', 'end': '172.16.{{ base_ip }}1.250'}]
+  ipv6_subnet: 'fd00:fd00:fd00:{{ base_ip }}001::/64'
+  ipv6_allocation_pools: [{'start': 'fd00:fd00:fd00:{{ base_ip }}001::10', 'end': 'fd00:fd00:fd00:{{ base_ip }}001:ffff:ffff:ffff:fffe'}]
 - name: StorageMgmt
   name_lower: storage_mgmt_cloud_{{ item }}
   service_net_map_replace: storage_mgmt
   vip: true
-  vlan: {{ item }}2
-  ip_subnet: '172.16.{{ item }}2.0/24'
-  allocation_pools: [{'start': '172.16.{{ item }}2.4', 'end': '172.16.{{ item }}2.250'}]
-  ipv6_subnet: 'fd00:fd00:fd00:{{ item }}002::/64'
-  ipv6_allocation_pools: [{'start': 'fd00:fd00:fd00:{{ item }}002::10', 'end': 'fd00:fd00:fd00:{{ item }}002:ffff:ffff:ffff:fffe'}]
+  vlan: {{ base_ip }}2
+  ip_subnet: '172.16.{{ base_ip }}2.0/24'
+  allocation_pools: [{'start': '172.16.{{ base_ip }}2.4', 'end': '172.16.{{ base_ip }}2.250'}]
+  ipv6_subnet: 'fd00:fd00:fd00:{{ base_ip }}002::/64'
+  ipv6_allocation_pools: [{'start': 'fd00:fd00:fd00:{{ base_ip }}002::10', 'end': 'fd00:fd00:fd00:{{ base_ip }}002:ffff:ffff:ffff:fffe'}]
 - name: InternalApi
   name_lower: internal_api_cloud_{{ item }}
   service_net_map_replace: internal_api
   vip: true
-  vlan: {{ item }}3
-  ip_subnet: '172.16.{{ item }}3.0/24'
-  allocation_pools: [{'start': '172.16.{{ item }}3.4', 'end': '172.16.{{ item }}3.250'}]
-  ipv6_subnet: 'fd00:fd00:fd00:{{ item }}003::/64'
-  ipv6_allocation_pools: [{'start': 'fd00:fd00:fd00:{{ item }}003::10', 'end': 'fd00:fd00:fd00:{{ item }}003:ffff:ffff:ffff:fffe'}]
+  vlan: {{ base_ip }}3
+  ip_subnet: '172.16.{{ base_ip }}3.0/24'
+  allocation_pools: [{'start': '172.16.{{ base_ip }}3.4', 'end': '172.16.{{ base_ip }}3.250'}]
+  ipv6_subnet: 'fd00:fd00:fd00:{{ base_ip }}003::/64'
+  ipv6_allocation_pools: [{'start': 'fd00:fd00:fd00:{{ base_ip }}003::10', 'end': 'fd00:fd00:fd00:{{ base_ip }}003:ffff:ffff:ffff:fffe'}]
 - name: Tenant
   vip: false  # Tenant network does not use VIPs
   name_lower: tenant_cloud_{{ item }}
   service_net_map_replace: tenant
-  vlan: {{ item }}4
-  ip_subnet: '172.16.{{ item }}4.0/24'
-  allocation_pools: [{'start': '172.16.{{ item }}4.4', 'end': '172.16.{{ item }}4.250'}]
+  vlan: {{ base_ip }}4
+  ip_subnet: '172.16.{{ base_ip }}4.0/24'
+  allocation_pools: [{'start': '172.16.{{ base_ip }}4.4', 'end': '172.16.{{ base_ip }}4.250'}]
   # Note that tenant tunneling is only compatible with IPv4 addressing at this time.
-  ipv6_subnet: 'fd00:fd00:fd00:{{ item }}004::/64'
-  ipv6_allocation_pools: [{'start': 'fd00:fd00:fd00:{{ item }}004::10', 'end': 'fd00:fd00:fd00:{{ item }}004:ffff:ffff:ffff:fffe'}]
+  ipv6_subnet: 'fd00:fd00:fd00:{{ base_ip }}004::/64'
+  ipv6_allocation_pools: [{'start': 'fd00:fd00:fd00:{{ base_ip }}004::10', 'end': 'fd00:fd00:fd00:{{ base_ip }}004:ffff:ffff:ffff:fffe'}]
 - name: External
   vip: true
   name_lower: external_cloud_{{ item }}
   service_net_map_replace: external
-  vlan: 11
-  ip_subnet: '10.0.1{{ item }}.0/24'
-  allocation_pools: [{'start': '10.0.1{{ item }}.4', 'end': '10.0.1{{ item }}.250'}]
-  gateway_ip: '10.0.1{{ item }}.1'
-  ipv6_subnet: '2001:db8:fd00:1{{ item }}00::/64'
-  ipv6_allocation_pools: [{'start': '2001:db8:fd00:1{{ item }}00::10', 'end': '2001:db8:fd00:1{{ item }}00:ffff:ffff:ffff:fffe'}]
-  gateway_ipv6: '2001:db8:fd00:1{{ item }}00::1'
+  vlan: {{ base_ip }}9
+  ip_subnet: '10.20.{{ base_ip }}.0/24'
+  allocation_pools: [{'start': '10.20.{{ base_ip }}.15', 'end': '10.20.{{ base_ip }}.100'}]
+  gateway_ip: '10.20.{{ base_ip }}.1'
+  ipv6_subnet: '2001:db8:fd00:1{{ base_ip }}00::/64'
+  ipv6_allocation_pools: [{'start': '2001:db8:fd00:1{{ base_ip }}00::10', 'end': '2001:db8:fd00:1{{ base_ip }}00:ffff:ffff:ffff:fffe'}]
+  gateway_ipv6: '2001:db8:fd00:1{{ base_ip }}00::1'
 - name: Management
   # Management network is enabled by default for backwards-compatibility, but
   # is not included in any roles by default. Add to role definitions to use.
@@ -53,8 +54,8 @@
   vip: false  # Management network does not use VIPs
   name_lower: management_cloud_{{ item }}
   service_net_map_replace: management
-  vlan: 61
-  ip_subnet: '10.0.2{{ item }}.0/24'
-  allocation_pools: [{'start': '10.0.2{{ item }}.4', 'end': '10.0.2{{ item }}.250'}]
-  ipv6_subnet: 'fd00:fd00:fd00:{{ item }}005::/64'
-  ipv6_allocation_pools: [{'start': 'fd00:fd00:fd00:{{ item }}005::10', 'end': 'fd00:fd00:fd00:{{ item }}005:ffff:ffff:ffff:fffe'}]
+  vlan: {{ base_ip }}6
+  ip_subnet: '10.0.2{{ base_ip }}.0/24'
+  allocation_pools: [{'start': '10.0.2{{ base_ip }}.4', 'end': '10.0.2{{ base_ip }}.250'}]
+  ipv6_subnet: 'fd00:fd00:fd00:{{ base_ip }}005::/64'
+  ipv6_allocation_pools: [{'start': 'fd00:fd00:fd00:{{ base_ip }}005::10', 'end': 'fd00:fd00:fd00:{{ base_ip }}005:ffff:ffff:ffff:fffe'}]

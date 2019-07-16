@@ -14,7 +14,7 @@
     option: masquerade
     value: true
     mode: 0640
-    backup: yes
+    backup: no
 
 - name: Enable undercloud hieradata for low memory
   ini_file:
@@ -23,7 +23,7 @@
     option: hieradata_override
     value: /home/stack/hieradata_undercloud_low_memory.yaml
     mode: 0640
-    backup: yes
+    backup: no
   when: undercloud_low_memory|bool
 
 - name: Create hieradata_undercloud_low_memory.yaml
@@ -86,6 +86,14 @@
       template:
         dest: "/home/stack/oc{{ item }}-network-data.yaml"
         src: oc-network-data.yaml.j2
+      loop: "{{ range(0, overclouds)|list }}"
+
+    - name: push per-overcloud network env
+      tags:
+        - baremetal
+      template:
+        dest: "/home/stack/overcloud-{{ item }}-yml/network-env.yaml"
+        src: oc-network-env.yaml.j2
       loop: "{{ range(0, overclouds)|list }}"
 
     - name: push ceph settings
