@@ -4,4 +4,5 @@
   roles:
     - common
     - builder
+    - nat_vm
     - undercloud
