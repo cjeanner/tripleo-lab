@@ -1,0 +1,62 @@
+---
+- name: run on nat-vm node
+  tags:
+    - nat_vm
+    - lab
+  delegate_to: nat-vm
+  delegate_facts: false
+  block:
+    - name: ensure we do not rely on GSS for auth
+      replace:
+        path: /etc/ssh/sshd_config
+        regexp: '^GSSAPIAuthentication yes$'
+        replace: 'GSSAPIAuthentication no'
+      register: sshd_config
+
+    - name: restart sshd if needed
+      service:
+        name: sshd
+        state: restarted
+      when: sshd_config is changed
+
+    - name: configure vlans
+      copy:
+        dest: "/etc/sysconfig/network-scripts/ifcfg-eth1.{{ item+1 }}9"
+        content: |
+          DEVICE="eth1.{{ item+1 }}9"
+          BOOTPROTO="static"
+          ONBOOT="yes"
+          TYPE="Ethernet"
+          IPADDR="10.20.{{ item+1 }}.1"
+          NETMASK=255.255.255.0
+          VLAN=yes
+      loop: "{{ range(0, overclouds)|list }}"
+      loop_control:
+        label: "vlan-{{item+1}}9"
+
+    - name: start vlan interfaces
+      command: "ifup eth1.{{ item+1 }}9"
+      loop: "{{ range(0, overclouds)|list }}"
+      loop_control:
+        label: "vlan-{{item+1}}9"
+
+    - name: accept NAT
+      sysctl:
+        name: net.ipv4.ip_forward
+        value: 1
+        state: present
+
+    - name: enable NAT in iptables step 1
+      iptables:
+        chain: POSTROUTING
+        table: nat
+        out_interface: eth0
+        jump: MASQUERADE
+
+    - name: enable NAT in iptables setp 2
+      iptables:
+        chain: FORWARD
+        in_interface: eth1
+        jump: ACCEPT
+
+

@@ -1,0 +1,79 @@
+---
+- name: run tasks as virt_user user
+  become: yes
+  become_user: "{{ virt_user }}"
+  tags:
+    - lab
+    - nat_vm
+  block:
+    - name: create nat-vm image based on centos
+      tags:
+        - images
+      command: |
+        qemu-img create -o backing_file=../images/centos-7.qcow2,backing_fmt=qcow2 -f qcow2 "{{ vm_prefix }}-nat-vm.qcow2" "10G"
+      args:
+        creates: "{{ basedir }}/workload/{{ vm_prefix }}-nat-vm.qcow2"
+        chdir: "{{ basedir }}/workload"
+
+    - name: nat-vm image settings
+      shell: |
+        virt-sysprep -a "{{basedir}}/workload/{{vm_prefix}}-nat-vm.qcow2" \
+          --firstboot-command "systemctl enable --now acpid" \
+          --network \
+          --uninstall cloud-init \
+          --hostname "{{ vm_prefix }}-nat-vm" \
+          --selinux-relabel \
+          --install acpid,iptables \
+          --ssh-inject root:file:{{ basedir }}/.ssh/authorized_keys &&
+          touch "{{basedir}}/workload/{{vm_prefix}}-nat-vm.qcow2.done"
+      args:
+        creates: "{{basedir}}/workload/{{vm_prefix}}-nat-vm.qcow2.done"
+
+    - name: define nat-vm
+      virt:
+        name: "{{ vm_prefix }}-nat-vm"
+        command: define
+        xml: "{{ lookup('template', 'nat-vm.xml.j2') }}"
+        uri: "qemu:///system"
+
+    - name: start nat-vm
+      virt:
+        name: "{{ vm_prefix }}-nat-vm"
+        state: running
+        uri: "qemu:///system"
+
+    - name: get nat-vm IP address
+      shell: |
+        virsh --connect qemu:///system domifaddr "{{ vm_prefix }}-nat-vm" | \
+        awk '/ipv4/ {print $4}' | head -n1
+      register: nat_vm_addr
+      retries: 10
+      delay: 10
+      until:
+        - nat_vm_addr.stdout != ""
+
+- name: inject config on ansible host
+  tags:
+    - lab
+    - nat_vm
+  local_action:
+    module: blockinfile
+    path: ~/.ssh/config
+    marker: "## {mark} nat-vm"
+    create: yes
+    mode: 0600
+    block: |
+      Host nat-vm {{ nat_vm_addr.stdout|replace('/24','') }}
+        ProxyJump {{ virt_user }}@{{ ansible_host }}
+        Hostname {{ nat_vm_addr.stdout|replace('/24','') }}
+        User root
+        StrictHostKeyChecking no
+        UserKnownHostsFile /dev/null
+
+- name: inject nat-vm into ansible inventory
+  tags:
+    - lab
+    - nat-vm
+  add_host:
+    hostname: "nat-vm"
+    ansible_host: "{{ nat_vm_addr.stdout|replace('/24','') }}"
