@@ -97,7 +97,7 @@
         - name: modify overcloud image
           when: overcloud_image_update|bool
           shell: |
-            virt-sysprep -a /home/stack/overcloud_imgs/overcloud-full.qcow2 \
+            LIBGUESTFS_BACKEND="direct" virt-sysprep -a /home/stack/overcloud_imgs/overcloud-full.qcow2 \
               --copy-in /etc/yum.conf:/etc/ \
               --copy-in /etc/environment:/etc/ \
               --copy-in /etc/selinux/config:/etc/selinux/ \
@@ -118,7 +118,7 @@
         - name: update overcloud image
           when: overcloud_image_update|bool
           shell: |
-            virt-customize -a /home/stack/overcloud_imgs/overcloud-full.qcow2 \
+            LIBGUESTFS_BACKEND="direct" virt-customize -a /home/stack/overcloud_imgs/overcloud-full.qcow2 \
               --update \
               --selinux-relabel \
               --network \
