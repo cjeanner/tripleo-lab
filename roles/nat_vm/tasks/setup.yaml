@@ -43,7 +43,7 @@
     - name: accept NAT
       sysctl:
         name: net.ipv4.ip_forward
-        value: 1
+        value: '1'
         state: present
 
     - name: enable NAT in iptables step 1
