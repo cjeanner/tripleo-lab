@@ -72,6 +72,14 @@
         src: "{{ item }}"
       with_fileglob: 'files/overcloud/*.yaml'
 
+    - name: push node placement
+      tags:
+        - baremetal
+      template:
+        dest: "/home/stack/overcloud-{{ item }}-yml/placement.yaml"
+        src: node-placement.yaml.j2
+      loop: "{{ range(0, overclouds)|list }}"
+
     - name: push scale setting
       tags:
         - baremetal

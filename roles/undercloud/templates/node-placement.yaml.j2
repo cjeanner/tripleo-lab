@@ -1,0 +1,8 @@
+---
+parameter_defaults:
+  ControllerSchedulerHints:
+    'capabilities:node': '{{ item }}-controller-%index%'
+  ComputeSchedulerHints:
+    'capabilities:node': '{{ item }}-compute-%index%'
+  CephStorageSchedulerHints:
+    'capabilities:node': '{{ item }}-ceph-%index%'

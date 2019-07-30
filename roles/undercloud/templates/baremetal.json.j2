@@ -15,11 +15,11 @@
       "root_device": {"size": "{{node.0.disksize | default('100')}}"},
 {% endif %}
 {% if tripleo_version not in ['rocky'] %}
-      "mac": ["{{ oc_mac_addresses.results|selectattr('_ansible_item_label', 'equalto', vm_name)|map(attribute='stdout')|first }}"],
+      "mac": ["{{ oc_mac_addresses.results|selectattr('changed', 'equalto', true)|selectattr('cmd', 'contains', vm_name)|map(attribute='stdout')|first }}"],
 {% else %}
       "ports": [
         {
-          "address": "{{ oc_mac_addresses.results|selectattr('_ansible_item_label', 'equalto', vm_name)|map(attribute='stdout')|first}}"
+          "address": "{{ oc_mac_addresses.results|selectattr('changed', 'equalto', true)|selectattr('cmd', 'contains', vm_name)|map(attribute='stdout')|first }}"
         }
       ],
 {% endif %}
@@ -27,7 +27,7 @@
       "pm_password": "ADMIN",
       "pm_addr": "192.168.122.1",
       "pm_port": "10{{ '%02d'|format(node.1) }}{{ count.index }}",
-      "capabilities": "node:{{node.0.name}},boot_option:local"
+      "capabilities": "node:{{ node.1 }}-{{node.0.name}},boot_option:local"
     }{% if not loop.last %},
 {% endif %}
 {% set count.index = count.index+1 %}
