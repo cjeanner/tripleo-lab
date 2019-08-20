@@ -21,14 +21,6 @@
           - lvm2
           - libvirt-client
 
-    - name: some hiera override
-      copy:
-        dest: /home/stack/undercloud_hiera.yaml
-        content: |
-          glance_backend: 'file'
-        owner: stack
-        group: stack
-
     - name: enforce TZ
       timezone:
         name: UTC
