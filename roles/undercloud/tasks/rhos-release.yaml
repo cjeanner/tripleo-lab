@@ -3,6 +3,13 @@
   when:
     - base_image == 'rhel'
   block:
+    - name: ensure we do have DNS resolution
+      copy:
+        dest: /etc/resolv.conf
+        content: |
+          {% for nameserver in nameservers %}
+          nameserver {{ nameserver }}
+          {% endfor %}
     - name: ensure rhos-release is installed via proxy
       when:
         - proxy_host is defined

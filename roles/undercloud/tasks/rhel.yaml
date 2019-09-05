@@ -5,14 +5,6 @@
     - name: "unmanage {{ unmanage_iface }}"
       command: nmcli dev set {{ unmanage_iface }} managed no
 
-    - name: ensure we do have DNS resolution
-      copy:
-        dest: /etc/resolv.conf
-        content: |
-          {% for nameserver in nameservers %}
-          nameserver {{ nameserver }}
-          {% endfor %}
-
     - name: install some packages
       package:
         name:
