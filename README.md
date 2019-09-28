@@ -295,3 +295,6 @@ modify_container:
     ref: refs/changes/60/661760/7
     container: neutron-server
 ```
+
+*num_osds*
+  The number of OSD disks created per ceph node (int, default 1)

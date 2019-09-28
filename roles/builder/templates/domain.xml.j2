@@ -30,11 +30,15 @@
     </disk>
     {% endif %}
     {% if item.0.name is match('^ceph-.*') %}
+    {# exclude 'a' and 'b' from letters as they're taken by root and swap #}
+    {% set letters='cdefghijklmnopqrstuvwxyz' %}
+    {% for osd in range(0, num_osds) %}
     <disk type='file' device='disk'>
       <driver name='qemu' type='raw'/>
-      <source file='{{basedir}}/workload/{{vm_prefix}}-oc{{item.1}}-{{item.0.name}}-osd.img'/>
-      <target dev='hdb'/>
+      <source file='{{basedir}}/workload/{{vm_prefix}}-oc{{item.1}}-{{item.0.name}}-osd-{{osd}}.img'/>
+      <target dev='sd{{letters[osd]}}'/>
     </disk>
+    {% endfor %}
     {% endif %}
     {% for interface in item.0.interfaces %}
     <interface type='network'>
