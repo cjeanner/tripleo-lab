@@ -1,0 +1,23 @@
+[Unit]
+Description=VirtualBMC daemon
+Documentation=https://docs.openstack.org/virtualbmc/latest/user/index.html
+After=libvirtd.service
+After=network.target
+
+[Service]
+Type=simple
+User=vbmcd
+Group=vbmcd
+WorkingDirectory=/var/lib/vbmcd
+ExecStart=/usr/local/bin/vbmcd --foreground
+ProtectSystem=full
+ProtectHome=true
+PrivateTmp=true
+CapabilityBoundingSet=
+NoNewPrivileges=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+
+[Install]
+WantedBy=multi-user.target
