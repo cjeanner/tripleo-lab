@@ -4,13 +4,11 @@ source /usr/local/bin/lab-helpers
 
 do_destroy() {
   for i in $($VIRSH list --all --name | grep {{vm_prefix}}); do
+    vbmc delete $i
     $VIRSH destroy $i;
     $VIRSH undefine $i;
     rm -f /home/{{virt_user}}/workload/${i}*
   done
-  sudo systemctl stop vbmcd
-  sleep 10 #ensure vbmc is down
-  sudo killall vbmc # kill last things if needed
   sudo rm -rf /root/.vbmc
   sudo rm -rf /home/{{virt_user}}/.vbmc
   sudo rm -rf /var/lib/vbmcd/.vbmc
