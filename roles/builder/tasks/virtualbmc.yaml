@@ -19,6 +19,17 @@
         name: vbmcd
         system: yes
 
+    - name: authorize vbmcd on libvirt
+      copy:
+        dest: /etc/polkit-1/rules.d/60-vbmcd.rules
+        src: vbmc-polkit.rules
+        group: root
+        mode: 0644
+        owner: root
+        serole: object_r
+        setype: etc_t
+        seuser: system_u
+
     - name: start virtualbmc
       service:
         daemon_reload: yes
