@@ -11,7 +11,7 @@ parameter_defaults:
   DnsServers: {{ nameservers | to_yaml }}
   DockerInsecureRegistryAddress:
     - {{ ip }}:8787
-  PythonInterpreter: {{ python_interpreter }}
+  PythonInterpreter: {{ undercloud_python_interpreter }}
   NeutronPublicInterface: {{ interface }}
   # domain name used by the host
   NeutronDnsDomain: localdomain

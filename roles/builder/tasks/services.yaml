@@ -8,7 +8,6 @@
     state: started
   loop:
     - libvirtd
-    - docker
 
 - name: ensure sshd does not rely on gssapi
   tags:

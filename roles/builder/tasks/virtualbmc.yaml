@@ -4,26 +4,25 @@
     - lab
     - builder-bootstrap
   block:
-    - name: push virtualbmc script
-      file:
-        path: /usr/local/sbin/vbmc-run
-        state: absent
 
-    - name: deactivate custom vbmc service
-      service:
-        name: vbmc
-        state: stopped
-        enabled: no
-      ignore_errors: yes
+    - name: push vbmcd unit
+      copy:
+        src: vbmcd.service
+        dest: /etc/systemd/system/vbmcd.service
+        mode: 0644
 
-    - name: remove custom systemd unit file
-      file:
-        path: /etc/systemd/system/vbmc.service
-        state: absent
+    - name: create vbmcd user
+      user:
+        comment: VirtualBMC Daemon user
+        create_home: yes
+        home: /var/lib/vbmcd
+        name: vbmcd
+        system: yes
 
     - name: start virtualbmc
       service:
-        name: virtualbmc
+        daemon_reload: yes
+        name: vbmcd.service
         enabled: yes
         state: started
 

@@ -21,16 +21,20 @@
 
     - name: ensure packages are present
       package:
+        use: "{{ package_use|default(omit) }}"
         name:
         - bash-completion
-        - docker
         - libguestfs-tools
         - libvirt
         - libvirt-client
         - libvirt-daemon
         - libvirt-daemon-kvm
-        - python-lxml
-        - python2-setuptools
-        - python2-virtualbmc
+        - "python{{python_version|default(omit)}}-lxml"
+        - "python{{python_version|default(omit)}}-libvirt"
+        - platform-python-setuptools
         - tmux
         - vim
+
+    - name: install virtualbmc
+      pip:
+        name: virtualbmc
