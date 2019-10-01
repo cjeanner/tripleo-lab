@@ -207,18 +207,19 @@
       loop_control:
         label: "{{ item.0.name }}"
 
-    - name: create OSD for ceph instances if any
+    - name: create OSD(s) for ceph instances if any
       tags:
         - images
       when:
-        - item.0.name is match('^ceph-.*')
-      command: "qemu-img create -f raw {{ vm_prefix }}-oc{{ item.1 }}-{{ item.0.name }}-osd.img 50G"
+        - item.0.0.name is match('^ceph-.*')
+      command: "qemu-img create -f raw {{ vm_prefix }}-oc{{ item.0.1 }}-{{ item.0.0.name }}-osd-{{ disk_index % num_osds}}.img 50G"
       args:
-        creates:  "{{ basedir }}/workload/{{ vm_prefix }}-oc{{ item.1 }}-{{ item.0.name }}-osd.img"
+        creates:  "{{ basedir }}/workload/{{ vm_prefix }}-oc{{ item.0.1 }}-{{ item.0.0.name }}-osd-{{ disk_index % num_osds}}.img"
         chdir: "{{ basedir }}/workload"
-      loop: "{{ vms|product(overclouds_range)|list }}"
+      loop: "{{ vms|product(overclouds_range)|product(range(0, num_osds)|list)|list }}"
       loop_control:
-        label: "{{ item.0.name }}"
+        label: "{{ item.0.0.name }}-osd-{{ disk_index % num_osds}}"
+        index_var: disk_index
 
     - name: push proxy config if needed
       template:
