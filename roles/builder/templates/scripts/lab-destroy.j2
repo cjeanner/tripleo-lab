@@ -9,12 +9,9 @@ do_destroy() {
     $VIRSH undefine $i;
     rm -f /home/{{virt_user}}/workload/${i}*
   done
-  sudo rm -rf /root/.vbmc
-  sudo rm -rf /home/{{virt_user}}/.vbmc
-  sudo rm -rf /var/lib/vbmcd/.vbmc
 }
 
-echo -n 'Destroy the lab? [Ny] ' 
+echo -n 'Destroy the lab? [Ny] '
 read -r destroy
 case $destroy in
   y|Y)
