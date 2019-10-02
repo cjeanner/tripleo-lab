@@ -26,3 +26,9 @@
   service:
     name: sshd
     state: restarted
+
+- name: Stop and deactive firewalld service
+  service:
+    name: firewalld.service
+    state: stopped
+    enabled: no
