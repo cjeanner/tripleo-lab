@@ -13,7 +13,7 @@
 
     - name: undercloud image settings
       shell: |
-        virt-sysprep -a "{{basedir}}/workload/{{vm_prefix}}-undercloud.qcow2" \
+        virt-sysprep -a "{{basedir}}/workload/{{vm_prefix}}-{{ item.name }}.qcow2" \
           --firstboot-command "growpart /dev/sda {{ root_device }}" \
           --firstboot-command "xfs_growfs {{ growfs_part }}" \
           --firstboot-command "systemctl enable acpid" \
@@ -26,7 +26,12 @@
           --selinux-relabel \
           --root-password "password:{{undercloud_password}}" \
           --ssh-inject root:file:{{ basedir }}/.ssh/authorized_keys  && \
-          touch "{{basedir}}/workload/{{vm_prefix}}-undercloud.qcow2.done"
+          touch "{{basedir}}/workload/{{vm_prefix}}-{{ item.name }}.qcow2.done"
       args:
-        creates: "{{basedir}}/workload/{{vm_prefix}}-undercloud.qcow2.done"
+        creates: "{{basedir}}/workload/{{vm_prefix}}-{{ item.name }}.qcow2.done"
+      when:
+        - item.name is match('^undercloud')
+      loop: "{{ vms }}"
+      loop_control:
+        label: "{{ item.name }}"
 
