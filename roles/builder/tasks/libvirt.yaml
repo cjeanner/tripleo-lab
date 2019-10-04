@@ -176,6 +176,20 @@
       loop_control:
         label: "{{ item.name }}"
 
+    - name: create undercloud swap file when needed
+      tags:
+        - images
+      command: "qemu-img create -f raw {{ vm_prefix }}-{{ item.name }}-swap.img {{ item.swap }}"
+      when:
+        - item.name is match('^undercloud')
+        - item.swap is defined
+      args:
+        creates: "{{ basedir }}/workload/{{ vm_prefix }}-{{ item.name }}-swap.img"
+        chdir: "{{ basedir }}/workload"
+      loop: "{{ vms }}"
+      loop_control:
+        label: "{{ item.name }}"
+
     - name: create overclouds range
       set_fact:
         overclouds_range: "{{ range(0, overclouds)|list }}"
@@ -194,12 +208,13 @@
       loop_control:
         label: "oc{{ item.1 }}-{{ item.0.name }}"
 
-    - name: create swap files when needed
+    - name: create overcloud swap files when needed
       tags:
         - images
       command: "qemu-img create -f raw {{ vm_prefix }}-oc{{ item.1 }}-{{ item.0.name }}-swap.img {{ item.0.swap }}"
       when:
-        - item.swap is defined
+        - item.0.swap is defined
+        - item.0.name is not match('^undercloud')
       args:
         creates: "{{ basedir }}/workload/{{ vm_prefix }}-oc{{ item.1 }}-{{ item.0.name }}-swap.img"
         chdir: "{{ basedir }}/workload"
