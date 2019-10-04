@@ -63,7 +63,7 @@
     create: yes
     mode: 0600
     block: |
-      Host nat-vm {{ nat_vm_addr.stdout|replace('/24','') }}
+      Host {{ vm_prefix }}-nat-vm {{ nat_vm_addr.stdout|replace('/24','') }}
         ProxyJump {{ virt_user }}@{{ ansible_host }}
         Hostname {{ nat_vm_addr.stdout|replace('/24','') }}
         User root
