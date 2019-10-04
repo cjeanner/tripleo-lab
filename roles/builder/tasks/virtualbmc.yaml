@@ -34,7 +34,7 @@
 
     - name: Create the Virtual BMCs
       when: item.0.name is not match('^undercloud')
-      command: "vbmc add {{vm_prefix}}-oc{{ item.1 }}-{{ item.0.name }} --port 10{{'%02d'|format(item.1)}}{{ vm_idx }} --libvirt-uri qemu:///system --username ADMIN --password ADMIN"
+      command: "vbmc add {{vm_prefix}}-oc{{ item.1 }}-{{ item.0.name }} --port 15{{'%03d'|format(item.1 + vm_idx )}} --libvirt-uri qemu:///system --username ADMIN --password ADMIN"
       args:
         creates: "/root/.vbmc/{{vm_prefix}}-oc{{ item.1 }}-{{ item.0.name }}/config"
       loop: "{{ vms|product(overclouds_range)|list }}"
