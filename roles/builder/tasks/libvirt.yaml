@@ -45,6 +45,13 @@
         serole: object_r
         setype: etc_t
         seuser: system_u
+    - name: create temp dir for virt_user
+      file:
+        path: "/home/{{ virt_user }}/.ansible/tmp"
+        state: directory
+        group: "{{ virt_user }}"
+        mode: 0700
+        owner: "{{ virt_user }}"
 
 - name: run tasks as virt_user user
   become: yes
