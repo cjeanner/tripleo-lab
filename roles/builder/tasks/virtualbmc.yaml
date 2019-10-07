@@ -7,7 +7,7 @@
 
     - name: push vbmcd unit
       when:
-        - ansible_python_version is version_compare('3.0', '<=')
+        - ansible_facts['python_version'] is version('3.0', 'gt', strict=False)
       copy:
         src: vbmcd.service
         dest: /etc/systemd/system/virtualbmc.service
@@ -15,7 +15,7 @@
 
     - name: create vbmcd user
       when:
-        - ansible_python_version is version_compare('3.0', '<=')
+        - ansible_facts['python_version'] is version('3.0', 'gt', strict=False)
       user:
         comment: VirtualBMC Daemon user
         create_home: yes
@@ -25,7 +25,7 @@
 
     - name: authorize vbmcd on libvirt
       when:
-        - ansible_python_version is version_compare('3.0', '<=')
+        - ansible_facts['python_version'] is version('3.0', 'gt', strict=False)
       copy:
         dest: /etc/polkit-1/rules.d/60-vbmcd.rules
         src: vbmc-polkit.rules

@@ -48,7 +48,7 @@
 
     - name: install python3 dedicated packages
       when:
-        - ansible_python_version is version_compare('3.0', '<=')
+        - ansible_facts['python_version'] is version('3.0', 'gt', strict=False)
       package:
         use: "{{ package_use|default(omit) }}"
         name:
@@ -58,20 +58,20 @@
 
     - name: install libvirt for python2
       when:
-        - ansible_python_version is version_compare('3.0', '>')
+        - ansible_facts['python_version'] is version('3.0', 'lt', strict=True)
       package:
         use: "{{ package_use|default(omit) }}"
         name: libvirt-python
 
     - name: install virtualbmc from pip
       when:
-        - ansible_python_version is version_compare('3.0', '<=')
+        - ansible_python_version is version('3.0', 'gt', strict=False)
       pip:
         name: virtualbmc
 
     - name: install virtualbmc from packages
       when:
-        - ansible_python_version is version_compare('3.0', '>')
+        - ansible_python_version is version('3.0', 'lt', strict=True)
       package:
         use: "{{ package_use|default(omit) }}"
         name: python2-virtualbmc
