@@ -6,12 +6,16 @@
   block:
 
     - name: push vbmcd unit
+      when:
+        - ansible_python_version is version_compare('3.0', '<=')
       copy:
         src: vbmcd.service
-        dest: /etc/systemd/system/vbmcd.service
+        dest: /etc/systemd/system/virtualbmc.service
         mode: 0644
 
     - name: create vbmcd user
+      when:
+        - ansible_python_version is version_compare('3.0', '<=')
       user:
         comment: VirtualBMC Daemon user
         create_home: yes
@@ -20,6 +24,8 @@
         system: yes
 
     - name: authorize vbmcd on libvirt
+      when:
+        - ansible_python_version is version_compare('3.0', '<=')
       copy:
         dest: /etc/polkit-1/rules.d/60-vbmcd.rules
         src: vbmc-polkit.rules
@@ -33,7 +39,7 @@
     - name: start virtualbmc
       service:
         daemon_reload: yes
-        name: vbmcd.service
+        name: virtualbmc.service
         enabled: yes
         state: started
 

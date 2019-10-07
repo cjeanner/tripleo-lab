@@ -3,6 +3,19 @@
     - builder-packages
     - builder-bootstrap
   block:
+    - name: remove beaker repository
+      register: no_beaker
+      file:
+        path: /etc/yum.repos.d/beaker-distro.repo
+        state: absent
+
+    - name: clean yum
+      when:
+        - no_beaker is changed
+      command: yum clean all
+      args:
+        warn: no
+
     - name: set up proxy if any is provided (sh profile)
       template:
         dest: /etc/profile.d/http_proxy.sh
@@ -29,12 +42,36 @@
         - libvirt-client
         - libvirt-daemon
         - libvirt-daemon-kvm
-        - "python{{python_version|default(omit)}}-lxml"
-        - "python{{python_version|default(omit)}}-libvirt"
-        - platform-python-setuptools
+        - "python{{python_version|default('')}}-lxml"
         - tmux
         - vim
 
-    - name: install virtualbmc
+    - name: install python3 dedicated packages
+      when:
+        - ansible_python_version is version_compare('3.0', '<=')
+      package:
+        use: "{{ package_use|default(omit) }}"
+        name:
+          - python3-libvirt
+          - python3-pip
+          - platform-python-setuptools
+
+    - name: install libvirt for python2
+      when:
+        - ansible_python_version is version_compare('3.0', '>')
+      package:
+        use: "{{ package_use|default(omit) }}"
+        name: libvirt-python
+
+    - name: install virtualbmc from pip
+      when:
+        - ansible_python_version is version_compare('3.0', '<=')
       pip:
         name: virtualbmc
+
+    - name: install virtualbmc from packages
+      when:
+        - ansible_python_version is version_compare('3.0', '>')
+      package:
+        use: "{{ package_use|default(omit) }}"
+        name: python2-virtualbmc
