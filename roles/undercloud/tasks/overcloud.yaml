@@ -106,7 +106,11 @@
               {% if base_image == 'centos' %}
               --copy-in /etc/yum.repos.d/:/etc/ \
               {% else %}
+              {% if package_use|default('dnf') == 'dnf' %}
               --copy-in /etc/dnf/dnf.conf:/etc/dnf/ \
+              {% else %}
+              --copy-in /etc/yum.conf:/etc/yum.conf \
+              {% endif %}
               --install {{ rhos_release_repo_url }}/rhos-release-latest.noarch.rpm \
               --run-command "rhos-release {{ rhos_release_opts|default('') }} {{ rhos_release_version }}" \
               {% endif %}
