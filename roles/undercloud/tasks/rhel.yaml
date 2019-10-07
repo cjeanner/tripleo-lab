@@ -9,9 +9,19 @@
       package:
         name:
           - iptables-services
-          - network-scripts
           - lvm2
           - libvirt-client
+
+    - name: check dnf presence
+      stat:
+        path: /etc/dnf/dnf.conf
+      register: dnf_state
+
+    - name: install rhel8 dependencies
+      package:
+        name:
+          - network-scripts
+      when: dnf_state.stat.exists
 
     - name: enforce TZ
       timezone:
