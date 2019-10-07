@@ -4,26 +4,42 @@
     - lab
     - builder-bootstrap
   block:
-    - name: push virtualbmc script
-      file:
-        path: /usr/local/sbin/vbmc-run
-        state: absent
 
-    - name: deactivate custom vbmc service
-      service:
-        name: vbmc
-        state: stopped
-        enabled: no
-      ignore_errors: yes
+    - name: push vbmcd unit
+      when:
+        - ansible_facts['python_version'] is version('3.0', 'gt', strict=False)
+      copy:
+        src: vbmcd.service
+        dest: /etc/systemd/system/virtualbmc.service
+        mode: 0644
 
-    - name: remove custom systemd unit file
-      file:
-        path: /etc/systemd/system/vbmc.service
-        state: absent
+    - name: create vbmcd user
+      when:
+        - ansible_facts['python_version'] is version('3.0', 'gt', strict=False)
+      user:
+        comment: VirtualBMC Daemon user
+        create_home: yes
+        home: /var/lib/vbmcd
+        name: vbmcd
+        system: yes
+
+    - name: authorize vbmcd on libvirt
+      when:
+        - ansible_facts['python_version'] is version('3.0', 'gt', strict=False)
+      copy:
+        dest: /etc/polkit-1/rules.d/60-vbmcd.rules
+        src: vbmc-polkit.rules
+        group: root
+        mode: 0644
+        owner: root
+        serole: object_r
+        setype: etc_t
+        seuser: system_u
 
     - name: start virtualbmc
       service:
-        name: virtualbmc
+        daemon_reload: yes
+        name: virtualbmc.service
         enabled: yes
         state: started
 
@@ -36,7 +52,7 @@
       when: item.0.name is not match('^undercloud')
       command: "vbmc add {{vm_prefix}}-oc{{ item.1 }}-{{ item.0.name }} --port 15{{'%03d'|format(item.1 + vm_idx )}} --libvirt-uri qemu:///system --username ADMIN --password ADMIN"
       args:
-        creates: "/root/.vbmc/{{vm_prefix}}-oc{{ item.1 }}-{{ item.0.name }}/config"
+        creates: "/var/lib/vbmcd/.vbmc/{{vm_prefix}}-oc{{ item.1 }}-{{ item.0.name }}/config"
       loop: "{{ vms|product(overclouds_range)|list }}"
       loop_control:
         label: "oc{{ item.1 }}-{{ item.0.name }}"

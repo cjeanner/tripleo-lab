@@ -8,7 +8,6 @@
     state: started
   loop:
     - libvirtd
-    - docker
 
 - name: ensure sshd does not rely on gssapi
   tags:
@@ -27,3 +26,9 @@
   service:
     name: sshd
     state: restarted
+
+- name: Stop and deactive firewalld service
+  service:
+    name: firewalld.service
+    state: stopped
+    enabled: no

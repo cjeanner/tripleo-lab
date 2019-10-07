@@ -4,18 +4,14 @@ source /usr/local/bin/lab-helpers
 
 do_destroy() {
   for i in $($VIRSH list --all --name | grep {{vm_prefix}}); do
+    vbmc show -q $i &> /dev/null && vbmc -q --log-file /home/virtuser/vbmc.log --no-daemon delete $i
     $VIRSH destroy $i;
     $VIRSH undefine $i;
     rm -f /home/{{virt_user}}/workload/${i}*
   done
-  sudo systemctl stop virtualbmc
-  sleep 10 #ensure vbmc is down
-  sudo killall vbmc # kill last things if needed
-  sudo rm -rf /root/.vbmc
-  sudo rm -rf /home/{{virt_user}}/.vbmc
 }
 
-echo -n 'Destroy the lab? [Ny] ' 
+echo -n 'Destroy the lab? [Ny] '
 read -r destroy
 case $destroy in
   y|Y)

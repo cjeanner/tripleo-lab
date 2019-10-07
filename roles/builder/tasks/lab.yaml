@@ -8,7 +8,6 @@
     - name: define undecloud node
       when: item.name is match('^undercloud')
       virt:
-        name: "{{ vm_prefix }}-{{ item.name }}"
         command: define
         xml: "{{ lookup('template', 'undercloud.xml.j2') }}"
         uri: "qemu:///system"
@@ -20,7 +19,6 @@
       when:
         - item.0.name is not match('^undercloud')
       virt:
-        name: "{{ vm_prefix }}-oc{{ item.1 }}-{{ item.0.name }}"
         command: define
         xml: "{{ lookup('template', 'domain.xml.j2') }}"
         uri: "qemu:///system"
@@ -111,7 +109,7 @@
   add_host:
     hostname: "{{ item.item.name }}"
     ansible_host: "{{ item.stdout|replace('/24','') }}"
-    ansible_python_interpreter: "{{ python_interpreter }}"
+    ansible_python_interpreter: "{{ undercloud_python_interpreter }}"
   loop: "{{ ip_address.results }}"
   loop_control:
     label: "{{ item.item.name }}"
