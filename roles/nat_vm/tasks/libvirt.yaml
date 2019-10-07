@@ -31,7 +31,6 @@
 
     - name: define nat-vm
       virt:
-        name: "{{ vm_prefix }}-nat-vm"
         command: define
         xml: "{{ lookup('template', 'nat-vm.xml.j2') }}"
         uri: "qemu:///system"
