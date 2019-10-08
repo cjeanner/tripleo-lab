@@ -124,8 +124,6 @@
         - configs
 
     - name: fetch centos base image
-      when:
-        - base_image == 'centos'
       tags:
         - images
       get_url:
