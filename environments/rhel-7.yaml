@@ -1,2 +1,3 @@
 ---
 package_use: yum
+unmanage_iface: eth1
