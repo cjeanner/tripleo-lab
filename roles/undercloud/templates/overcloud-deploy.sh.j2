@@ -1,9 +1,33 @@
 #!/bin/bash
 
 source ~/stackrc
+{% if tripleo_version in ['pike', 'queens'] %}
+stdbuf -i0 -o0 -e0 openstack overcloud container image prepare \
+  --output-images-file ~/containers-image-file.yaml \
+  --output-env-file ~/containers-env-file.yaml \
+  {% if vms|map(attribute='name')|select("match", '^controller.+')|list|length > 1-%}
+  -e /usr/share/openstack-tripleo-heat-templates/environments/docker-ha.yaml \
+  {% else -%}
+  -e /usr/share/openstack-tripleo-heat-templates/environments/{{ overcloud_container_cli }}.yaml \
+  {% endif -%}
+  {% if vms|map(attribute='name')|select("match", '^ceph')|list|length > 0 -%}
+  -e /usr/share/openstack-tripleo-heat-templates/environments/ceph-ansible/ceph-ansible.yaml \
+  {% endif -%}
+  --namespace {{ container_namespace }} \
+  --tag {{ container_tag }} \
+  --prefix {{ container_name_prefix }} \
+  --suffix {{ container_name_suffix }} \
+  --set ceph_namespace={{ ceph_namespace |default('docker.io/ceph') }} \
+  --set ceph_image={{ ceph_image |default('daemon') }} \
+  --set ceph_tag={{ ceph_container_tag }} \
+  --push-destination {{ local_registry }} |tee -a oc-images-prepare.log
+stdbuf -i0 -o0 -e0 openstack overcloud container image upload --debug \
+  --config-file ~/containers-image-file.yaml |tee -a oc-images-upload.log
+{% else %}
 stdbuf -i0 -o0 -e0 openstack tripleo container image prepare \
   -e ~/local_images.yaml \
-  --output-env-file ~/containers-env-file.yaml
+  --output-env-file ~/containers-env-file.yaml |tee -a oc-image-prepare.log
+{% endif %}
 
 stdbuf -i0 -o0 -e0 openstack overcloud deploy \
   --templates /usr/share/openstack-tripleo-heat-templates/ \
