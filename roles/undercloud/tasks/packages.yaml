@@ -10,6 +10,7 @@
     state: present
   loop:
     - git
+    - iotop
     - tmux
     - vim
 
