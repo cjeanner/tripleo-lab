@@ -5,39 +5,38 @@ vms:
     memory: 8192
     swap: '10G'
     interfaces:
-      - mac: "24:42:53:21:52:15"
-        network: default
-      - mac: "24:42:53:21:52:16"
+      - network: default
+      - Net2
     autostart: yes
   - name: controller-0
     cpu: 2
     memory: 4096
     swap: '10G'
     interfaces:
-      - mac: "24:42:53:21:52:25"
-      - mac: "24:42:53:21:52:26"
+      - Net1
+      - Net2
     autostart: no
   - name: controller-1
     cpu: 2
     memory: 4096
     swap: '10G'
     interfaces:
-      - mac: "24:42:53:21:52:35"
-      - mac: "24:42:53:21:52:36"
+      - Net1
+      - Net1
     autostart: no
   - name: controller-2
     cpu: 2
     memory: 4096
     swap: '10G'
     interfaces:
-      - mac: "24:42:53:21:52:45"
-      - mac: "24:42:53:21:52:46"
+      - Net1
+      - Net2
     autostart: no
   - name: compute-0
     cpu: 2
     memory: 2048
     swap: '10G'
     interfaces:
-      - mac: "24:42:53:21:52:55"
-      - mac: "24:42:53:21:52:56"
+      - Net1
+      - Net2
     autostart: no
