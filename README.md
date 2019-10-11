@@ -104,10 +104,12 @@ tracks of older deploy for comparaison purpose.
   - cpu (int)
   - memory (int, MB)
   - interfaces (list)
-    - mac (MAC address)
     - network (network name, default 'ctlplane')
   - autostart (bool)
   - swap (string, for example 10G)
+  - iotune (list)
+    - tune (string, iotune option)
+      value (string, iotune option value)
 ```YAML
 vms:
   - name: undercloud
@@ -115,17 +117,16 @@ vms:
     memory: 20000
     disksize: 100
     interfaces:
-      - mac: "24:42:53:21:52:15"
-        network: default
-      - mac: "24:42:53:21:52:25"
+      - network: default
+      - net2
     autostart: yes
   - name: controller-0
     cpu: 8
     memory: 20000
     disksize: 100
     interfaces:
-      - mac: "24:42:53:21:53:15"
-      - mac: "24:42:53:21:53:25"
+      - net1
+      - net2
     autostart: no
 ```
 

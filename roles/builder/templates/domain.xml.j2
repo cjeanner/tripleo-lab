@@ -21,12 +21,26 @@
       <driver name='qemu' type='qcow2'/>
       <source file='{{basedir}}/workload/{{vm_prefix}}-oc{{item.1}}-{{item.0.name}}.qcow2'/>
       <target dev='hda'/>
+      {% if item.0.iotune is defined %}
+      <iotune>
+      {% for option in item.0.iotune %}
+      <{{option.tune }}>{{ option.value }}</{{ option.tune }}>
+      {% endfor %}
+      </iotune>
+      {% endif %}
     </disk>
     {% if item.0.swap is defined %}
     <disk type='file' device='disk'>
       <driver name='qemu' type='raw'/>
       <source file='{{basedir}}/workload/{{vm_prefix}}-oc{{item.1}}-{{item.0.name}}-swap.img'/>
       <target dev='hdb'/>
+      {% if item.0.iotune is defined %}
+      <iotune>
+      {% for option in item.0.iotune %}
+      <{{option.tune }}>{{ option.value }}</{{ option.tune }}>
+      {% endfor %}
+      </iotune>
+      {% endif %}
     </disk>
     {% endif %}
     {% if item.0.name is match('^ceph-.*') %}

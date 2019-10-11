@@ -1,0 +1,19 @@
+---
+standalone: yes
+local_registry: 192.168.24.2:8787
+vms:
+  - name: undercloud
+    cpu: 10
+    memory: 32000
+    disksize: 100
+    interfaces:
+      - network: default
+      - net2
+    autostart: yes
+    iotune:
+      - tune: total_bytes_sec
+        value: 5000000
+      - tune: read_iops_sec
+        value: 200000
+      - tune: write_iops_sec
+        value: 50000
