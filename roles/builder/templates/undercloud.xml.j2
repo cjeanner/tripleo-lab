@@ -46,7 +46,7 @@
     {% for interface in item.interfaces %}
     <interface type='network'>
       <source network='{{ interface.network | default('ctlplane') }}'/>
-      <mac address='{{ interface.mac }}'/>
+      <mac address='{{ '24:42:01' |random_mac }}'/>
       <model type="virtio"/>
     </interface>
     {% endfor %}
