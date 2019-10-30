@@ -45,6 +45,7 @@
         - "python{{python_version|default('')}}-lxml"
         - tmux
         - vim
+        - wget
 
     - name: install python3 dedicated packages
       when:
