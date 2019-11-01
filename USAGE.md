@@ -50,6 +50,17 @@ generate a constant load of 3-4 with that setup on my builder, ensuring you
 will hit any race conditions/timeouts you can find in upstream CI. Although
 those values are, probably, a bit too harsh :).
 
+## I want to customize my tmate
+1. create local_envs/tmate.yaml
+2. push something like that in it:
+```YAML
+tmate_config: |
+  set -g tmate-server-host "tmate.your-domain.tld"
+  set -g tmate-server-port "2200"
+  set -g tmate-server-rsa-fingerprint "SHA256:XXXX"
+  set -g tmate-server-ed25519-fingerprint "SHA256:YYYY"
+```
+
 ## I want to push some custom semodule
 1. Create ```my-module.te``` file somewhere on your system
 2. Create ```semodule.yaml``` in ```local_env``` directory
