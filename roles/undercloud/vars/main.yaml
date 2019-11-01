@@ -19,7 +19,7 @@ containerized_undercloud: yes
 synchronize: []
 synchronize_default_dest: /home/stack/tripleo/
 ceph_version: luminous
-tmate_release: 2.2.1
+tmate_release: 2.3.1
 semodules: []
 overcloud_container_cli: podman
 overcloud_image_update: yes

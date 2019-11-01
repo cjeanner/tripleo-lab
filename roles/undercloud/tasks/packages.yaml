@@ -25,16 +25,16 @@
     state: installed
 
 - name: fetch tmate release from github
-  command: "curl -OL https://github.com/tmate-io/tmate/releases/download/{{tmate_release}}/tmate-{{tmate_release}}-static-linux-amd64.tar.gz"
+  command: "curl -OL https://github.com/tmate-io/tmate/releases/download/{{tmate_release}}/tmate-{{tmate_release}}-static-linux-amd64.tar.xz"
   args:
-    creates: "/usr/src/tmate-{{tmate_release}}-static-linux-amd64.tar.gz"
+    creates: "/usr/src/tmate-{{tmate_release}}-static-linux-amd64.tar.xz"
     chdir: /usr/src
 
 - name: uncompress tmate release
   unarchive:
     creates: "/usr/src/tmate-{{tmate_release}}-static-linux-amd64"
     dest: /usr/src/
-    src: "/usr/src/tmate-{{tmate_release}}-static-linux-amd64.tar.gz"
+    src: "/usr/src/tmate-{{tmate_release}}-static-linux-amd64.tar.xz"
     remote_src: yes
 
 - name: copy tmate binary in path
@@ -43,3 +43,11 @@
     dest: "/usr/local/bin/tmate"
     remote_src: yes
     mode: 0755
+
+- name: configure tmate
+  copy:
+    content: "{{ tmate_config|default('') }}"
+    dest: /home/stack/.tmate.conf
+    mode: 0600
+    owner: stack
+    group: stack
