@@ -164,7 +164,7 @@ undercloud_config:
 ```
 
 *tripleo_repo_version*
-  Tripleo-repos package name/version
+  Tripleo-repos package name/version. The default version is `master`. This can be changed this to any OpenStack version, like `stein` or `train`.
 
 *overcloud_images*
   Hash with the following entries:
