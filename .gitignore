@@ -1,4 +1,5 @@
 .*.swp
+__pycache__
 ansible_facts_cache
 local_env
 inventory.yaml

@@ -26,7 +26,7 @@
       "pm_user": "ADMIN",
       "pm_password": "ADMIN",
       "pm_addr": "192.168.122.1",
-      "pm_port": "15{{ '%03d'|format(node.1 + count.index) }}",
+      "pm_port": "{{ '%s-%s-oc-%s'|format(vm_prefix, node.1, node.0.name)|hashed_port }}",
       "capabilities": "node:{{ node.1 }}-{{node.0.name}},boot_option:local"
     }{% if not loop.last %},
 {% endif %}
