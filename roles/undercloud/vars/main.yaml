@@ -1,5 +1,5 @@
 virt_user: virtuser
-tripleo_version: stein
+tripleo_version: master
 overcloud_images:
   - file: ironic-python-agent.tar
     content: ironic-python-agent.kernel

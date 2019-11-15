@@ -17,7 +17,7 @@
     path: /etc/ssh/sshd_config
     regexp: '^GSSAPIAuthentication yes$'
     replace: 'GSSAPIAuthentication no'
-  register: sshd-config
+  register: sshd_config
 
 - name: restart sshd upon config change
   tags:
