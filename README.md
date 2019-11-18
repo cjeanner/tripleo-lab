@@ -204,8 +204,12 @@ patches:
   List of hashes with the following entries:
   - name
   - base
+  - container (optional, default False)
+  - host (optional, default True)
   - dest (defaults to /home/stack/tripleo/)
-  Synchronize with rsync from your ansible controller to remote
+  Synchronize with rsync from your ansible controller to remote. The "host"
+  and "container" params are used for the build destiation - either container
+  or host, or both. It results in a different target directory.
 ```YAML
 synchronize:
   - name: tripleo-heat-templates

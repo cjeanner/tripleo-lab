@@ -75,6 +75,40 @@ semodules:
 ansible-playbook builder.yaml -t lab -e @local_env/semodule.yaml
 ```
 
+## I want to inject that RPM/patch/other in my containers
+Tripleo-lab relies on tripleo-image-modify for this part. In order to
+inject things into the container image prior any deploy, you have to know
+a bit about the[related doc](https://docs.openstack.org/project-deploy-guide/tripleo-docs/latest/deployment/container_image_prepare.html#modifying-images-during-prepare).
+
+For instance, if you want to build RPM based on a serie of patches and inject
+them into a bunch of container images:
+1. create ```local_env/patches.yaml```
+```YAML
+synchronize:
+  - name: mistral
+    container: yes
+    base: /home/cjeanner/work/gerrit
+    dest: /home/stack/tripleo/
+```
+2. Create ```local_env/container-modify.yaml```
+```YAML
+modify_image:
+  - push_destiation: true
+    includes:
+      - mistral
+    modify_role: tripleo-modify-image
+    modify_append_tag: '-dev'
+    modify_vars:
+      tasks_from: rpm_install.yml
+      source: "{{ container_namespace }}/{{ container_name_prefix }}-mistral-engine:{{container_tag}}"
+      rpms_path: /home/stack/container-rpms
+```
+3. Run the deploy command, including those two files:
+```Bash
+ansible-playbook builder.yaml -e @local_env/container-modify.yaml -e @local_env/patches.yaml
+```
+
+
 ## I want to deploy Red Hat Director
 Please note this is for Red Hat employees and was NOT tested for any other use
 1. Create a "rhel.yaml" in local_env directory
