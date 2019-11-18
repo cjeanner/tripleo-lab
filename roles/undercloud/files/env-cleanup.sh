@@ -1,6 +1,6 @@
 #!/bin/sh
-sudo docker rm -f $(docker ps -aq )
 sudo podman rm -fa
+sudo podman rmi -fa
 sudo rm -rf /var/lib/config-data/ \
   /var/lib/docker-puppet/ \
   /var/lib/rabbitmq \
