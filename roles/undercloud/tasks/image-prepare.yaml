@@ -3,8 +3,21 @@
   command: |
     ansible -m include_role \
       -a role=tripleo-image-serve \
-      -e tripleo_container_registry_host=undercloud.ctlplane.localdomain \
+      -e tripleo_container_registry_host='*' \
       localhost
+
+- name: Ensure we have something for podman registry
+  command: |
+    ansible -m include_role \
+      -a role=tripleo-podman \
+      -e tripleo_container_registry_insecure_registries='["localhost","undercloud.ctlplane"]'
+      localhost
+
+- name: Ensure we have an entry for undercloud.ctlplane in /etc/hosts
+  lineinfile:
+    dest: /etc/hosts
+    line: "127.0.0.1 undercloud.ctlplane undercloud.ctlplane.localdomain"
+    state: present
 
 - name: get standard container-prepare-image output
   shell: |
@@ -26,3 +39,10 @@
     openstack tripleo container image prepare \
     -e /home/stack/containers-prepare-parameter.yaml \
     --output-env-file /home/stack/generated-container-prepare.yaml
+
+- name: Clean tweaked entry for undercloud.ctlplane in /etc/hosts
+  lineinfile:
+    dest: /etc/hosts
+    line: "127.0.0.1 undercloud.ctlplane undercloud.ctlplane.localdomain"
+    state: absent
+
