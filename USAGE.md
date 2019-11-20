@@ -95,12 +95,14 @@ synchronize:
 modify_image:
   - push_destiation: true
     includes:
-      - mistral
+      - mistral-api
+      - mistral-engine
+      - mistral-event-engine
+      - mistral-executor
     modify_role: tripleo-modify-image
     modify_append_tag: '-dev'
     modify_vars:
       tasks_from: rpm_install.yml
-      source: "{{ container_namespace }}/{{ container_name_prefix }}-mistral-engine:{{container_tag}}"
       rpms_path: /home/stack/container-rpms
 ```
 3. Run the deploy command, including those two files:

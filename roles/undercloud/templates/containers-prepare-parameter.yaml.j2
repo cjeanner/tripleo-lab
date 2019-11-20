@@ -1,2 +1,5 @@
+{% set ori_yml = container_image_prepare.stdout|from_yaml  %}
+{% set ori_content = ori_yml['parameter_defaults']['ContainerImagePrepare'] %}
+{% set content = ori_content + content %}
 {% set yml = {'parameter_defaults': {'ContainerImagePrepare': content }} %}
 {{ yml | to_nice_yaml }}

@@ -6,29 +6,23 @@
       -e tripleo_container_registry_host=undercloud.ctlplane.localdomain \
       localhost
 
-- name: YAML standard content
-  set_fact:
-    std_yaml:
-      - push_destination: "{{ local_registry }}"
-        set:
-          ceph_image: "{{ ceph_image |default('daemon') }}"
-          ceph_namespace: "{{ ceph_namespace |default('docker.io/ceph') }}"
-          ceph_tag: "{{ ceph_container_tag }}"
-          name_prefix: "{{ container_name_prefix }}"
-          name_suffix: "{{ container_name_suffix }}"
-          namespace: "{{ container_namespace }}"
-          neutron_driver: null
-          tag: "{{ container_tag }}"
+- name: get standard container-prepare-image output
+  shell: |
+    openstack tripleo container image prepare default --local-push-destination
+  register: container_image_prepare
 
-- name: "set up registry - mainly used for rhel"
+- name: generate container-image-prepare
   template:
     src: containers-prepare-parameter.yaml.j2
     dest: /home/stack/containers-prepare-parameter.yaml
     owner: stack
     group: stack
   vars:
-    content: "{{ std_yaml + modify_image|default([]) }}"
+    content: "{{ modify_image|default([]) }}"
 
 - name: run container image prepare if we have custom config
   when: modify_image|default([]) != []
-  command: openstack tripleo container image prepare -e /home/stack/containers-prepare-parameter.yaml
+  command: |
+    openstack tripleo container image prepare \
+    -e /home/stack/containers-prepare-parameter.yaml \
+    --output-env-file /home/stack/generated-container-prepare.yaml

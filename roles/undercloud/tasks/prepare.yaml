@@ -1,3 +1,7 @@
+- name: let know tripleo-lab about custom container file
+  set_fact:
+    custom_container: "{{ modify_image|default([]) != [] }}"
+
 - name: copy undercloud.conf sample
   copy:
     dest: /home/stack/undercloud.conf
@@ -14,6 +18,16 @@
     option: masquerade
     value: true
     mode: 0640
+    backup: no
+
+- name: inject generated file in the undercloud.conf
+  when:
+    - modify_image|default([]) != []
+  ini_file:
+    path: /home/stack/undercloud.conf
+    section: DEFAULT
+    option: container_images_file
+    value: /home/stack/generated-container-prepare.yaml
     backup: no
 
 - name: Enable undercloud hieradata for low memory
