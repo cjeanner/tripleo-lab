@@ -7,7 +7,11 @@ stdbuf -i0 -o0 -e0 sudo openstack tripleo deploy \
   -e /usr/share/openstack-tripleo-heat-templates/environments/ceph-ansible/ceph-ansible.yaml \
 {% endif %}
   -r /usr/share/openstack-tripleo-heat-templates/roles/Standalone.yaml \
+{% if custom_container %}
+  -e /home/stack/generated-container-prepare.yaml \
+{% else %}
   -e /home/stack/containers-prepare-parameter.yaml \
+{% endif %}
   -e /home/stack/standalone_parameters.yaml \
 {% if standalone_ceph|bool %}
   -e /home/stack/ceph_parameters.yaml \

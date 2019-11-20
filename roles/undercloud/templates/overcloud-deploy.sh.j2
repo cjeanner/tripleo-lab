@@ -27,7 +27,11 @@ stdbuf -i0 -o0 -e0 openstack overcloud deploy \
   -e {{ env }} \
   {% endfor -%}
   -e /home/stack/domain.yaml \
+{% if custom_container %}
+  -e /home/stack/generated-container-prepare.yaml \
+{% else %}
   -e /home/stack/containers-env-file.yaml \
+{% endif %}
   --environment-directory ~/overcloud-{{ item }}-yml \
   --ntp-server pool.ntp.org --libvirt-type qemu 2>&1 | tee -a ~/install-overcloud-{{ item }}.log
 ret_val=$?

@@ -1,4 +1,8 @@
 ---
+- name: check if we have custom container image
+  set_fact:
+    custom_container: "{{ modify_image|default([]) != [] }}"
+
 - name: push deploy script
   template:
     dest: /home/stack/deploy.sh
