@@ -23,6 +23,13 @@ stdbuf -i0 -o0 -e0 openstack overcloud deploy \
   {% else -%}
   -e /usr/share/openstack-tripleo-heat-templates/environments/{{ overcloud_container_cli }}.yaml \
   {% endif -%}
+  {% if enable_tls|default(False)|bool %}
+  -e ~/tls-inject-ca.yaml \
+  -e /usr/share/openstack-tripleo-heat-templates/environments/ssl/inject-trust-anchor-hiera.yaml \
+  -e /usr/share/openstack-tripleo-heat-templates/environments/ssl/tls-everywhere-endpoints-dns.yaml \
+  -e /usr/share/openstack-tripleo-heat-templates/environments/services/haproxy-public-tls-certmonger.yaml \
+  -e /usr/share/openstack-tripleo-heat-templates/environments/ssl/enable-internal-tls.yaml \
+  {% endif %}
   {% for env in additional_envs %}
   -e {{ env }} \
   {% endfor -%}

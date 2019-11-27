@@ -1,0 +1,3 @@
+---
+{% set content = {'parameter_defaults': {'SSLRootCertificate': certmonger_ca['content'] | b64decode}} %}
+{{ content |to_nice_yaml }}

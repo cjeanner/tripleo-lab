@@ -46,6 +46,10 @@
     src: hieradata_undercloud_low_memory.yaml.j2
   when: undercloud_low_memory|bool
 
+- name: include TLS config if needed
+  when: enable_tls|default(False)|bool
+  import_tasks: tls.yaml
+
 - name: custom configuration in undercloud.conf
   ini_file:
     path: /home/stack/undercloud.conf

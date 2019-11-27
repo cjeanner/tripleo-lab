@@ -1,0 +1,16 @@
+---
+- name: enable service certificate generation
+  ini_file:
+    backup: no
+    path: /home/stack/undercloud.conf
+    section: DEFAULT
+    option: generate_service_certificate
+    value: 'True'
+
+- name: set CA for service certificate
+  ini_file:
+    backup: no
+    path: /home/stack/undercloud.conf
+    section: DEFAULT
+    option: certificate_generation_ca
+    value: 'local'

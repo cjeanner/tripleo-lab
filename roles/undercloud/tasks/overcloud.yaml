@@ -16,6 +16,21 @@
     enabled: no
   when: stat_iscsid_socket.stat.exists
 
+- name: get certmonger local CA
+  when: enable_tls|default(False)|bool
+  slurp:
+    src: /etc/pki/ca-trust/source/anchors/cm-local-ca.pem
+  register: certmonger_ca
+
+- name: inject certmonger CA in overcloud env file
+  when: enable_tls|default(False)|bool
+  template:
+    dest: /home/stack/tls-inject-ca.yaml
+    src: tls-inject-ca.yaml.j2
+    group: stack
+    mode: 0644
+    owner: stack
+
 - name: image management on non-RHEL system
   tags:
     - baremetal
