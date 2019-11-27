@@ -46,6 +46,15 @@
     src: hieradata_undercloud_low_memory.yaml.j2
   when: undercloud_low_memory|bool
 
+- name: Disable SELinux if requested
+  when: disable_selinux|default(False)|bool
+  ini_file:
+    backup: no
+    path: /home/stack/undercloud.conf
+    section: DEFAULT
+    option: undercloud_enable_selinux
+    value: 'false'
+
 - name: include TLS config if needed
   when: enable_tls|default(False)|bool
   import_tasks: tls.yaml
