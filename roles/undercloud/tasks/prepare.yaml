@@ -55,6 +55,15 @@
     option: undercloud_enable_selinux
     value: 'false'
 
+- name: Set undercloud NTP servers if needed
+  when: NtpServer is defined
+  ini_file:
+    backup: no
+    path: /home/stack/undercloud.conf
+    section: DEFAULT
+    option: undercloud_ntp_servers
+    value: "{{ NtpServer | join(',') }}"
+
 - name: include TLS config if needed
   when: enable_tls|default(False)|bool
   import_tasks: tls.yaml
