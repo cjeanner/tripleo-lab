@@ -1,48 +1,165 @@
 ---
-- name: Ensure we have image-serve
-  command: |
-    ansible -m include_role \
-      -a role=tripleo-image-serve \
-      -e tripleo_container_registry_host='*' \
-      localhost
+- name: only for older releases
+  when: tripleo_version in ['queens', 'rocky']
+  block:
+    - name: run container image prepare
+      command: |
+        openstack overcloud container image prepare \
+        --output-env-file /home/stack/containers-env-file.yaml
 
-- name: Ensure we have something for podman registry
-  command: |
-    ansible -m include_role \
-      -a role=tripleo-podman \
-      -e tripleo_container_registry_insecure_registries='["localhost","undercloud.ctlplane"]'
-      localhost
+- name: only for recent releases
+  when: tripleo_version not in ['queens', 'rocky']
+  block:
+    - name: Ensure we have image-serve
+      command: |
+        ansible -m include_role \
+          -a role=tripleo-image-serve \
+          -e tripleo_container_registry_host='*' \
+          localhost
 
-- name: Ensure we have an entry for undercloud.ctlplane in /etc/hosts
-  lineinfile:
-    dest: /etc/hosts
-    line: "127.0.0.1 undercloud.ctlplane undercloud.ctlplane.localdomain"
-    state: present
+    - name: Ensure we have something for podman registry
+      command: |
+        ansible -m include_role \
+          -a role=tripleo-podman \
+          -e tripleo_container_registry_insecure_registries='["localhost","undercloud.ctlplane"]'
+          localhost
 
-- name: get standard container-prepare-image output
-  shell: |
-    openstack tripleo container image prepare default --local-push-destination
-  register: container_image_prepare
+    - name: Ensure we have an entry for undercloud.ctlplane in /etc/hosts
+      lineinfile:
+        dest: /etc/hosts
+        line: "127.0.0.1 undercloud.ctlplane undercloud.ctlplane.localdomain"
+        state: present
 
-- name: generate container-image-prepare
-  template:
-    src: containers-prepare-parameter.yaml.j2
-    dest: /home/stack/containers-prepare-parameter.yaml
-    owner: stack
-    group: stack
-  vars:
-    content: "{{ modify_image|default([]) }}"
+    - name: get standard container-prepare-image output
+      shell: |
+        openstack tripleo container image prepare default \
+        --local-push-destination
+      register: container_image_prepare
 
-- name: run container image prepare if we have custom config
-  when: modify_image|default([]) != []
-  command: |
-    openstack tripleo container image prepare \
-    -e /home/stack/containers-prepare-parameter.yaml \
-    --output-env-file /home/stack/generated-container-prepare.yaml
+    - name: convert as a fact
+      set_fact:
+        f_container_image_prepare: "{{ container_image_prepare.stdout|from_yaml }}"
 
-- name: Clean tweaked entry for undercloud.ctlplane in /etc/hosts
-  lineinfile:
-    dest: /etc/hosts
-    line: "127.0.0.1 undercloud.ctlplane undercloud.ctlplane.localdomain"
-    state: absent
+    - name: shorten content
+      set_fact:
+        fcip: "{{ f_container_image_prepare['parameter_defaults']['ContainerImagePrepare'][0] }}"
+
+    - name: update container registry if needed
+      when: container_namespace is defined
+      block:
+        - name: datastructure
+          set_fact:
+            registry: |
+              set:
+                namespace: {{container_namespace}}
+        - name: update dict
+          set_fact:
+            fcip: "{{ fcip |combine(registry|from_yaml, recursive=True) }}"
+
+    - name: update container name suffix if needed
+      when: container_name_suffix is defined
+      block:
+        - name: datastructure
+          set_fact:
+            registry: |
+              set:
+                name_suffix: {{ container_name_suffix }}
+        - name: update dict
+          set_fact:
+            fcip: "{{ fcip |combine(registry|from_yaml, recursive=True) }}"
+
+    - name: update container name prefix if needed
+      when: container_name_prefix is defined
+      block:
+        - name: datastructure
+          set_fact:
+            registry: |
+              set:
+                name_prefix: {{ container_name_prefix }}
+        - name: update dict
+          set_fact:
+            fcip: "{{ fcip |combine(registry|from_yaml, recursive=True) }}"
+
+    - name: update container tag if needed
+      when: container_tag is defined
+      block:
+        - name: datastructure
+          set_fact:
+            registry: |
+              set:
+                tag: {{ container_tag }}
+        - name: update dict
+          set_fact:
+            fcip: "{{ fcip |combine(registry|from_yaml, recursive=True) }}"
+
+    - name: update ceph container registry if needed
+      when: ceph_container_namespace is defined
+      block:
+        - name: datastructure
+          set_fact:
+            registry: |
+              set:
+                ceph_namespace: {{ ceph_container_namespace }}
+        - name: update dict
+          set_fact:
+            fcip: "{{ fcip |combine(registry|from_yaml, recursive=True) }}"
+
+    - name: update ceph container tag if needed
+      when: ceph_container_tag is defined
+      block:
+        - name: datastructure
+          set_fact:
+            registry: |
+              set:
+                ceph_tag: {{ ceph_container_tag }}
+        - name: update dict
+          set_fact:
+            fcip: "{{ fcip |combine(registry|from_yaml, recursive=True) }}"
+
+    - name: update ceph image if needed
+      when: ceph_image is defined
+      block:
+        - name: datastructure
+          set_fact:
+            registry: |
+              set:
+                ceph_image: {{ ceph_image }}
+        - name: update dict
+          set_fact:
+            fcip: "{{ fcip |combine(registry|from_yaml, recursive=True) }}"
+
+    - name: generate container-image-prepare
+      template:
+        src: containers-prepare-parameter.yaml.j2
+        dest: /home/stack/containers-prepare-parameter.yaml
+        owner: stack
+        group: stack
+      vars:
+        content: "{{ modify_image|default([]) }}"
+
+    - name: drop tag_from_label
+      lineinfile:
+        path: /home/stack/containers-prepare-parameter.yaml
+        state: absent
+        regexp: '[\s]+tag_from_label:'
+
+    - name: run container image prepare if we have custom config
+      when: modify_image|default([]) != []
+      command: |
+        openstack tripleo container image prepare \
+        -e /home/stack/containers-prepare-parameter.yaml \
+        --output-env-file /home/stack/generated-container-prepare.yaml
+
+    - name: run container image prepare for standard config
+      when: modify_image|default([]) == []
+      command: |
+        openstack tripleo container image prepare \
+        -e /home/stack/containers-prepare-parameter.yaml \
+        --output-env-file /home/stack/containers-env-file.yaml
+
+    - name: Clean tweaked entry for undercloud.ctlplane in /etc/hosts
+      lineinfile:
+        dest: /etc/hosts
+        line: "127.0.0.1 undercloud.ctlplane undercloud.ctlplane.localdomain"
+        state: absent
 

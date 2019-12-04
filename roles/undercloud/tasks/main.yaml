@@ -24,6 +24,7 @@
       when: base_image == 'centos'
       import_tasks: custom-packages.yaml
     - import_tasks: image-prepare.yaml
+      tags: image-prepare
     - name: deploy standard undercloud and stuff
       when: not standalone|bool
       block:
