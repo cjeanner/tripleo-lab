@@ -145,7 +145,6 @@
   tags:
     - domains
     - start-domains
-    - inventory
     - gen-ssh-config
     - lab
   wait_for_connection:
