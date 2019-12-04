@@ -21,13 +21,11 @@
     backup: no
 
 - name: inject generated file in the undercloud.conf
-  when:
-    - modify_image|default([]) != []
   ini_file:
     path: /home/stack/undercloud.conf
     section: DEFAULT
     option: container_images_file
-    value: /home/stack/generated-container-prepare.yaml
+    value: /home/stack/containers-prepare-parameter.yaml
     backup: no
 
 - name: Enable undercloud hieradata for low memory

@@ -5,7 +5,7 @@
     - name: run container image prepare
       command: |
         openstack overcloud container image prepare \
-        --output-env-file /home/stack/containers-env-file.yaml
+        --output-env-file /home/stack/generated-container-prepare.yaml
 
 - name: only for recent releases
   when: tripleo_version not in ['queens', 'rocky']
@@ -149,13 +149,6 @@
         openstack tripleo container image prepare \
         -e /home/stack/containers-prepare-parameter.yaml \
         --output-env-file /home/stack/generated-container-prepare.yaml
-
-    - name: run container image prepare for standard config
-      when: modify_image|default([]) == []
-      command: |
-        openstack tripleo container image prepare \
-        -e /home/stack/containers-prepare-parameter.yaml \
-        --output-env-file /home/stack/containers-env-file.yaml
 
     - name: Clean tweaked entry for undercloud.ctlplane in /etc/hosts
       lineinfile:
