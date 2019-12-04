@@ -1,10 +1,6 @@
 #!/bin/bash
 
 source ~/stackrc
-stdbuf -i0 -o0 -e0 openstack tripleo container image prepare \
-  -e ~/local_images.yaml \
-  --output-env-file ~/containers-env-file.yaml
-
 stdbuf -i0 -o0 -e0 openstack overcloud deploy \
   --templates /usr/share/openstack-tripleo-heat-templates/ \
   --stack overcloud-{{ item }} --stack-only \

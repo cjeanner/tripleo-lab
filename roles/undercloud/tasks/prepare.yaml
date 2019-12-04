@@ -156,13 +156,6 @@
         src: container-cli.yaml.j2
       loop: "{{ range(0, overclouds)|list }}"
 
-    - name: push local_images.yaml setting
-      tags:
-        - baremetal
-      template:
-        dest: /home/stack/local_images.yaml
-        src: local_images.yaml
-
     - name: push basic deploy script
       tags:
         - baremetal
