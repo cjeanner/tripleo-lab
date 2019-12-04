@@ -44,89 +44,12 @@
       set_fact:
         fcip: "{{ f_container_image_prepare['parameter_defaults']['ContainerImagePrepare'][0] }}"
 
-    - name: update container registry if needed
-      when: container_namespace is defined
-      block:
-        - name: datastructure
-          set_fact:
-            registry: |
-              set:
-                namespace: {{container_namespace}}
-        - name: update dict
-          set_fact:
-            fcip: "{{ fcip |combine(registry|from_yaml, recursive=True) }}"
-
-    - name: update container name suffix if needed
-      when: container_name_suffix is defined
-      block:
-        - name: datastructure
-          set_fact:
-            registry: |
-              set:
-                name_suffix: {{ container_name_suffix }}
-        - name: update dict
-          set_fact:
-            fcip: "{{ fcip |combine(registry|from_yaml, recursive=True) }}"
-
-    - name: update container name prefix if needed
-      when: container_name_prefix is defined
-      block:
-        - name: datastructure
-          set_fact:
-            registry: |
-              set:
-                name_prefix: {{ container_name_prefix }}
-        - name: update dict
-          set_fact:
-            fcip: "{{ fcip |combine(registry|from_yaml, recursive=True) }}"
-
-    - name: update container tag if needed
-      when: container_tag is defined
-      block:
-        - name: datastructure
-          set_fact:
-            registry: |
-              set:
-                tag: {{ container_tag }}
-        - name: update dict
-          set_fact:
-            fcip: "{{ fcip |combine(registry|from_yaml, recursive=True) }}"
-
-    - name: update ceph container registry if needed
-      when: ceph_container_namespace is defined
-      block:
-        - name: datastructure
-          set_fact:
-            registry: |
-              set:
-                ceph_namespace: {{ ceph_container_namespace }}
-        - name: update dict
-          set_fact:
-            fcip: "{{ fcip |combine(registry|from_yaml, recursive=True) }}"
-
-    - name: update ceph container tag if needed
-      when: ceph_container_tag is defined
-      block:
-        - name: datastructure
-          set_fact:
-            registry: |
-              set:
-                ceph_tag: {{ ceph_container_tag }}
-        - name: update dict
-          set_fact:
-            fcip: "{{ fcip |combine(registry|from_yaml, recursive=True) }}"
-
-    - name: update ceph image if needed
-      when: ceph_image is defined
-      block:
-        - name: datastructure
-          set_fact:
-            registry: |
-              set:
-                ceph_image: {{ ceph_image }}
-        - name: update dict
-          set_fact:
-            fcip: "{{ fcip |combine(registry|from_yaml, recursive=True) }}"
+    - name: update default entries
+      set_fact:
+        fcip: "{{ fcip |combine({'set': {item.key: item.value}}, recursive=True) }}"
+      loop: "{{ container_prepare_overrides|dict2items }}"
+      loop_control:
+        label: "{{ item.key }}"
 
     - name: generate container-image-prepare
       template:
@@ -143,8 +66,7 @@
         state: absent
         regexp: '[\s]+tag_from_label:'
 
-    - name: run container image prepare if we have custom config
-      when: modify_image|default([]) != []
+    - name: run container image prepare
       command: |
         openstack tripleo container image prepare \
         -e /home/stack/containers-prepare-parameter.yaml \
