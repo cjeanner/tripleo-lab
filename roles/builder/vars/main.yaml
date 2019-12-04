@@ -77,7 +77,6 @@ vm_prefix: lab
 root_device: 1
 growfs_part: /dev/sda1
 guestfs_appliance: "appliance-1.38.0.tar.xz"
-python_interpreter: /usr/bin/python
 undercloud_python_interpreter: /usr/bin/python
 undercloud_hostname: undercloud.localdomain
 num_osds: 1
