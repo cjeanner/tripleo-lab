@@ -39,7 +39,7 @@ ansible-playbook builder.yaml --tags lab
 Just limit with the tags, and be sure to have the ```inventory``` tag. For
 example, in order to just manage the overcloud images:
 ```Bash
-ansible-playbook builder.yaml -t inventory -t overcloud-images
+ansible-playbook builder.yaml -t inventory,overcloud-images
 ```
 
 ### I want to add a new instance to my current lab
@@ -299,6 +299,18 @@ modify_container:
   neutron:
     ref: refs/changes/60/661760/7
     container: neutron-server
+```
+
+*container_prepare_overrides*
+  Dict of overrides for the default container-image-prepare.
+```YAML
+container_prepare_overrides:
+  tag: my-test-tag
+  namespace: my.container.registry/rh-osbs
+  name_prefix: tripleo-
+  ceph_namespace: my.ceph.registry/ceph
+  ceph_tag: latest
+  ceph_image: myceph_image
 ```
 
 *num_osds*
