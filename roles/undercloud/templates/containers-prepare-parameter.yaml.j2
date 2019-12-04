@@ -1,7 +1,3 @@
-{% if content != [] %}
 {% set content = [fcip] + content %}
-{% else %}
-{% set content = [fcip] %}
-{% endif %}
 {% set yml = {'parameter_defaults': {'ContainerImagePrepare': content }} %}
 {{ yml | to_nice_yaml }}
