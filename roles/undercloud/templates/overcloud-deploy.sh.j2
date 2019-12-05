@@ -1,4 +1,5 @@
 #!/bin/bash
+source ~/stackrc
 
 stdbuf -i0 -o0 -e0 openstack overcloud deploy \
   --templates /usr/share/openstack-tripleo-heat-templates/ \
