@@ -1,3 +1,8 @@
-{% set content = [fcip] + content %}
-{% set yml = {'parameter_defaults': {'ContainerImagePrepare': content }} %}
+{% set container_image = [fcip] + content %}
+{% if registry_credentials is defined %}
+{% set registry_cred = {registry_credentials.registry: {registry_credentials.login: registry_credentials.password }} %}
+{% else %}
+{% set registry_cred = {} %}
+{% endif %}
+{% set yml = {'parameter_defaults': {'ContainerImagePrepare': container_image, 'ContainerImageRegistryCredentials': registry_cred}} %}
 {{ yml | to_nice_yaml }}
