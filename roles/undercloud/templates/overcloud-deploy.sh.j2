@@ -30,6 +30,7 @@ stdbuf -i0 -o0 -e0 openstack overcloud deploy \
   -e {{ env }} \
   {% endfor -%}
   -e /home/stack/domain.yaml \
+  -e /home/stack/containers-prepare-parameter.yaml \
   -e /home/stack/generated-container-prepare.yaml \
   --environment-directory ~/overcloud-{{ item }}-yml \
   --ntp-server pool.ntp.org --libvirt-type qemu 2>&1 | tee -a ~/install-overcloud-{{ item }}.log
