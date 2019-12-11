@@ -1,0 +1,49 @@
+---
+- name: Is container_tag defined
+  when: container_tag is defined
+  fail:
+    msg: |
+     'container_tag' is deprecated. Please use this instead:
+      container_prepare_overrides: {tag: {{ container_tag }} }
+
+- name: Is container_namespace defined
+  when: container_namespace is defined
+  fail:
+    msg: |+
+     'container_namespace' is deprecated. Please use this instead:
+      container_prepare_overrides: {namespace: {{ container_namespace }} }
+
+- name: Is container_name_prefix defined
+  when: container_name_prefix is defined
+  fail:
+    msg: |+
+     'container_name_prefix' is deprecated. Please use this instead:
+      container_prepare_overrides: {prefix: {{ container_name_prefix }} }
+
+- name: Is container_name_suffix defined
+  when: container_name_suffix is defined
+  fail:
+    msg: |+
+     'container_name_suffix' is deprecated. Please use this instead:
+      container_prepare_overrides: {suffix: {{ container_name_suffix }} }
+
+- name: Is ceph_image defined
+  when: ceph_image is defined
+  fail:
+    msg: |+
+     'ceph_image' is deprecated. Please use this instead:
+      container_prepare_overrides: {ceph_image: {{ ceph_image }} }
+
+- name: Is ceph_namespace defined
+  when: ceph_namespace is defined
+  fail:
+    msg: |+
+     'ceph_namespace' is deprecated. Please use this instead:
+      container_prepare_overrides: {ceph_namespace: {{ ceph_namespace }} }
+
+- name: Is ceph_container_tag defined
+  when: ceph_container_tag is defined
+  fail:
+    msg: |+
+     'ceph_container_tag' is deprecated. Please use this instead:
+      container_prepare_overrides: {ceph_tag: {{ ceph_container_tag }} }

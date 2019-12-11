@@ -1,0 +1,8 @@
+---
+- name: Set tags
+  tags:
+    - always
+    - deprecations
+  block:
+    - name: Image prepare parameters
+      import_tasks: image-prepare.yaml

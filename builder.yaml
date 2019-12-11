@@ -2,6 +2,7 @@
 - hosts: builder
   remote_user: root
   roles:
+    - deprecations
     - common
     - builder
     - nat_vm
