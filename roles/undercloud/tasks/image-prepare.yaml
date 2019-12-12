@@ -6,6 +6,8 @@
       command: |
         openstack overcloud container image prepare \
         --output-env-file /home/stack/generated-container-prepare.yaml
+      args:
+        creates: /home/stack/generated-container-prepare.yaml
 
 - name: only for recent releases
   when: tripleo_version not in ['queens', 'rocky']
@@ -71,6 +73,8 @@
         openstack tripleo container image prepare \
         -e /home/stack/containers-prepare-parameter.yaml \
         --output-env-file /home/stack/generated-container-prepare.yaml
+      args:
+        creates: /home/stack/generated-container-prepare.yaml
 
     - name: Clean tweaked entry for undercloud.ctlplane in /etc/hosts
       lineinfile:
