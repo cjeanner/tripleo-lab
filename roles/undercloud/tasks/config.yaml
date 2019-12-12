@@ -148,3 +148,16 @@
     gpgcheck: "{{ item.gpg |default(omit) }}"
     priority: "{{ item.priority |default(omit) }}"
   loop: "{{ custom_repositories }}"
+
+- name: add static routes for overclouds public endpoints
+  when: nat_vm_addr is defined
+  register: set_overcloud_pub_routes
+  template:
+    dest: /etc/sysconfig/network-scripts/route-eth0
+    src: undercloud-static-routes.j2
+
+- name: add static route to the live system if needed
+  when:
+    - set_overcloud_pub_routes is defined
+    - set_overcloud_pub_routes is changed
+  command: ip ro add 10.20.1.0/24 via {{ nat_vm_addr.stdout|replace('/24','') }} dev eth0
