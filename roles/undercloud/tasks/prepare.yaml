@@ -25,7 +25,7 @@
     path: /home/stack/undercloud.conf
     section: DEFAULT
     option: container_images_file
-    value: /home/stack/containers-prepare-parameter.yaml
+    value: /home/stack/generated-container-prepare.yaml
     backup: no
 
 - name: Enable undercloud hieradata for low memory
