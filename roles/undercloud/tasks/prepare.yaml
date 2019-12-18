@@ -156,6 +156,14 @@
         src: container-cli.yaml.j2
       loop: "{{ range(0, overclouds)|list }}"
 
+    - name: push selinux setting
+      tags:
+        - baremetal
+      template:
+        dest: "/home/stack/overcloud-{{ item }}-yml/selinux-mode.yaml"
+        src: oc-selinux.yaml.j2
+      loop: "{{ range(0, overclouds)|list }}"
+
     - name: push basic deploy script
       tags:
         - baremetal
