@@ -20,6 +20,14 @@
     mode: 0640
     backup: no
 
+- name: Inject insecure registry in undercloud.conf
+  ini_file:
+    path: /home/stack/undercloud.conf
+    section: DEFAULT
+    option: container_insecure_registries
+    value: undercloud.ctlplane
+    backup: no
+
 - name: inject generated file in the undercloud.conf
   ini_file:
     path: /home/stack/undercloud.conf
@@ -172,6 +180,14 @@
         src: overcloud-deploy.sh.j2
         mode: 0750
       loop: "{{ range(0, overclouds)|list }}"
+
+    - name: push push-oc-img script
+      tags:
+        - baremetal
+      template:
+        dest: /home/stack/push-oc-img
+        src: push-oc-img
+        mode: 0750
 
     - name: push config-download script
       tags:
