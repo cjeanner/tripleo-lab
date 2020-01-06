@@ -28,12 +28,12 @@
     value: undercloud.ctlplane
     backup: no
 
-- name: inject generated file in the undercloud.conf
+- name: inject container-prepare file in the undercloud.conf
   ini_file:
     path: /home/stack/undercloud.conf
     section: DEFAULT
     option: container_images_file
-    value: /home/stack/generated-container-prepare.yaml
+    value: /home/stack/containers-prepare-parameter.yaml
     backup: no
 
 - name: Enable undercloud hieradata for low memory
