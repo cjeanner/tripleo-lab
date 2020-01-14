@@ -14,7 +14,7 @@ stdbuf -i0 -o0 -e0 openstack overcloud deploy \
   {% if vms|map(attribute='name')|select("match", '^ceph')|list|length > 0 -%}
   -e /usr/share/openstack-tripleo-heat-templates/environments/ceph-ansible/ceph-ansible.yaml \
   {% endif -%}
-  {% if vms|map(attribute='name')|select("match", '^controller.+')|list|length > 1-%}
+  {% if base_image != 'rhel' and vms|map(attribute='name')|select("match", '^controller.+')|list|length > 1 -%}
   -e /usr/share/openstack-tripleo-heat-templates/environments/docker-ha.yaml \
   {% else -%}
   -e /usr/share/openstack-tripleo-heat-templates/environments/{{ overcloud_container_cli }}.yaml \
