@@ -32,7 +32,6 @@ no_proxy: "localhost,127.0.0.1,192.168.24.0,192.168.24.1,192.168.24.2,192.168.24
 custom_repositories: []
 tripleoclient_pkgname: python-tripleoclient
 unmanage_iface: ens3
-local_registry: true
 custom_ca: ''
 nameservers:
   - 1.1.1.1
