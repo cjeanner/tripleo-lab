@@ -119,7 +119,7 @@
         name: "https://trunk.rdoproject.org/centos7/current/{{tripleo_repo_version.stdout}}"
         state: present
     - name: enable tripleo_version repository with ceph
-      command: tripleo-repos -b "{{tripleo_version}}" current-tripleo ceph
+      command: tripleo-repos -b "{{tripleo_version}}" "{{ tripleo_mod }}" ceph
       args:
         creates: "/etc/yum.repos.d/delorean-{{tripleo_version}}.repo"
 
