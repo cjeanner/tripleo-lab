@@ -68,6 +68,12 @@
         state: absent
         regexp: '[\s]+tag_from_label:'
 
+    - name: ensure push_destination value
+      replace:
+        path: /home/stack/containers-prepare-parameter.yaml
+        regexp: 'push_destination:.+'
+        replace: "push_destination: {{ local_registry }}"
+
     - name: run container image prepare
       command: |
         openstack tripleo container image prepare \
