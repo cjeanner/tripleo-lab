@@ -1,4 +1,11 @@
 ---
+- name: Is local_registry defined
+  when: local_registry is defined
+  fail:
+    msg: |
+      'local_registry' is deprecated. Please use this instead:
+      container_prepare_overrides: {push_destination: {{ local_registry }} }
+
 - name: Is container_tag defined
   when: container_tag is defined
   fail:
