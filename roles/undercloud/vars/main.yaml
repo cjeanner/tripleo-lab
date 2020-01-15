@@ -6,26 +6,26 @@ overcloud_images:
     content: ironic-python-agent.kernel
   - file: overcloud-full.tar
     content: overcloud-full.qcow2
-use_heat: no
-ci_tools: yes
-deploy_undercloud: yes
-deploy_overcloud: no
+use_heat: false
+ci_tools: true
+deploy_undercloud: true
+deploy_overcloud: false
 undercloud_sample: /usr/share/python-tripleoclient/undercloud.conf.sample
 undercloud_dns: 192.168.122.1
 patches: []
 custom_rpms: []
-standalone: no
-standalone_ceph: no
-containerized_undercloud: yes
+standalone: false
+standalone_ceph: false
+containerized_undercloud: true
 synchronize: []
 synchronize_default_dest: /home/stack/tripleo/
 ceph_version: luminous
 tmate_release: 2.3.1
 semodules: []
 overcloud_container_cli: podman
-overcloud_image_update: yes
-undercloud_low_memory: no
-disable_selinux: no
+overcloud_image_update: true
+undercloud_low_memory: false
+disable_selinux: false
 additional_envs: []
 container_registry_ip: ''
 no_proxy: "localhost,127.0.0.1,192.168.24.0,192.168.24.1,192.168.24.2,192.168.24.3,192.168.24.4,192.168.24.5,192.168.24.6,192.168.24.7,192.168.24.8,192.168.24.9,192.168.24.10,192.168.24.11,192.168.24.12,192.168.24.13,192.168.24.14,192.168.24.15,192.168.24.16,192.168.24.17,192.168.24.18,192.168.24.19,192.168.24.20,192.168.24.21,192.168.24.22,192.168.24.23,192.168.24.24"
@@ -33,6 +33,7 @@ custom_repositories: []
 tripleoclient_pkgname: python-tripleoclient
 unmanage_iface: ens3
 custom_ca: ''
+local_registry: 'true'
 nameservers:
   - 1.1.1.1
   - 8.8.8.8
