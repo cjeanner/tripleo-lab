@@ -20,9 +20,7 @@
     - name: deploy ci only on centos
       when: base_image == 'centos'
       import_tasks: ci-tools.yaml
-    - name: custom packages only on centos
-      when: base_image == 'centos'
-      import_tasks: custom-packages.yaml
+    - import_tasks: custom-packages.yaml
     - import_tasks: image-prepare.yaml
       tags: image-prepare
     - name: deploy standard undercloud and stuff

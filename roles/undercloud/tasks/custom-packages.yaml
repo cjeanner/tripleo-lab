@@ -2,107 +2,110 @@
   tags:
     - custom-packages
   block:
-    - name: create local RPM cache
-      file:
-        path: /home/stack/custom-rpms
-        state: directory
-        owner: stack
-        group: stack
-
-    - name: create container RPM cache
-      file:
-        path: /home/stack/container-rpms
-        state: directory
-        owner: stack
-        group: stack
-
     - name: install custom RPM from remote link
       package:
         name: "{{ custom_rpms }}"
         state: installed
       when: custom_rpms | length > 0
 
-    - name: synchronize from controler to undercloud
-      local_action:
-        module: command
-        _raw_params: "rsync -a --delete {{ item.base  }}/{{ item.name }} stack@undercloud:{{ item.dest | default(synchronize_default_dest) }}"
-      loop: "{{ synchronize }}"
-      loop_control:
-        label: "{{ item.name }}"
+    - name: Build packages only on CentOS
+      when: base_image == 'centos'
+      block:
+        - name: create local RPM cache
+          file:
+            path: /home/stack/custom-rpms
+            state: directory
+            owner: stack
+            group: stack
 
-    - name: build synchronized packages
-      become: yes
-      become_user: stack
-      loop: "{{ synchronize }}"
-      loop_control:
-        label: "{{ item.name }}"
-      shell: |
-        rm -rf tripleo/delorean/rdoinfo
-        rm -rf tripleo/delorean/repos
-        ./tripleo-ci/scripts/tripleo.sh --delorean-build {{ item.name }} &> /home/stack/build_{{ item.name }}.log
-        {% if item.host|default(true)|bool %}
-        find ~/tripleo/delorean/ -name "*.rpm" -and -not -name "*.src.rpm" -and -not -name "*-test*" -exec cp '{}' ~/custom-rpms/ \;
-        {% endif %}
-        {% if item.container|default(false)|bool %}
-        find ~/tripleo/delorean/ -name "*.rpm" -and -not -name "*.src.rpm" -and -not -name "*-test*" -exec cp '{}' ~/container-rpms/ \;
-        {% endif %}
-      args:
-        chdir: "/home/stack"
-        creates: "/home/stack/build_{{ item.name }}.log"
+        - name: create container RPM cache
+          file:
+            path: /home/stack/container-rpms
+            state: directory
+            owner: stack
+            group: stack
 
-    - name: fetch and build gerrit changes
-      become: yes
-      become_user: stack
-      when: ci_tools|bool
-      loop: "{{ patches }}"
-      loop_control:
-        label: "{{ item.name }}"
-      shell: |
-        cd tripleo/
-        rm -rf {{ item.name }} delorean/rdoinfo delorean/data/repos/
-        git clone https://github.com/openstack/{{ item.name }}
-        cd {{ item.name }}
-        git fetch https://review.opendev.org/openstack/{{ item.name }} refs/changes/{{ item.refs }}
-        git checkout FETCH_HEAD
-        cd /home/stack
-        ./tripleo-ci/scripts/tripleo.sh --delorean-build {{ item.name }} &> /home/stack/build_{{ item.name }}.log
-        {% if item.host|default(true)|bool %}
-        find ~/tripleo/delorean/ -name "*.rpm" -and -not -name "*.src.rpm" -and -not -name "*-test*" -exec cp '{}' ~/custom-rpms/ \;
-        {% endif %}
-        {% if item.container|default(false)|bool %}
-        find ~/tripleo/delorean/ -name "*.rpm" -and -not -name "*.src.rpm" -and -not -name "*-test*" -exec cp '{}' ~/container-rpms/ \;
-        {% endif %}
-      args:
-        chdir: "/home/stack"
-        creates: "/home/stack/build_{{ item.name }}.log"
+        - name: synchronize from controler to undercloud
+          local_action:
+            module: command
+            _raw_params: "rsync -a --delete {{ item.base  }}/{{ item.name }} stack@undercloud:{{ item.dest | default(synchronize_default_dest) }}"
+          loop: "{{ synchronize }}"
+          loop_control:
+            label: "{{ item.name }}"
 
-    - name: ensure we have RPMs to install
-      find:
-        path: /home/stack/custom-rpms/
-        patterns: '*.rpm'
-        recurse: no
-      register: rpm_to_install
+        - name: build synchronized packages
+          become: yes
+          become_user: stack
+          loop: "{{ synchronize }}"
+          loop_control:
+            label: "{{ item.name }}"
+          shell: |
+            rm -rf tripleo/delorean/rdoinfo
+            rm -rf tripleo/delorean/repos
+            ./tripleo-ci/scripts/tripleo.sh --delorean-build {{ item.name }} &> /home/stack/build_{{ item.name }}.log
+            {% if item.host|default(true)|bool %}
+            find ~/tripleo/delorean/ -name "*.rpm" -and -not -name "*.src.rpm" -and -not -name "*-test*" -exec cp '{}' ~/custom-rpms/ \;
+            {% endif %}
+            {% if item.container|default(false)|bool %}
+            find ~/tripleo/delorean/ -name "*.rpm" -and -not -name "*.src.rpm" -and -not -name "*-test*" -exec cp '{}' ~/container-rpms/ \;
+            {% endif %}
+          args:
+            chdir: "/home/stack"
+            creates: "/home/stack/build_{{ item.name }}.log"
 
-    - name: install custom RPMs
-      when: rpm_to_install['files'] !=  []
-      command: "yum install -y {{ rpm_to_install['files'] |map(attribute='path') | join(' ') }}"
+        - name: fetch and build gerrit changes
+          become: yes
+          become_user: stack
+          when: ci_tools|bool
+          loop: "{{ patches }}"
+          loop_control:
+            label: "{{ item.name }}"
+          shell: |
+            cd tripleo/
+            rm -rf {{ item.name }} delorean/rdoinfo delorean/data/repos/
+            git clone https://github.com/openstack/{{ item.name }}
+            cd {{ item.name }}
+            git fetch https://review.opendev.org/openstack/{{ item.name }} refs/changes/{{ item.refs }}
+            git checkout FETCH_HEAD
+            cd /home/stack
+            ./tripleo-ci/scripts/tripleo.sh --delorean-build {{ item.name }} &> /home/stack/build_{{ item.name }}.log
+            {% if item.host|default(true)|bool %}
+            find ~/tripleo/delorean/ -name "*.rpm" -and -not -name "*.src.rpm" -and -not -name "*-test*" -exec cp '{}' ~/custom-rpms/ \;
+            {% endif %}
+            {% if item.container|default(false)|bool %}
+            find ~/tripleo/delorean/ -name "*.rpm" -and -not -name "*.src.rpm" -and -not -name "*-test*" -exec cp '{}' ~/container-rpms/ \;
+            {% endif %}
+          args:
+            chdir: "/home/stack"
+            creates: "/home/stack/build_{{ item.name }}.log"
 
-    - name: push custom SELinux policies files
-      copy:
-        dest: "/usr/local/src/{{ item.name }}.te"
-        src: "{{ item.src }}"
-      loop: "{{ semodules }}"
-      loop_control:
-        label: "{{ item.name }}"
+        - name: ensure we have RPMs to install
+          find:
+            path: /home/stack/custom-rpms/
+            patterns: '*.rpm'
+            recurse: no
+          register: rpm_to_install
 
-    - name: build and install custom policies
-      args:
-        chdir: /usr/local/src
-        creates: "{{ item.name }}.pp"
-      shell: |
-        checkmodule -M -m -o {{ item.name }}.mod {{ item.name }}.te
-        semodule_package -o {{ item.name }}.pp -m {{ item.name }}.mod
-        semodule -i {{ item.name }}.pp
-      loop: "{{ semodules }}"
-      loop_control:
-        label: "{{ item.name }}"
+        - name: install custom RPMs
+          when: rpm_to_install['files'] !=  []
+          command: "yum install -y {{ rpm_to_install['files'] |map(attribute='path') | join(' ') }}"
+
+        - name: push custom SELinux policies files
+          copy:
+            dest: "/usr/local/src/{{ item.name }}.te"
+            src: "{{ item.src }}"
+          loop: "{{ semodules }}"
+          loop_control:
+            label: "{{ item.name }}"
+
+        - name: build and install custom policies
+          args:
+            chdir: /usr/local/src
+            creates: "{{ item.name }}.pp"
+          shell: |
+            checkmodule -M -m -o {{ item.name }}.mod {{ item.name }}.te
+            semodule_package -o {{ item.name }}.pp -m {{ item.name }}.mod
+            semodule -i {{ item.name }}.pp
+          loop: "{{ semodules }}"
+          loop_control:
+            label: "{{ item.name }}"
