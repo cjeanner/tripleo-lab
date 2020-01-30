@@ -1,4 +1,6 @@
 .*.swp
+satellite.yaml
+roles/satellite
 __pycache__
 ansible_facts_cache
 local_env
