@@ -121,7 +121,7 @@
     - name: enable tripleo_version repository with ceph
       command: tripleo-repos -b "{{tripleo_version}}" "{{ tripleo_mod }}" ceph
       args:
-        creates: "/etc/yum.repos.d/delorean-{{tripleo_version}}.repo"
+        creates: "/etc/yum.repos.d/delorean.repo"
 
 - name: do we have a swap file
   stat:
