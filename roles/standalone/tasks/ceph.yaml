@@ -3,6 +3,11 @@
   when: standalone_ceph|bool
   become: yes
   block:
+    - name: install lvm2
+      package:
+        name: lvm2
+        state: installed
+
     - name: create loop devices
       command: dd if=/dev/zero of=/var/lib/ceph-osd.img bs=1 count=0 seek=7G
       args:
@@ -17,3 +22,13 @@
       file:
         path: /root/ceph_ansible_fetch
         state: directory
+
+    - name: create LVM things for ceph
+      shell: |
+        pvcreate /dev/loop3
+        vgcreate ceph_vg /dev/loop3
+        lvcreate -n ceph_lv_wal -l 375 ceph_vg
+        lvcreate -n ceph_lv_db -l 375 ceph_vg
+        lvcreate -n ceph_lv_data -l 1041 ceph_vg
+      args:
+        creates: /dev/mapper/ceph_vg-ceph_lv_wal
