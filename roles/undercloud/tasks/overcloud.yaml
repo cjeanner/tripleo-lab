@@ -206,6 +206,11 @@
                 source ~/stackrc
                 openstack subnet show ctlplane-subnet -f json | jq '.dns_nameservers' | grep "{{ undercloud_dns }}" ||
                 openstack subnet set ctlplane-subnet --dns-nameserver {{ undercloud_dns }}
+
+            - name: Metalsmith-based node deploy
+              when: metalsmith | default(false) | bool
+              import_tasks: metalsmith.yaml
+
             - name: deploy the overcloud
               when:
                 - vms|length > 1

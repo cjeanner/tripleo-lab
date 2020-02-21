@@ -42,3 +42,4 @@ run_validations: yes
 modify_container: {}
 overclouds: 1
 container_prepare_overrides: {}
+metalsmith: false

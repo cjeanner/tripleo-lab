@@ -1,0 +1,28 @@
+---
+- name: Controller
+  count: {{ (vms|map(attribute='name')|select("match", 'controller.+')|list|length)|int }}
+  instances:
+{% for ctl in (vms|map(attribute='name')|select("match", 'controller.+')|list) %}
+    - hostname: {{ ctl }}
+      name: oc{{item}}-{{ ctl }}
+{% endfor -%}
+
+{% if (vms|map(attribute='name')|select("match", 'compute.+')|list|length)|int > 0 %}
+- name: Compute
+  count: {{ (vms|map(attribute='name')|select("match", 'compute.+')|list|length)|int }}
+  instances:
+{% for compute in (vms|map(attribute='name')|select("match", 'compute.+')|list) %}
+    - hostname: {{ compute }}
+      name: oc{{item}}-{{ compute }}
+{% endfor -%}
+{% endif -%}
+
+{% if (vms|map(attribute='name')|select("match", 'ceph.+')|list|length)|int > 0 %}
+- name: CephStorage
+  count: {{ (vms|map(attribute='name')|select("match", 'ceph.+')|list|length)|int }}
+  instances:
+{% for ceph in (vms|map(attribute='name')|select("match", 'ceph.+')|list) %}
+    - hostname: {{ ceph }}
+      name: oc{{item}}-{{ ceph }}
+{% endfor -%}
+{% endif -%}

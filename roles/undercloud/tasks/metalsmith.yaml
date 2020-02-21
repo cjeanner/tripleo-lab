@@ -1,0 +1,17 @@
+---
+- name: Create metalsmith config yaml
+  template:
+    src: metalsmith.yaml.j2
+    dest: "/home/stack/metalsmith-{{ item }}.yaml"
+  loop: "{{ range(0, overclouds)|list }}"
+
+- name: Provision nodes
+  shell: |
+    source ~/stackrc
+    openstack overcloud node provision \
+      --stack overcloud-{{ item }} \
+      --output ~/overcloud-baremetal-deployed-{{ item }}.yaml \
+      /home/stack/metalsmith-{{ item }}.yaml |tee -a /home/stack/metalsmith-{{ item}}.log
+  args:
+    creates: "/home/stack/overcloud-baremetal-deployed-{{ item }}.yaml"
+  loop: "{{ range(0, overclouds)|list }}"

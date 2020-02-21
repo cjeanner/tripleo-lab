@@ -5,6 +5,11 @@ stdbuf -i0 -o0 -e0 openstack overcloud deploy \
   --templates /usr/share/openstack-tripleo-heat-templates/ \
   --stack overcloud-{{ item }} \
   -n /home/stack/oc{{ item }}-network-data.yaml \
+  {% if metalsmith | default(false) | bool %}
+  -e /usr/share/openstack-tripleo-heat-templates/environments/deployed-server-environment.yaml \
+  -e /home/stack/overcloud-baremetal-deployed-{{ item }}.yaml \
+  --deployed-server --disable-validations \
+  {% endif -%}
   -e /usr/share/openstack-tripleo-heat-templates/environments/net-multiple-nics.yaml \
   -e /usr/share/openstack-tripleo-heat-templates/environments/network-isolation.yaml \
   -e /usr/share/openstack-tripleo-heat-templates/environments/network-environment.yaml \
