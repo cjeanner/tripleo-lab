@@ -5,7 +5,7 @@
     - domains
     - lab
   block:
-    - name: define undecloud node
+    - name: define undercloud node
       when: item.name is match('^undercloud')
       virt:
         command: define
