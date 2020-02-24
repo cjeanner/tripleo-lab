@@ -55,6 +55,14 @@
         name:
           - python3-libvirt
           - python3-pip
+
+    - name: install platform-python-setuptools if needed
+      when:
+        - ansible_facts['python_version'] is version('3.0', 'gt', strict=False)
+        - ansible_facts['distribution'] != 'Fedora'
+      package:
+        use: "{{ package_use|default(omit) }}"
+        name:
           - platform-python-setuptools
 
     - name: install libvirt for python2

@@ -53,6 +53,14 @@
         mode: 0700
         owner: "{{ virt_user }}"
 
+    - name: Create symlink if needed
+      when:
+        ansible_facts['distribution'] == 'Fedora'
+      file:
+        path: /usr/libexec/qemu-kvm
+        state: link
+        src: /usr/bin/qemu-kvm
+
 - name: run tasks as virt_user user
   become: true
   become_user: "{{ virt_user }}"
