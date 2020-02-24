@@ -1,5 +1,5 @@
 - name: execute all as virt_user
-  become: yes
+  become: true
   become_user: "{{ virt_user }}"
   tags:
     - images

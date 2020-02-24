@@ -38,7 +38,7 @@ nameservers:
   - 1.1.1.1
   - 8.8.8.8
 undercloud_config: []
-run_validations: yes
+run_validations: true
 modify_container: {}
 overclouds: 1
 container_prepare_overrides: {}

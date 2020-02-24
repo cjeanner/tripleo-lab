@@ -6,32 +6,32 @@ vms:
     interfaces:
       - network: default
       - Net2
-    autostart: yes
+    autostart: true
   - name: controller-0
     cpu: 4
     memory: 8192
     interfaces:
       - Net1
       - Net2
-    autostart: no
+    autostart: false
   - name: controller-1
     cpu: 4
     memory: 8192
     interfaces:
       - Net1
       - Net2
-    autostart: no
+    autostart: false
   - name: controller-2
     cpu: 4
     memory: 8192
     interfaces:
       - Net1
       - Net2
-    autostart: no
+    autostart: false
   - name: compute-0
     cpu: 4
     memory: 6144
     interfaces:
       - Net1
       - Net2
-    autostart: no
+    autostart: false

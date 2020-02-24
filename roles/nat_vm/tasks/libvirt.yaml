@@ -1,6 +1,6 @@
 ---
 - name: run tasks as virt_user user
-  become: yes
+  become: true
   become_user: "{{ virt_user }}"
   tags:
     - lab
@@ -59,7 +59,7 @@
     module: blockinfile
     path: ~/.ssh/config
     marker: "## {mark} nat-vm"
-    create: yes
+    create: true
     mode: 0600
     block: |
       Host {{ vm_prefix }}-nat-vm {{ nat_vm_addr.stdout|replace('/24','') }}

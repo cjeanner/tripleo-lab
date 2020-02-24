@@ -1,4 +1,4 @@
-enable_metrics: no
+enable_metrics: false
 overclouds: 1
 vms:
   - name: undercloud
@@ -7,69 +7,69 @@ vms:
     interfaces:
       - network: default
       - Net2
-    autostart: yes
+    autostart: true
   - name: controller-0
     cpu: 2
     memory: 4096
     interfaces:
       - Net1
       - Net2
-    autostart: no
+    autostart: false
   - name: controller-1
     cpu: 2
     memory: 4096
     interfaces:
       - Net1
       - Net2
-    autostart: no
+    autostart: false
   - name: controller-2
     cpu: 2
     memory: 4096
     interfaces:
       - Net1
       - Net2
-    autostart: no
+    autostart: false
   - name: compute-0
     cpu: 2
     memory: 4096
     interfaces:
       - Net1
       - Net2
-    autostart: no
+    autostart: false
   - name: compute-1
     cpu: 2
     memory: 4096
     interfaces:
       - Net1
       - Net2
-    autostart: no
+    autostart: false
   - name: ceph-0
     cpu: 2
     memory: 8192
     interfaces:
       - Net1
       - Net2
-    autostart: no
+    autostart: false
   - name: ceph-1
     cpu: 2
     memory: 8192
     interfaces:
       - Net1
       - Net2
-    autostart: no
+    autostart: false
   - name: ceph-2
     cpu: 2
     memory: 8192
     interfaces:
       - Net1
       - Net2
-    autostart: no
+    autostart: false
 
 virt_user: virtuser
 basedir: "/home/{{virt_user}}"
 undercloud_password: fooBar
-centos_mirror: no
-manage_mirror_device: yes
+centos_mirror: false
+manage_mirror_device: true
 mirror_base_directory: /srv/mirror
 centos_mirror_device: /dev/sdc
 base_image: centos

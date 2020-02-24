@@ -2,7 +2,7 @@
   lineinfile:
     path: /etc/collectd.conf.d/plugins.conf
     line: "LoadPlugin {{ plugin_name }}"
-    create: yes
+    create: true
 
 - name: "push plugin configuration for {{ plugin_name }}"
   template:

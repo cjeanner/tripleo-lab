@@ -2,7 +2,7 @@
   shell: |
     podman ps --all | grep -c "{{ct_name}}"
   register: is_created
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: "create {{ct_name}} if needed"
   when: is_created.stdout|int == 0
@@ -22,7 +22,7 @@
 
 - name: "enable {{ct_name}} container unit"
   systemd:
-    daemon_reload: yes
-    enabled: yes
+    daemon_reload: true
+    enabled: true
     name: "container-{{ct_name}}.service"
     state: started

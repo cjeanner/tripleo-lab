@@ -28,7 +28,7 @@
             dev: "{{centos_mirror_device}}1"
         - name: mount dedicated device
           mount:
-            backup: yes
+            backup: true
             fstype: xfs
             path: "{{ mirror_base_directory }}"
             src: "{{centos_mirror_device}}1"
@@ -72,7 +72,7 @@
       service:
         name: nginx
         state: started
-        enabled: yes
+        enabled: true
 
     - name: mirror DLRN
       command: /usr/local/sbin/mirror dlrn

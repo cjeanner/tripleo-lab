@@ -13,7 +13,7 @@
   service:
     name: iscsid.socket
     state: stopped
-    enabled: no
+    enabled: false
   when: stat_iscsid_socket.stat.exists
 
 - name: get certmonger local CA
@@ -51,7 +51,7 @@
       loop_control:
         label: "{{item.file}}"
     - name: run commands as stack user
-      become: yes
+      become: true
       become_user: stack
       tags:
         - baremetal
@@ -61,7 +61,7 @@
           unarchive:
             creates: "/home/stack/overcloud_imgs/{{item.content}}"
             dest: "/home/stack/overcloud_imgs/"
-            remote_src: yes
+            remote_src: true
             src: "/home/stack/overcloud_imgs/{{item.file}}"
           loop: "{{ overcloud_images }}"
           loop_control:
@@ -79,7 +79,7 @@
         name: rhosp-director-images-x86_64
         state: installed
     - name: run commands as stack user
-      become: yes
+      become: true
       become_user: stack
       tags:
         - baremetal
@@ -89,7 +89,7 @@
           unarchive:
             creates: "/home/stack/overcloud_imgs/{{item.content}}"
             dest: "/home/stack/overcloud_imgs/"
-            remote_src: yes
+            remote_src: true
             src: "/usr/share/rhosp-director-images/{{item.file}}"
           loop: "{{ overcloud_images }}"
           loop_control:
@@ -100,7 +100,7 @@
     - baremetal
   block:
     - name: run commands as stack user
-      become: yes
+      become: true
       become_user: stack
       block:
         - name: copy overcloud firstboot script

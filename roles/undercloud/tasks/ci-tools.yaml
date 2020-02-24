@@ -13,13 +13,13 @@
 - name: common tags
   tags:
     - deploy-ci
-  become: yes
+  become: true
   become_user: stack
   when: ci_tools|bool
   block:
     - name: clone tripleo-ci in stack home
       git:
-        accept_hostkey: yes
+        accept_hostkey: true
         dest: "/home/stack/tripleo-ci"
         repo: "https://review.opendev.org/openstack/tripleo-ci"
 

@@ -1,5 +1,5 @@
 - name: run commands as stack user
-  become: yes
+  become: true
   become_user: stack
   block:
     - name: "deploy undercloud (explicit --use-heat)"

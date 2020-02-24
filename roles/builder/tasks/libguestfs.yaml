@@ -6,7 +6,7 @@
     creates: /usr/local/src/appliance
     src: "http://download.libguestfs.org/binaries/appliance/{{ guestfs_appliance }}"
     dest: "/usr/local/src/"
-    remote_src: yes
+    remote_src: true
 
 - name: inject appliance in env
   tags:

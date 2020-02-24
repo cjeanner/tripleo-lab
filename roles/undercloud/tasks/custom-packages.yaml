@@ -34,7 +34,7 @@
             label: "{{ item.name }}"
 
         - name: build synchronized packages
-          become: yes
+          become: true
           become_user: stack
           loop: "{{ synchronize }}"
           loop_control:
@@ -54,7 +54,7 @@
             creates: "/home/stack/build_{{ item.name }}.log"
 
         - name: fetch and build gerrit changes
-          become: yes
+          become: true
           become_user: stack
           when: ci_tools|bool
           loop: "{{ patches }}"
@@ -83,7 +83,7 @@
           find:
             path: /home/stack/custom-rpms/
             patterns: '*.rpm'
-            recurse: no
+            recurse: false
           register: rpm_to_install
 
         - name: install custom RPMs

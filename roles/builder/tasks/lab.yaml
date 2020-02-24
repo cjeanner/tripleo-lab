@@ -1,5 +1,5 @@
 - name: all tasks run as virt_user
-  become: yes
+  become: true
   become_user: "{{ virt_user }}"
   tags:
     - domains
@@ -126,7 +126,7 @@
     module: blockinfile
     path: ~/.ssh/config
     marker: "## {mark} {{ item.item.name }}"
-    create: yes
+    create: true
     mode: 0600
     block: |
       Host {{ item.item.name }} {{ item.stdout|replace('/24','') }}

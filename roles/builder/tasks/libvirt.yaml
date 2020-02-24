@@ -7,8 +7,8 @@
     - name: create virt_user
       user:
         comment: "Virtual user for tripleo lab"
-        create_home: yes
-        generate_ssh_key: yes
+        create_home: true
+        generate_ssh_key: true
         groups:
           - libvirt
           - kvm
@@ -29,7 +29,7 @@
     - name: push authorized_keys
       copy:
         src: /root/.ssh/authorized_keys
-        remote_src: yes
+        remote_src: true
         dest: "{{ basedir }}/.ssh/authorized_keys"
         group: "{{ virt_user }}"
         mode: 0600
@@ -54,7 +54,7 @@
         owner: "{{ virt_user }}"
 
 - name: run tasks as virt_user user
-  become: yes
+  become: true
   become_user: "{{ virt_user }}"
   tags:
     - lab
@@ -83,12 +83,12 @@
       virt_net:
         command: create
         name: default
-      ignore_errors: yes
+      ignore_errors: true
 
     - name: ensure network is active and autostart
       virt_net:
         state: active
-        autostart: yes
+        autostart: true
         name: default
 
     - name: load ctlplane network
@@ -107,7 +107,7 @@
     - name: ensure ctlplane is active and autostart
       virt_net:
         state: active
-        autostart: yes
+        autostart: true
         name: ctlplane
 
     - name: create some directories

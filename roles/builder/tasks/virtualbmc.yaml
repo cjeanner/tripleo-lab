@@ -18,10 +18,10 @@
         - ansible_facts['python_version'] is version('3.0', 'gt', strict=False)
       user:
         comment: VirtualBMC Daemon user
-        create_home: yes
+        create_home: true
         home: /var/lib/vbmcd
         name: vbmcd
-        system: yes
+        system: true
 
     - name: authorize vbmcd on libvirt
       when:
@@ -38,9 +38,9 @@
 
     - name: start virtualbmc
       service:
-        daemon_reload: yes
+        daemon_reload: true
         name: virtualbmc.service
-        enabled: yes
+        enabled: true
         state: started
 
     - name: get all defined VMs
@@ -58,14 +58,14 @@
         label: "oc{{ item.1 }}-{{ item.0.name }}"
         index_var: vm_idx
       register: vbmc
-      ignore_errors: yes
+      ignore_errors: true
 
     - name: Start the Virtual BMCs (virtualbmc >= 1.4.0+)
       command: "vbmc start {{vm_prefix}}-oc{{ item.1 }}-{{ item.0.name }}"
       loop: "{{ vms|product(overclouds_range)|list }}"
       loop_control:
         label: "oc{{ item.1 }}-{{ item.0.name }}"
-      ignore_errors: yes
+      ignore_errors: true
       when:
         - vbmc.changed
         - item.0.name is not match('^undercloud')

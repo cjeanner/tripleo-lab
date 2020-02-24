@@ -9,10 +9,10 @@
       yum_repository:
         baseurl: 'https://buildlogs.centos.org/centos/7/virt/$basearch/container/'
         description: 'Latest podman binaries'
-        enabled: yes
-        gpgcheck: no
+        enabled: true
+        gpgcheck: false
         name: centos7-virt-container
-        skip_if_unavailable: yes
+        skip_if_unavailable: true
 
     - name: install podman
       package:

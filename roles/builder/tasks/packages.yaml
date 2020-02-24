@@ -14,7 +14,7 @@
         - no_beaker is changed
       command: yum clean all
       args:
-        warn: no
+        warn: false
 
     - name: set up proxy if any is provided (sh profile)
       template:

@@ -3,7 +3,7 @@
     - builder-services
     - builder-bootstrap
   service:
-    enabled: yes
+    enabled: true
     name: "{{item}}"
     state: started
   loop:
@@ -31,4 +31,4 @@
   service:
     name: firewalld.service
     state: stopped
-    enabled: no
+    enabled: false

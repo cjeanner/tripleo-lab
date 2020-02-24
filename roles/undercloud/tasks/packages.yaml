@@ -35,13 +35,13 @@
     creates: "/usr/src/tmate-{{tmate_release}}-static-linux-amd64"
     dest: /usr/src/
     src: "/usr/src/tmate-{{tmate_release}}-static-linux-amd64.tar.xz"
-    remote_src: yes
+    remote_src: true
 
 - name: copy tmate binary in path
   copy:
     src: "/usr/src/tmate-{{tmate_release}}-static-linux-amd64/tmate"
     dest: "/usr/local/bin/tmate"
-    remote_src: yes
+    remote_src: true
     mode: 0755
 
 - name: configure tmate

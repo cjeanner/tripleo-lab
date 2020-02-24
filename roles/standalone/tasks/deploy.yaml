@@ -13,7 +13,7 @@
 
 - name: deploy standalone
   when: deploy_standalone|bool
-  become: yes
+  become: true
   become_user: stack
   command: /home/stack/deploy.sh
   args:

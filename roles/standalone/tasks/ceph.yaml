@@ -1,7 +1,7 @@
 ---
 - name: if ceph is requested
   when: standalone_ceph|bool
-  become: yes
+  become: true
   block:
     - name: install lvm2
       package:

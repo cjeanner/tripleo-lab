@@ -1,8 +1,8 @@
 - name: create stack user
   user:
     comment: "Stack user for tripleo"
-    create_home: yes
-    generate_ssh_key: yes
+    create_home: true
+    generate_ssh_key: true
     name: stack
     shell: "/bin/bash"
     ssh_key_bits: 4096
@@ -18,7 +18,7 @@
 
 - name: create root keypair
   user:
-    generate_ssh_key: yes
+    generate_ssh_key: true
     name: root
     shell: "/bin/bash"
     ssh_key_bits: 4096
@@ -40,7 +40,7 @@
     group: stack
     mode: '0644'
     owner: stack
-    remote_src: yes
+    remote_src: true
     src: /root/.ssh/authorized_keys
 
 - name: get stack pub key
