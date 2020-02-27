@@ -80,3 +80,4 @@ guestfs_appliance: "appliance-1.38.0.tar.xz"
 undercloud_python_interpreter: /usr/bin/python
 undercloud_hostname: undercloud.localdomain
 num_osds: 1
+os_version: 7
