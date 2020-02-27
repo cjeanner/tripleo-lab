@@ -95,12 +95,12 @@
     src: delorean.repo.j2
   when:
     - centos_mirror|bool
-    - base_image != 'rhel'
+    - base_image == 'centos'
 
 - name: set CentOS mirror if we have a mirror
   when:
     - centos_mirror|bool
-    - base_image != 'rhel'
+    - base_image == 'centos'
   template:
     dest: "/etc/yum.repos.d/CentOS-Base.repo"
     src: centos.repo.j2
@@ -108,20 +108,8 @@
 - name: set delorean repository from upstream if no mirror
   when:
     - not centos_mirror|bool
-    - base_image != 'rhel'
-  block:
-    - name: fetch latest repo version
-      shell: |
-        curl -s https://trunk.rdoproject.org/centos7/current/ | awk '/python2-tripleo-repos/ { print $6}' | cut -d '"' -f 2
-      register: tripleo_repo_version
-    - name: install tripleo repository
-      package:
-        name: "https://trunk.rdoproject.org/centos7/current/{{tripleo_repo_version.stdout}}"
-        state: present
-    - name: enable tripleo_version repository with ceph
-      command: tripleo-repos -b "{{tripleo_version}}" "{{ tripleo_mod }}" ceph
-      args:
-        creates: "/etc/yum.repos.d/delorean.repo"
+    - base_image == 'centos'
+  import_tasks: "centos-{{ os_version }}.yaml"
 
 - name: do we have a swap file
   stat:
@@ -161,3 +149,14 @@
     - set_overcloud_pub_routes is defined
     - set_overcloud_pub_routes is changed
   command: ip ro add 10.20.1.0/24 via {{ nat_vm_addr.stdout|replace('/24','') }} dev eth0
+
+- name: Inject custom PS1
+  copy:
+    dest: /etc/profile.d/ps1.sh
+    content: |
+      # Set PS1 to reflect OS version and deploy type
+      {% if standalone | default(false) | bool %}
+      export PS1="[{{ ansible_facts['distribution'] }}-{{ ansible_facts['distribution_version'] }} (standalone) - \u@\h \W]\$ "
+      {% else %}
+      export PS1="[{{ ansible_facts['distribution'] }}-{{ ansible_facts['distribution_version'] }} (undercloud) - \u@\h \W]\$ "
+      {% endif %}

@@ -1,0 +1,26 @@
+---
+- name: push custom SELinux policies files
+  tags:
+    - custom-packages
+    - selinux
+  copy:
+    dest: "/usr/local/src/{{ item.name }}.te"
+    src: "{{ item.src }}"
+  loop: "{{ semodules }}"
+  loop_control:
+    label: "{{ item.name }}"
+
+- name: build and install custom policies
+  tags:
+    - custom-packages
+    - selinux
+  args:
+    chdir: /usr/local/src
+    creates: "{{ item.name }}.pp"
+  shell: |
+    checkmodule -M -m -o {{ item.name }}.mod {{ item.name }}.te
+    semodule_package -o {{ item.name }}.pp -m {{ item.name }}.mod
+    semodule -i {{ item.name }}.pp
+  loop: "{{ semodules }}"
+  loop_control:
+    label: "{{ item.name }}"

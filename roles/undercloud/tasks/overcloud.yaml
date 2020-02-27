@@ -36,7 +36,7 @@
     - baremetal
     - overcloud-images
   when:
-    - base_image != 'rhel'
+    - base_image == 'centos'
   block:
     - name: fetch images
       get_url:
@@ -72,7 +72,7 @@
     - baremetal
     - overcloud-images
   when:
-    - base_image == 'rhel'
+    - base_image != 'centos'
   block:
     - name: install package
       package:

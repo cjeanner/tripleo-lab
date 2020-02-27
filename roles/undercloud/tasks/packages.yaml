@@ -6,13 +6,12 @@
 
 - name: install some tools
   package:
-    name: "{{item}}"
+    name:
+      - git
+      - iotop
+      - tmux
+      - vim
     state: present
-  loop:
-    - git
-    - iotop
-    - tmux
-    - vim
 
 - name: install tripleo client
   package:
@@ -23,6 +22,12 @@
   package:
     name: [ceph-ansible, util-linux]
     state: installed
+
+- name: Install network-scripts-openvswitch
+  when:
+    - os_version == 8
+  package:
+    name: network-scripts-openvswitch
 
 - name: fetch tmate release from github
   command: "curl -OL https://github.com/tmate-io/tmate/releases/download/{{tmate_release}}/tmate-{{tmate_release}}-static-linux-amd64.tar.xz"

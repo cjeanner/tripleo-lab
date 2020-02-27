@@ -1,0 +1,30 @@
+---
+- name: Create local RPM cache
+  tags:
+    - custom-packages
+  file:
+    path: /home/stack/custom-rpms
+    state: directory
+    owner: stack
+    group: stack
+
+- name: Create container RPM cache
+  tags:
+    - custom-packages
+  file:
+    path: /home/stack/container-rpms
+    state: directory
+    owner: stack
+    group: stack
+
+- name: Synchronize from controler to undercloud
+  tags:
+    - custom-packages
+  local_action:
+    module: command
+    _raw_params: "rsync -a --delete {{ item.base  }}/{{ item.name }} stack@undercloud:{{ item.dest | default(synchronize_default_dest) }}"
+  loop: "{{ synchronize }}"
+  loop_control:
+    label: "{{ item.name }}"
+
+

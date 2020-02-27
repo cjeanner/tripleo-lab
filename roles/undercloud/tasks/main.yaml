@@ -2,25 +2,50 @@
   tags:
     - undercloud-bootstrap
     - lab
-  delegate_to: undercloud
-  delegate_facts: false
   block:
+    - name: Gather facts
+      setup:
+        gather_subset: 'all'
+
+    - name: Set some local facts|vars
+      set_fact:
+        base_image: "{{ ansible_facts['distribution'] | lower }}"
+        overclouds_range: "{{ range(0, overclouds | default(1)) | list }}"
+
     - import_tasks: config.yaml
     - import_tasks: user.yaml
     - import_tasks: rhos-release.yaml
     - import_tasks: rhel.yaml
+
     - name: install epel only on centos
       when: base_image == 'centos'
       import_tasks: epel.yaml
+
     - name: configure metrics
       when: enable_metrics|bool
       import_role:
         name: metrics
+
     - import_tasks: packages.yaml
-    - name: deploy ci only on centos
-      when: base_image == 'centos'
-      import_tasks: ci-tools.yaml
-    - import_tasks: custom-packages.yaml
+    - import_tasks: prepare-build.yaml
+
+    - name: CentOS package building
+      tags:
+        - custom-packages
+      when:
+        - base_image == 'centos'
+      block:
+        - import_tasks: pkg-build.yaml
+
+    - name: Install built RPMs on CentOS
+      tags:
+        - custom-packages
+      when:
+        - base_image == 'centos'
+      import_tasks: install-built-rpms.yaml
+
+    - import_tasks: install-custom-selinux.yaml
+    - import_tasks: remote-pkg.yaml
     - import_tasks: image-prepare.yaml
       tags: image-prepare
     - name: deploy standard undercloud and stuff
