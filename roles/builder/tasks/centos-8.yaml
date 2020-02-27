@@ -1,0 +1,11 @@
+---
+- name: Get latest centos-8 image name
+  shell: |
+    curl -s http://cloud.centos.org/centos/8/x86_64/images/ | awk '/GenericCloud/ { print $8 }'|cut -d '"' -f 2
+  register: latest_centos8
+
+- name: Fetch latest centos-8 image
+  get_url:
+    url: "http://cloud.centos.org/centos/8/x86_64/images/{{ latest_centos8.stdout }}"
+    dest: "{{ basedir }}/images/centos-8.qcow2"
+    mode: 0664

@@ -1,0 +1,6 @@
+---
+- name: Fetch centos-7 base image
+  get_url:
+    url: "http://cloud.centos.org/centos/7/images/CentOS-7-x86_64-GenericCloud.qcow2"
+    dest: "{{ basedir }}/images/centos-7.qcow2"
+    mode: 0664
