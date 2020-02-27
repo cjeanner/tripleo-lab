@@ -74,7 +74,7 @@
 
     - name: install virtualbmc from pip
       when:
-        - ansible_python_version is version('3.0', 'gt', strict=False)
+        - ansible_facts['python_version'] is version('3.0', 'gt', strict=False)
       pip:
         name: virtualbmc
 
