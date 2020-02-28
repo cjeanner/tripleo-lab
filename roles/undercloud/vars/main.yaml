@@ -1,5 +1,6 @@
 centos_mirror: false
 enable_metrics: false
+vm_prefix: lab
 virt_user: virtuser
 tripleo_version: master
 tripleo_mod: current-tripleo
