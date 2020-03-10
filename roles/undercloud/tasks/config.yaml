@@ -157,7 +157,7 @@
     content: |
       # Set PS1 to reflect OS version and deploy type
       {% if standalone | default(false) | bool %}
-      export PS1='[{{ ansible_facts['distribution'] }}-{{ ansible_facts['distribution_version'] }} (standalone) - \u@\h \W]\$ '
+      export PS1='[{{ ansible_facts['distribution'] }}-{{ ansible_facts['distribution_version'] }} - \u@standalone \W]\$ '
       {% else %}
-      export PS1='[{{ ansible_facts['distribution'] }}-{{ ansible_facts['distribution_version'] }} (undercloud) - \u@\h \W]\$ '
+      export PS1='[{{ ansible_facts['distribution'] }}-{{ ansible_facts['distribution_version'] }} - \u@\h \W]\$ '
       {% endif %}
