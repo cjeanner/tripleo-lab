@@ -9,6 +9,10 @@ do_destroy() {
     $VIRSH undefine $i;
     rm -f /home/{{virt_user}}/workload/${i}*
   done
+{% if ansible_facts['distribution_version'] is version('8.0', 'gt', strict=False) %}
+  echo 'Flushing temporary VBMC rules'
+  sudo firewall-cmd --reload
+{% endif -%}
 }
 
 echo -n 'Destroy the lab? [Ny] '
