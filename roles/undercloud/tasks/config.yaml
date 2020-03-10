@@ -138,7 +138,8 @@
   loop: "{{ custom_repositories }}"
 
 - name: add static routes for overclouds public endpoints
-  when: nat_vm_addr is defined
+  when:
+    - hostvars['builder']['nat_vm_addr'] is defined
   register: set_overcloud_pub_routes
   template:
     dest: /etc/sysconfig/network-scripts/route-eth0
@@ -148,7 +149,7 @@
   when:
     - set_overcloud_pub_routes is defined
     - set_overcloud_pub_routes is changed
-  command: ip ro add 10.20.1.0/24 via {{ nat_vm_addr.stdout|replace('/24','') }} dev eth0
+  command: ip ro add 10.20.1.0/24 via {{ hostvars['builder']['nat_vm_addr'].stdout|replace('/24','') }} dev eth0
 
 - name: Inject custom PS1
   copy:
