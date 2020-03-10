@@ -1,15 +1,15 @@
 ---
-- name: only for older releases
+- name: Only for older releases
   when: tripleo_version in ['queens', 'rocky']
   block:
-    - name: run container image prepare
+    - name: Run container image prepare
       command: |
         openstack overcloud container image prepare \
         --output-env-file /home/stack/generated-container-prepare.yaml
       args:
         creates: /home/stack/generated-container-prepare.yaml
 
-- name: only for recent releases
+- name: Only for recent releases
   when: tripleo_version not in ['queens', 'rocky']
   block:
     - name: Ensure we have image-serve
@@ -18,12 +18,18 @@
           -a role=tripleo-image-serve \
           -e tripleo_container_registry_host='*' \
           localhost
+      args:
+        creates: /etc/httpd/conf.d/image-serve.conf
 
     - name: Ensure we have something for podman registry
       command: |
         ansible -m include_role \
           -a role=tripleo-podman \
-          -e tripleo_container_registry_insecure_registries='["localhost","undercloud.ctlplane"]'
+          -e tripleo_container_registry_insecure_registries='["localhost","undercloud.ctlplane"]' \
+          -e ansible_distribution={{ ansible_facts['distribution'] }} \
+          -e ansible_os_family={{ ansible_facts['os_family'] }} \
+          -e ansible_distribution_version={{ ansible_facts['distribution_version'] }} \
+          -e ansible_distribution_major_version={{ ansible_facts['distribution_major_version'] }} \
           localhost
 
     - name: Ensure we have an entry for undercloud.ctlplane in /etc/hosts
@@ -32,28 +38,28 @@
         line: "127.0.0.1 undercloud.ctlplane undercloud.ctlplane.localdomain"
         state: present
 
-    - name: get standard container-prepare-image output
+    - name: Get standard container-prepare-image output
       shell: |
         openstack tripleo container image prepare default \
         --local-push-destination
       register: container_image_prepare
 
-    - name: convert as a fact
+    - name: Convert as a fact
       set_fact:
         f_container_image_prepare: "{{ container_image_prepare.stdout|from_yaml }}"
 
-    - name: shorten content
+    - name: Shorten content
       set_fact:
         fcip: "{{ f_container_image_prepare['parameter_defaults']['ContainerImagePrepare'][0] }}"
 
-    - name: update default entries
+    - name: Update default entries
       set_fact:
         fcip: "{{ fcip |combine({'set': {item.key: item.value}}, recursive=True) }}"
       loop: "{{ container_prepare_overrides|dict2items }}"
       loop_control:
         label: "{{ item.key }}"
 
-    - name: generate container-image-prepare
+    - name: Generate container-image-prepare
       template:
         src: containers-prepare-parameter.yaml.j2
         dest: /home/stack/containers-prepare-parameter.yaml
@@ -62,23 +68,25 @@
       vars:
         content: "{{ modify_image|default([]) }}"
 
-    - name: drop tag_from_label
+    - name: Drop tag_from_label
       lineinfile:
         path: /home/stack/containers-prepare-parameter.yaml
         state: absent
         regexp: '[\s]+tag_from_label:'
 
-    - name: ensure push_destination value
+    - name: Ensure push_destination value
       replace:
         path: /home/stack/containers-prepare-parameter.yaml
         regexp: 'push_destination:.+'
         replace: "push_destination: {{ local_registry }}"
 
-    - name: run container image prepare
+    - name: "Run container image prepare (/var/log/tripleo-container-image-prepare.log)"
       command: |
         openstack tripleo container image prepare \
         -e /home/stack/containers-prepare-parameter.yaml \
-        --output-env-file /home/stack/generated-container-prepare.yaml
+        --output-env-file /home/stack/generated-container-prepare.yaml \
+        --log-file /var/log/tripleo-container-image-prepare.log \
+        --debug
       args:
         creates: /home/stack/generated-container-prepare.yaml
 

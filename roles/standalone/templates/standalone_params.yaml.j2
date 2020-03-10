@@ -1,29 +1,21 @@
 parameter_defaults:
-  ContainerCli: {{ standalone_container_cli|default('podman') }}
-{% if disable_selinux|bool %}
+  ContainerCli: {{ standalone_container_cli | default('podman') }}
+{% if disable_selinux | default(false) | bool %}
   SELinuxMode: permissive
 {% endif %}
   CloudName: {{ ip }}
   ControlPlaneStaticRoutes: []
   Debug: true
+  ConfigDebug: true
   ContainerImagePrepareDebug: true
   DeploymentUser: stack
   DnsServers: {{ nameservers | to_yaml }}
   DockerInsecureRegistryAddress:
     - {{ ip }}:8787
-  PythonInterpreter: {{ undercloud_python_interpreter }}
-  NeutronPublicInterface: {{ interface }}
-  # domain name used by the host
+  NeutronPublicInterface: eth1
   NeutronDnsDomain: localdomain
-  # re-use ctlplane bridge for public net, defined in the standalone
-  # net config (do not change unless you know what you're doing)
-  NeutronBridgeMappings: datacentre:br-ctlplane
-  NeutronPhysicalBridge: br-ctlplane
-  # enable to force metadata for public net
-  #NeutronEnableForceMetadata: true
   StandaloneEnableRoutedNetworks: false
   StandaloneHomeDir: /home/stack
   StandaloneLocalMtu: 1500
-  # Needed if running in a VM, not needed if on baremetal
-  NovaComputeLibvirtType: kvm
+  NovaComputeLibvirtType: qemu
   NtpServer: {{ NtpServer | to_yaml }}

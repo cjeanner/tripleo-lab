@@ -1,0 +1,52 @@
+---
+- name: Map RDO project names
+  register: mapped_name
+  shell:
+    chdir: '{{ build_dir }}/DLRN'
+    cmd: |
+      source '{{ build_dir }}/dlrn-venv/bin/activate'
+      set +e
+      rdopkg findpkg \
+        -s '{{ project.name }}' \
+        -l /home/stack/rdoinfo | \
+        awk '/^name/{print $2}; {print "findpkg: " $0 > "/dev/stderr"}'
+
+- name: Copy content to build location
+  copy:
+    src: "{{ project.dest | default(synchronize_default_dest) }}/{{ project.name }}/"
+    dest: "{{ build_dir }}/DLRN/data/{{ mapped_name.stdout }}"
+    remote_src: yes
+
+- name: Build package
+  register: pkg_build
+  args:
+    chdir: "{{ build_dir }}/DLRN/"
+    creates: "{{ build_dir }}/build-{{ mapped_name.stdout }}"
+  shell: |
+    source {{ build_dir }}/dlrn-venv/bin/activate
+    set +e
+    while true; do
+      dlrn --config-file projects.ini --head-only \
+        --package-name {{ mapped_name.stdout }} \
+        --local \
+        --info-repo /home/stack/rdoinfo --dev &> {{ build_dir }}/build-{{ mapped_name.stdout }}
+      if [ $? -eq 0 ]; then
+        break;
+      elif [ $? -eq 1 ]; then
+        exit 1;
+      elif [ $? -eq 2 ]; then
+        continue
+      fi
+      exit $?;
+    done
+
+- name: Copy packages to their final location
+  when:
+    - pkg_build is changed
+  shell: |
+    {% if item.host|default(true)|bool %}
+    find /home/stack/DLRN/data/repos/ -name "*.rpm" -and -not -name "*.src.rpm" -and -not -name "*-test*" -exec cp '{}' ~/custom-rpms/ \;
+    {% endif %}
+    {% if item.container|default(false)|bool %}
+    find /home/stack/DLRN/data/repos/ -name "*.rpm" -and -not -name "*.src.rpm" -and -not -name "*-test*" -exec cp '{}' ~/container-rpms/ \;
+    {% endif %}

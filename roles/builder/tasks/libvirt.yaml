@@ -131,13 +131,13 @@
         - workload
         - configs
 
-    - name: fetch centos base image
-      tags:
-        - images
-      get_url:
-        url: "http://cloud.centos.org/centos/7/images/CentOS-7-x86_64-GenericCloud.qcow2"
-        dest: "{{ basedir }}/images/centos-7.qcow2"
-        mode: 0664
+    - name: centos-7
+      when: os_version == 7
+      import_tasks: centos-7.yaml
+
+    - name: centos-8
+      when: os_version == 8
+      import_tasks: centos-8.yaml
 
     - name: are we re-deploying upon existing deploy
       find:
@@ -153,7 +153,7 @@
         - image-update
       shell: |
         export LIBGUESTFS_BACKEND=direct
-        virt-sysprep -a "{{ basedir }}/images/centos-7.qcow2" \
+        virt-sysprep -a "{{ basedir }}/images/centos-{{ os_version }}.qcow2" \
           --network \
           --uninstall cloud-init \
           --selinux-relabel \
@@ -166,7 +166,7 @@
       tags:
         - images
       command: |
-        qemu-img create -o backing_file=../images/centos-7.qcow2,backing_fmt=qcow2 -f qcow2 "{{ vm_prefix }}-{{ item.name }}.qcow2" "{{ item.disksize|default ('100') }}G"
+        qemu-img create -o backing_file=../images/centos-{{ os_version }}.qcow2,backing_fmt=qcow2 -f qcow2 "{{ vm_prefix }}-{{ item.name }}.qcow2" "{{ item.disksize|default ('100') }}G"
       args:
         creates: "{{ basedir }}/workload/{{ vm_prefix }}-{{ item.name }}.qcow2"
         chdir: "{{ basedir }}/workload"
@@ -176,7 +176,7 @@
 
     - name: create images based on RHEL
       when:
-        - base_image == "rhel"
+        - (base_image | lower) in ['rhel', 'redhat']
         - item.name is match('^undercloud')
       tags:
         - images

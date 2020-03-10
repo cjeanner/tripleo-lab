@@ -1,9 +1,13 @@
 ---
-- hosts: all
+- hosts: builder
   remote_user: root
   roles:
     - deprecations
     - common
     - builder
     - nat_vm
+
+- hosts: undercloud
+  remote_user: root
+  roles:
     - undercloud

@@ -1,0 +1,6 @@
+- name: install custom RPM from remote link
+  package:
+    name: "{{ custom_rpms }}"
+    state: installed
+  when: custom_rpms | length > 0
+

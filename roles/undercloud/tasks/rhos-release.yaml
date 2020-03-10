@@ -1,7 +1,7 @@
 ---
 - name: set up rhos if needed
   when:
-    - base_image == 'rhel'
+    - base_image == 'redhat'
   block:
     - name: ensure we do have DNS resolution
       copy:

@@ -1,6 +1,6 @@
 ---
 - name: Some hacks specificy for RHEL
-  when: base_image == 'rhel'
+  when: base_image == 'redhat'
   block:
     - name: "unmanage {{ unmanage_iface }}"
       command: nmcli dev set {{ unmanage_iface }} managed no

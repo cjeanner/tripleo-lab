@@ -1,3 +1,6 @@
+centos_mirror: false
+enable_metrics: false
+vm_prefix: lab
 virt_user: virtuser
 tripleo_version: master
 tripleo_mod: current-tripleo
@@ -43,3 +46,8 @@ modify_container: {}
 overclouds: 1
 container_prepare_overrides: {}
 metalsmith: false
+os_version: 7
+dlrn_baseurl: >-
+    {%- if ansible_distribution == "RedHat" and ansible_distribution_major_version|int == 8 -%}
+    https://trunk.rdoproject.org/rhel8-master
+    {%- else %}https://trunk.rdoproject.org/centos{{ os_version }}/{% endif -%}

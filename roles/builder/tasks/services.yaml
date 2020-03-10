@@ -27,8 +27,13 @@
     name: sshd
     state: restarted
 
-- name: Stop and deactive firewalld service
+- name: Ensure firewalld is active
+  tags:
+    - builder-services
+    - builder-bootstrap
+  when:
+    - ansible_facts['distribution_version'] is version('8.0', 'gt', strict=False)
   service:
     name: firewalld.service
-    state: stopped
-    enabled: false
+    state: started
+    enabled: true

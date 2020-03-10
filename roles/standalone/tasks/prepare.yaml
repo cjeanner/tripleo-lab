@@ -4,6 +4,11 @@
     name: lvm2
     state: installed
 
+- name: Unmanage eth1
+  when:
+    - os_version > 7
+  command: nmcli dev set eth1 managed no
+
 - name: update containers-prepare push_destination
   replace:
     path: /home/stack/containers-prepare-parameter.yaml
@@ -16,7 +21,6 @@
     src: standalone_params.yaml.j2
   vars:
     ip: '192.168.24.2'
-    interface: 'eth1'
 
 - name: ceph params if requested
   when: standalone_ceph|bool
