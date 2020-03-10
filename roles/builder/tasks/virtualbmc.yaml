@@ -71,6 +71,8 @@
         - item.0.name is not match('^undercloud')
 
     - name: open firewall on libvirt link
+      when:
+        - ansible_facts['distribution_version'] is version('8.0', 'lt', strict=True)
       iptables:
         action: insert
         chain: INPUT
@@ -78,3 +80,16 @@
         destination: "192.168.122.1"
         jump: ACCEPT
         protocol: udp
+
+    - name: Open firewalld in libvirt zone for each node
+      when:
+        - ansible_facts['distribution_version'] is version('8.0', 'gt', strict=False)
+      firewalld:
+        port: "{{ '%s-%s-oc-%s'|format(vm_prefix, item.1, item.0.name)|hashed_port }}/udp"
+        permanent: no
+        zone: libvirt
+        state: enabled
+      loop: "{{ vms|product(overclouds_range)|list }}"
+      loop_control:
+        label: "oc{{ item.1 }}-{{ item.0.name }}"
+        index_var: vm_idx
