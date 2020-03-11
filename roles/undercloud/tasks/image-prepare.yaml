@@ -19,7 +19,9 @@
           -e tripleo_container_registry_host='*' \
           localhost
       args:
-        creates: /etc/httpd/conf.d/image-serve.conf
+        creates:
+          - /etc/httpd/conf.d/image-serve.conf
+          - /var/lib/image-serve/v2
 
     - name: Ensure we have something for podman registry
       command: |
