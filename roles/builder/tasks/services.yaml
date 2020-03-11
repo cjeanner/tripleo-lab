@@ -37,3 +37,15 @@
     name: firewalld.service
     state: started
     enabled: true
+
+- name: Allow docker-registry in libvirt zone
+  tags:
+    - builder-services
+    - builder-bootstrap
+  when:
+    - ansible_facts['distribution_version'] is version('8.0', 'gt', strict=False)
+  firewalld:
+    service: docker-registry
+    permanent: yes
+    zone: libvirt
+    state: enabled
