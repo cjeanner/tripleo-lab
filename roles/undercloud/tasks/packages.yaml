@@ -25,6 +25,7 @@
 
 - name: Install network-scripts-openvswitch
   when:
+    - base_image == 'centos'
     - os_version == 8
   package:
     name: network-scripts-openvswitch
