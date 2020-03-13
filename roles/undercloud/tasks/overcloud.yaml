@@ -38,13 +38,13 @@
   when:
     - base_image == 'centos'
   block:
-    - name: fetch images
+    - name: "fetch images for centos{{ os_version }}"
       get_url:
         dest: "/home/stack/overcloud_imgs/{{item.file}}"
         group: stack
         mode: 0644
         owner: stack
-        url: "https://images.rdoproject.org/{{tripleo_version}}/rdo_trunk/current-tripleo/{{item.file}}"
+        url: "https://images.rdoproject.org/centos{{ os_version }}/{{tripleo_version}}/rdo_trunk/current-tripleo/{{item.file}}"
       retries: 10
       delay: 5
       loop: "{{ overcloud_images }}"
