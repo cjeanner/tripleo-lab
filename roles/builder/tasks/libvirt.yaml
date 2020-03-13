@@ -132,11 +132,15 @@
         - configs
 
     - name: centos-7
-      when: os_version == 7
+      when:
+        - base_image == 'centos'
+        - os_version == 7
       import_tasks: centos-7.yaml
 
     - name: centos-8
-      when: os_version == 8
+      when:
+        - base_image == 'centos'
+        - os_version == 8
       import_tasks: centos-8.yaml
 
     - name: are we re-deploying upon existing deploy
