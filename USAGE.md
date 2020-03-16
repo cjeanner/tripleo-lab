@@ -86,7 +86,7 @@ them into a bunch of container images:
 ```YAML
 synchronize:
   - name: mistral
-    container: yes
+    container: true
     base: /home/cjeanner/work/gerrit
     dest: /home/stack/tripleo/
 ```

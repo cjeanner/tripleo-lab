@@ -1,5 +1,5 @@
 ---
-standalone: yes
+standalone: true
 vms:
   - name: undercloud
     cpu: 10
@@ -8,4 +8,4 @@ vms:
     interfaces:
       - network: default
       - Net2
-    autostart: yes
+    autostart: true

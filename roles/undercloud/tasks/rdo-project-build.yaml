@@ -15,7 +15,7 @@
   copy:
     src: "{{ project.dest | default(synchronize_default_dest) }}/{{ project.name }}/"
     dest: "{{ build_dir }}/DLRN/data/{{ mapped_name.stdout }}"
-    remote_src: yes
+    remote_src: true
 
 - name: Build package
   register: pkg_build

@@ -1,2 +1,2 @@
 ---
-standalone_ceph: yes
+standalone_ceph: true
