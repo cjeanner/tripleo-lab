@@ -119,7 +119,7 @@ vms:
     interfaces:
       - network: default
       - net2
-    autostart: yes
+    autostart: true
   - name: controller-0
     cpu: 8
     memory: 20000
@@ -127,7 +127,7 @@ vms:
     interfaces:
       - net1
       - net2
-    autostart: no
+    autostart: false
 ```
 
 *centos_mirror*

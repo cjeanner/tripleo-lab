@@ -1,5 +1,5 @@
 ---
-standalone: yes
+standalone: true
 local_registry: 192.168.24.2:8787
 vms:
   - name: undercloud
@@ -9,7 +9,7 @@ vms:
     interfaces:
       - network: default
       - net2
-    autostart: yes
+    autostart: true
     iotune:
       - tune: total_bytes_sec
         value: 5000000

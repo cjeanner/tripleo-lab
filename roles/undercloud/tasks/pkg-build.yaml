@@ -49,7 +49,7 @@
     append: true
 
 - name: Run as virtuser
-  become: yes
+  become: true
   become_user: stack
   block:
     - name: Clean DLRN directory
