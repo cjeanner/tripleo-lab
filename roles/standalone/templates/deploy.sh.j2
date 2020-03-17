@@ -5,6 +5,9 @@ stdbuf -i0 -o0 -e0 sudo openstack tripleo deploy \
   -e /usr/share/openstack-tripleo-heat-templates/environments/standalone/standalone-tripleo.yaml \
 {% if standalone_ceph|bool %}
   -e /usr/share/openstack-tripleo-heat-templates/environments/ceph-ansible/ceph-ansible.yaml \
+{% if ceph_dashboard|default(False)|bool %}
+  -e /usr/share/openstack-tripleo-heat-templates/environments/ceph-ansible/ceph-dashboard.yaml \
+{% endif -%}
 {% endif %}
 {% if standalone_ceph|bool %}
   -e /home/stack/ceph_parameters.yaml \
