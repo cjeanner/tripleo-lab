@@ -20,6 +20,15 @@
     mode: 0640
     backup: false
 
+- name: Set undercloud hostname
+  ini_file:
+    path: /home/stack/undercloud.conf
+    section: DEFAULT
+    option: undercloud_hostname
+    value: "{{ undercloud_hostname | default('undercloud.localdomain') }}"
+    mode: 0640
+    backup: false
+
 - name: Inject insecure registry in undercloud.conf
   ini_file:
     path: /home/stack/undercloud.conf
