@@ -13,7 +13,7 @@
   yum_repository:
     name: storage8-ceph-nautilus
     description: storage8-ceph-nautilus
-    baseurl: https://trunk.rdoproject.org/centos8/deps/storage/storage8-ceph-nautilus/x86_64/Packages/
+    baseurl: https://trunk.rdoproject.org/centos8/deps/storage/storage8-ceph-nautilus/x86_64/
     gpgcheck: false
 
 - name: Drop ghost ens3 interface
