@@ -20,7 +20,7 @@
           --firstboot-command "systemctl start acpid" \
           --firstboot-command "mkswap /dev/sdb" \
           --firstboot-command "swapon /dev/sdb" \
-          --hostname {{ undercloud_hostname }} \
+          --hostname {{ undercloud_hostname | lower }} \
           --network {{ opt_pkg|default('') }} \
           --uninstall cloud-init \
           --selinux-relabel \
