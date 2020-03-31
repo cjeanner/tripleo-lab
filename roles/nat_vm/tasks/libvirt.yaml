@@ -46,7 +46,7 @@
         virsh --connect qemu:///system domifaddr "{{ vm_prefix }}-nat-vm" | \
         awk '/ipv4/ {print $4}' | head -n1
       register: nat_vm_addr
-      retries: 10
+      retries: "{{ node_retries | default(10) | int }}"
       delay: 10
       until:
         - nat_vm_addr.stdout != ""

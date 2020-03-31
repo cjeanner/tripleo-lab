@@ -1,5 +1,5 @@
 ---
-- name: Fetch latest delorean repository
+- name: "Fetch latest delorean repository for {{ tripleo_mod }}"
   get_url:
     url: "https://trunk.rdoproject.org/centos8/{{ tripleo_mod }}/delorean.repo"
     dest: /etc/yum.repos.d/delorean.repo

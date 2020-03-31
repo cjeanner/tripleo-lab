@@ -56,7 +56,7 @@
         virsh --connect qemu:///system domifaddr "{{ vm_prefix }}-{{ item.name }}" | \
         awk '/ipv4/ {print $4}' | head -n1
       register: ip_address
-      retries: 10
+      retries: "{{ node_retries | default(10) | int }}"
       delay: 5
       until:
         - ip_address.stdout != ""
