@@ -5,4 +5,3 @@ metalsmith: true
 tripleoclient_pkgname: python3-tripleoclient
 undercloud_python_interpreter: /usr/libexec/platform-python
 os_version: 8
-tripleo_mod: tripleo-ci-testing
