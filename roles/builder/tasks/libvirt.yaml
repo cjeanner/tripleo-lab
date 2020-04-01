@@ -133,11 +133,11 @@
 
     - name: centos-7
       import_tasks: centos-7.yaml
-
-    - name: centos-8
       when:
         - base_image == 'centos'
-        - os_version == 8
+        - os_version == 7
+
+    - name: centos-8
       import_tasks: centos-8.yaml
 
     - name: are we re-deploying upon existing deploy

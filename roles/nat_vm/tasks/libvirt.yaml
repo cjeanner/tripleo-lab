@@ -4,13 +4,13 @@
   become_user: "{{ virt_user }}"
   tags:
     - lab
-    - nat_vm
+    - nat-vm
   block:
-    - name: create nat-vm image based on centos
+    - name: create nat-vm image based on centos-8
       tags:
         - images
       command: |
-        qemu-img create -o backing_file=../images/centos-7.qcow2,backing_fmt=qcow2 -f qcow2 "{{ vm_prefix }}-nat-vm.qcow2" "10G"
+        qemu-img create -o backing_file=../images/centos-8.qcow2,backing_fmt=qcow2 -f qcow2 "{{ vm_prefix }}-nat-vm.qcow2" "10G"
       args:
         creates: "{{ basedir }}/workload/{{ vm_prefix }}-nat-vm.qcow2"
         chdir: "{{ basedir }}/workload"
@@ -54,7 +54,7 @@
 - name: inject config on ansible host
   tags:
     - lab
-    - nat_vm
+    - nat-vm
   local_action:
     module: blockinfile
     path: ~/.ssh/config
@@ -76,3 +76,4 @@
   add_host:
     hostname: "nat-vm"
     ansible_host: "{{ nat_vm_addr.stdout|replace('/24','') }}"
+    ansible_python_interpreter: /usr/libexec/platform-python
