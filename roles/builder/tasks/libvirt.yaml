@@ -132,9 +132,6 @@
         - configs
 
     - name: centos-7
-      when:
-        - base_image == 'centos'
-        - os_version == 7
       import_tasks: centos-7.yaml
 
     - name: centos-8
