@@ -5,7 +5,6 @@
     - vars/main.yaml
   roles:
     - deprecations
-    - common
     - builder
     - nat_vm
 
