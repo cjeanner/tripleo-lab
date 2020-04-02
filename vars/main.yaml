@@ -1,0 +1,132 @@
+---
+additional_envs: []
+basedir: "/home/{{virt_user}}"
+base_image: centos
+centos_mirror: false
+centos_mirror_device: /dev/sdc
+ceph_version: luminous
+ci_tools: true
+container_prepare_overrides: {}
+container_registry_ip: ''
+containerized_undercloud: true
+custom_ca: ''
+custom_repositories: []
+custom_rpms: []
+deploy_standalone: true
+deploy_overcloud: false
+deploy_undercloud: true
+disable_selinux: false
+dlrn_baseurl: >-
+    {%- if ansible_distribution == "RedHat" and ansible_distribution_major_version|int == 8 -%}
+    https://trunk.rdoproject.org/rhel8-master
+    {%- else %}https://trunk.rdoproject.org/centos{{ os_version }}/{% endif -%}
+enable_metrics: false
+guestfs_appliance: "appliance-1.38.0.tar.xz"
+growfs_part: /dev/sda1
+local_registry: 'true'
+os_version: 7
+overcloud_container_cli: podman
+overcloud_image_update: true
+overcloud_images:
+  - file: ironic-python-agent.tar
+    content: ironic-python-agent.kernel
+  - file: overcloud-full.tar
+    content: overcloud-full.qcow2
+overclouds: 1
+patches: []
+manage_mirror_device: true
+metalsmith: false
+mirror_base_directory: /srv/mirror
+modify_container: {}
+nameservers:
+  - 1.1.1.1
+  - 8.8.8.8
+no_proxy: "localhost,127.0.0.1,192.168.24.0,192.168.24.1,192.168.24.2,192.168.24.3,192.168.24.4,192.168.24.5,192.168.24.6,192.168.24.7,192.168.24.8,192.168.24.9,192.168.24.10,192.168.24.11,192.168.24.12,192.168.24.13,192.168.24.14,192.168.24.15,192.168.24.16,192.168.24.17,192.168.24.18,192.168.24.19,192.168.24.20,192.168.24.21,192.168.24.22,192.168.24.23,192.168.24.24"
+NtpServer: ['0.pool.ntp.org', '1.pool.ntp.org', '2.pool.ntp.org', '3.pool.ntp.org']
+num_osds: 1
+root_device: 1
+run_validations: false
+semodules: []
+standalone: false
+standalone_ceph: false
+synchronize: []
+synchronize_default_dest: /home/stack/tripleo/
+tmate_release: 2.3.1
+tripleo_mod: current-tripleo
+tripleoclient_pkgname: python-tripleoclient
+tripleo_version: master
+undercloud_config: []
+undercloud_dns: 192.168.122.1
+undercloud_hostname: undercloud.localdomain
+undercloud_low_memory: false
+undercloud_password: fooBar
+undercloud_python_interpreter: /usr/bin/python
+undercloud_sample: /usr/share/python-tripleoclient/undercloud.conf.sample
+unmanage_iface: ens3
+use_heat: false
+virt_user: virtuser
+vm_prefix: lab
+vms:
+  - name: undercloud
+    cpu: 4
+    memory: 16384
+    interfaces:
+      - network: default
+      - Net2
+    autostart: true
+  - name: controller-0
+    cpu: 2
+    memory: 4096
+    interfaces:
+      - Net1
+      - Net2
+    autostart: false
+  - name: controller-1
+    cpu: 2
+    memory: 4096
+    interfaces:
+      - Net1
+      - Net2
+    autostart: false
+  - name: controller-2
+    cpu: 2
+    memory: 4096
+    interfaces:
+      - Net1
+      - Net2
+    autostart: false
+  - name: compute-0
+    cpu: 2
+    memory: 4096
+    interfaces:
+      - Net1
+      - Net2
+    autostart: false
+  - name: compute-1
+    cpu: 2
+    memory: 4096
+    interfaces:
+      - Net1
+      - Net2
+    autostart: false
+  - name: ceph-0
+    cpu: 2
+    memory: 8192
+    interfaces:
+      - Net1
+      - Net2
+    autostart: false
+  - name: ceph-1
+    cpu: 2
+    memory: 8192
+    interfaces:
+      - Net1
+      - Net2
+    autostart: false
+  - name: ceph-2
+    cpu: 2
+    memory: 8192
+    interfaces:
+      - Net1
+      - Net2
+    autostart: false

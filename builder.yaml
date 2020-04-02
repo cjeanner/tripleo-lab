@@ -1,6 +1,8 @@
 ---
 - hosts: builder
   remote_user: root
+  vars_files:
+    - vars/main.yaml
   roles:
     - deprecations
     - common
@@ -9,5 +11,7 @@
 
 - hosts: undercloud
   remote_user: root
+  vars_files:
+    - vars/main.yaml
   roles:
     - undercloud
