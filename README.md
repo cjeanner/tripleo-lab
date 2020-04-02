@@ -71,25 +71,6 @@ ansible-playbook builder.yaml --skip-tags overcloud-images --tags lab -e @enviro
 ```
 This will start a lab with just 3 controllers and 1 compute.
 
-### Metrics
-The project now allows to gather metrics about the undercloud instance. In order
-to activate requested things on the builder (namely, run a couple of containers),
-you need to add the following tag the first time you re-deploy the lab:
-```Bash
-ansible-playbook builder.yaml --tags metrics,lab
-```
-
-Please note this will install podman on the builder, and start two containers,
-one for graphite, the other for grafana.
-
-Graphite has two persistent data directories located in ```/var/lib/containers/storage/mounts/graphite```.
-
-In case you want to clean up data, you can go in ```/var/lib/containers/storage/mounts/graphite/storage/whisper```
-and remove the data related to your undercloud.
-
-The cleanup is NOT done when you drop the lab and rebuild it, in order to keep
-tracks of older deploy for comparaison purpose.
-
 #### Variables
 *vms*
   Hash with the following entries:
@@ -252,10 +233,6 @@ semodules:
 *disable_selinux*
   Allows to disable selinux on the undercloud, setting it to "permissive" while
   still logging what would have been blocked.
-  (Bool, default no)
-
-*enable_metrics*
-  Allows to set up metrics gathering, using collectd, graphite and grafana.
   (Bool, default no)
 
 *custom_repositories*

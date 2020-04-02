@@ -4,3 +4,9 @@
   fail:
     msg: |
       run_validation is deprecated. Please remove this parameter
+
+- name: Is enable_metrics defined
+  when: enable_metrics is defined
+  fail:
+    msg: |
+      enable_metrics is deprecated. Please remove this parameter

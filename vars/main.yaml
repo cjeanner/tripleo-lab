@@ -20,7 +20,6 @@ dlrn_baseurl: >-
     {%- if ansible_distribution == "RedHat" and ansible_distribution_major_version|int == 8 -%}
     https://trunk.rdoproject.org/rhel8-master
     {%- else %}https://trunk.rdoproject.org/centos{{ os_version }}/{% endif -%}
-enable_metrics: false
 guestfs_appliance: "appliance-1.38.0.tar.xz"
 growfs_part: /dev/sda1
 local_registry: 'true'

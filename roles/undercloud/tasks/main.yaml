@@ -21,11 +21,6 @@
       when: base_image == 'centos'
       import_tasks: epel.yaml
 
-    - name: configure metrics
-      when: enable_metrics|bool
-      import_role:
-        name: metrics
-
     - import_tasks: packages.yaml
     - import_tasks: prepare-build.yaml
 

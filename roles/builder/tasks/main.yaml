@@ -7,4 +7,3 @@
 - import_tasks: undercloud.yaml
 - import_tasks: lab.yaml
 - import_tasks: virtualbmc.yaml
-- import_tasks: metrics.yaml
