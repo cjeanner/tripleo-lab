@@ -31,9 +31,7 @@ overcloud_images:
     content: overcloud-full.qcow2
 overclouds: 1
 patches: []
-manage_mirror_device: true
 metalsmith: false
-mirror_base_directory: /srv/mirror
 modify_container: {}
 nameservers:
   - 1.1.1.1
