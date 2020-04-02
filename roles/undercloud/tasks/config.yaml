@@ -89,25 +89,8 @@
         mode: 0644
         owner: root
 
-- name: set delorean repository if we have a mirror
-  template:
-    dest: "/etc/yum.repos.d/delorean-{{tripleo_version}}.repo"
-    src: delorean.repo.j2
+- name: set delorean repository from upstream
   when:
-    - centos_mirror|bool
-    - base_image == 'centos'
-
-- name: set CentOS mirror if we have a mirror
-  when:
-    - centos_mirror|bool
-    - base_image == 'centos'
-  template:
-    dest: "/etc/yum.repos.d/CentOS-Base.repo"
-    src: centos.repo.j2
-
-- name: set delorean repository from upstream if no mirror
-  when:
-    - not centos_mirror|bool
     - base_image == 'centos'
   import_tasks: "centos-{{ os_version }}.yaml"
 

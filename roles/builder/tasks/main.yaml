@@ -1,7 +1,6 @@
 - import_tasks: packages.yaml
 - import_tasks: libguestfs.yaml
 - import_tasks: services.yaml
-- import_tasks: mirror.yaml
 - import_tasks: libvirt.yaml
 - import_tasks: scripts.yaml
 - import_tasks: undercloud.yaml

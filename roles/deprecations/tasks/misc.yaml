@@ -10,3 +10,27 @@
   fail:
     msg: |
       enable_metrics is deprecated. Please remove this parameter
+
+- name: Is centos_mirror defined
+  when: centos_mirror is defined
+  fail:
+    msg: |
+      centos_mirror is deprecated. Please remove this parameter
+
+- name: Is mirror_base_directory defined
+  when: mirror_base_directory is defined
+  fail:
+    msg: |
+      mirror_base_directory is deprecated. Please remove this parameter
+
+- name: Is manage_mirror_device defined
+  when: manage_mirror_device is defined
+  fail:
+    msg: |
+      manage_mirror_device is deprecated. Please remove this parameter
+
+- name: Is centos_mirror_device defined
+  when: centos_mirror_device is defined
+  fail:
+    msg: |
+      centos_mirror_device is deprecated. Please remove this parameter

@@ -2,8 +2,6 @@
 additional_envs: []
 basedir: "/home/{{virt_user}}"
 base_image: centos
-centos_mirror: false
-centos_mirror_device: /dev/sdc
 ceph_version: luminous
 ci_tools: true
 container_prepare_overrides: {}

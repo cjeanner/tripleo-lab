@@ -104,20 +104,6 @@ vms:
     autostart: false
 ```
 
-*centos_mirror*
-  Create a CentOS repository mirror (default to no)
-
-*mirror_base_directory*
-  Location of the mirrors on your filesystem (default to /srv/mirror)
-
-*manage_mirror_device*
-  Toggle management of the dedicated device for the mirror content (default to yes)
-
-*centos_mirror_device*
-  Block device name for mirror content.
-
-  Please note it will create a partition and format it as XFS.
-
 *virt_user*
   Username on the builder (will be created)
 
