@@ -47,14 +47,14 @@
         state: present
 
     - name: Get standard container-prepare-image output
-      shell: |
-        openstack tripleo container image prepare default \
-        --local-push-destination
-      register: container_image_prepare
+      include_role:
+        name: tripleo.operator.tripleo_container_image_prepare_default
+      vars:
+        tripleo_container_image_prepare_default_local_push_destination: true
 
-    - name: Convert as a fact
+    - name: Convert output to plain yaml
       set_fact:
-        f_container_image_prepare: "{{ container_image_prepare.stdout|from_yaml }}"
+        f_container_image_prepare: "{{ tripleo_container_image_prepare_default_output|from_yaml }}"
 
     - name: Shorten content
       set_fact:
@@ -89,16 +89,11 @@
         replace: "push_destination: {{ local_registry }}"
 
     - name: "Run container image prepare (/var/log/tripleo-container-image-prepare.log)"
-      become: yes
-      become_user: root
-      command: |
-        openstack tripleo container image prepare \
-        -e /home/stack/containers-prepare-parameter.yaml \
-        --output-env-file /home/stack/generated-container-prepare.yaml \
-        --log-file /var/log/tripleo-container-image-prepare.log \
-        --debug
-      args:
-        creates: /home/stack/generated-container-prepare.yaml
+      include_role:
+        name: tripleo.operator.tripleo_container_image_prepare
+      vars:
+        tripleo_container_image_prepare_environment_files: /home/stack/containers-prepare-parameter.yaml
+        tripleo_container_image_prepare_output_env_file: /home/stack/generated-container-prepare.yaml
 
     - name: Clean tweaked entry for undercloud.ctlplane in /etc/hosts
       become: true
