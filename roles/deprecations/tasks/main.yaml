@@ -6,3 +6,5 @@
   block:
     - name: Image prepare parameters
       import_tasks: image-prepare.yaml
+    - name: Misc params
+      import_tasks: misc.yaml

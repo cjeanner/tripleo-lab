@@ -45,7 +45,6 @@ no_proxy: "localhost,127.0.0.1,192.168.24.0,192.168.24.1,192.168.24.2,192.168.24
 NtpServer: ['0.pool.ntp.org', '1.pool.ntp.org', '2.pool.ntp.org', '3.pool.ntp.org']
 num_osds: 1
 root_device: 1
-run_validations: false
 semodules: []
 standalone: false
 standalone_ceph: false

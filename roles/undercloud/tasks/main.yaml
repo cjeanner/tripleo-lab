@@ -57,12 +57,6 @@
             - deploy_undercloud|bool
           block:
             - import_tasks: deploy.yaml
-            - name: run validations
-              when: run_validations|bool
-              import_role:
-                name: validations
-                tasks_from: undercloud
-            - import_tasks: overcloud.yaml
     - name: prepare and deploy standalone
       when: standalone|bool
       block:

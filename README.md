@@ -71,13 +71,6 @@ ansible-playbook builder.yaml --skip-tags overcloud-images --tags lab -e @enviro
 ```
 This will start a lab with just 3 controllers and 1 compute.
 
-### Validations
-You can run tempest validations against standalone and undercloud deploy. In order to run
-just the validations and avoid having to wait to much time, you can run the following command:
-```Bash
-ansible-playbook builder.yaml -t inventory -t validations
-```
-
 ### Metrics
 The project now allows to gather metrics about the undercloud instance. In order
 to activate requested things on the builder (namely, run a couple of containers),
@@ -281,9 +274,6 @@ custom_repositories:
 
 *unmanage_iface*
   Point to the interface we want to unmanage from NetworkManager
-
-*run_validations*
-  Activate tempest runs (bool, default yes)
 
 *modify_container*
   List projects/container to modify on the fly during a standalone deploy.

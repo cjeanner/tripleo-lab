@@ -1,0 +1,6 @@
+---
+- name: Is run_validations defined
+  when: run_validations is defined
+  fail:
+    msg: |
+      run_validation is deprecated. Please remove this parameter
