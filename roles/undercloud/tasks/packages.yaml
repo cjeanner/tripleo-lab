@@ -1,8 +1,6 @@
 - name: install some tools
   become: true
   become_user: root
-  tags:
-    - lab
   package:
     name:
       - git
@@ -12,8 +10,6 @@
     state: present
 
 - name: install tripleo client
-  tags:
-    - lab
   become: true
   become_user: root
   package:
@@ -21,8 +17,6 @@
     state: present
 
 - name: install requested packages for ceph
-  tags:
-    - lab
   become: true
   become_user: root
   package:
@@ -32,8 +26,6 @@
 - name: Install network-scripts-openvswitch
   become: true
   become_user: root
-  tags:
-    - lab
   when:
     - base_image == 'centos'
     - os_version == 8

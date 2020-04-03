@@ -1,62 +1,93 @@
-- name: run on undercloud node
+- name: Gather facts
+  tags:
+    - always
+  setup:
+    gather_subset: 'all'
+
+- name: Set some local facts|vars
+  tags:
+    - always
+  set_fact:
+    base_image: "{{ ansible_facts['distribution'] | lower }}"
+    overclouds_range: "{{ range(0, overclouds | default(1)) | list }}"
+
+- name: Configure upstream repository
   tags:
     - lab
+    - undercloud
+  when:
+    - base_image == 'centos'
+  import_role:
+    name: tripleo.operator.tripleo_repos
+  vars:
+    tripleo_repos_extra_repos:
+      - ceph
+    tripleo_repos_version: "{{ tripleo_mod }}"
+    tripleo_repos_branch: "{{ tripleo_version }}"
+
+- import_tasks: packages.yaml
+  tags:
+    - lab
+    - undercloud
+
+- import_tasks: prepare-build.yaml
+  tags:
+    - lab
+    - undercloud
+
+- name: CentOS package building
+  tags:
+    - lab
+    - undercloud
+    - custom-packages
+  when:
+    - base_image == 'centos'
   block:
-    - name: Gather facts
-      setup:
-        gather_subset: 'all'
+    - import_tasks: pkg-build.yaml
 
-    - name: Set some local facts|vars
-      set_fact:
-        base_image: "{{ ansible_facts['distribution'] | lower }}"
-        overclouds_range: "{{ range(0, overclouds | default(1)) | list }}"
+- name: Install built RPMs on CentOS
+  tags:
+    - lab
+    - undercloud
+    - custom-packages
+  when:
+    - base_image == 'centos'
+  import_tasks: install-built-rpms.yaml
 
-    - name: Configure upstream repository
+- import_tasks: install-custom-selinux.yaml
+  tags:
+    - lab
+    - undercloud
+
+- import_tasks: remote-pkg.yaml
+  tags:
+    - lab
+    - undercloud
+
+- import_tasks: image-prepare.yaml
+  tags:
+    - lab
+    - undercloud
+    - image-prepare
+
+- name: deploy standard undercloud and stuff
+  tags:
+    - lab
+    - undercloud
+  when: not standalone|bool
+  block:
+    - import_tasks: prepare.yaml
+    - name: deploy undercloud and prepare overcloud
       when:
-        - base_image == 'centos'
-      include_role:
-        name: tripleo.operator.tripleo_repos
-      vars:
-        tripleo_repos_extra_repos:
-          - ceph
-        tripleo_repos_version: "{{ tripleo_mod }}"
-        tripleo_repos_branch: "{{ tripleo_version }}"
-
-    - import_tasks: packages.yaml
-
-    - import_tasks: prepare-build.yaml
-
-    - name: CentOS package building
-      tags:
-        - custom-packages
-      when:
-        - base_image == 'centos'
+        - deploy_undercloud|bool
       block:
-        - import_tasks: pkg-build.yaml
-
-    - name: Install built RPMs on CentOS
-      tags:
-        - custom-packages
-      when:
-        - base_image == 'centos'
-      import_tasks: install-built-rpms.yaml
-
-    - import_tasks: install-custom-selinux.yaml
-    - import_tasks: remote-pkg.yaml
-    - import_tasks: image-prepare.yaml
-      tags: image-prepare
-    - name: deploy standard undercloud and stuff
-      when: not standalone|bool
-      block:
-        - import_tasks: prepare.yaml
-        - name: deploy undercloud and prepare overcloud
-          when:
-            - deploy_undercloud|bool
-          block:
-            - import_tasks: deploy.yaml
-    - name: prepare and deploy standalone
-      when: standalone|bool
-      block:
-        - name: go for standalone
-          import_role:
-            role: standalone
+        - import_tasks: deploy.yaml
+- name: prepare and deploy standalone
+  tags:
+    - lab
+    - undercloud
+  when: standalone|bool
+  block:
+    - name: go for standalone
+      import_role:
+        role: standalone
