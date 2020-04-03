@@ -1,8 +1,4 @@
 ---
-- hosts: localhost
-  roles:
-    - operators
-
 - hosts: builder
   remote_user: root
   vars_files:

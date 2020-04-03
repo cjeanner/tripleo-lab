@@ -8,4 +8,6 @@ all:
     localhost:
       # Not mandatory, but you can also set it there
       ansible_python_interpreter: /usr/bin/python3
+      # Mandatory
+      ansible_connection: local
     undercloud: {}
