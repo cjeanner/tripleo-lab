@@ -1,17 +1,13 @@
-- name: run commands as stack user
-  become: true
-  become_user: stack
-  block:
-    - name: "deploy undercloud (explicit --use-heat)"
-      when: use_heat|bool
-      command: stdbuf -i0 -o0 -e0 openstack undercloud install --use-heat
-      args:
-        creates: /home/stack/stackrc
-        chdir: /home/stack
+- name: "deploy undercloud (explicit --use-heat)"
+  when: use_heat|bool
+  command: stdbuf -i0 -o0 -e0 openstack undercloud install --use-heat
+  args:
+    creates: /home/stack/stackrc
+    chdir: /home/stack
 
-    - name: deploy undercloud
-      when: not use_heat|bool
-      command: stdbuf -i0 -o0 -e0 openstack undercloud install
-      args:
-        creates: /home/stack/stackrc
-        chdir: /home/stack
+- name: deploy undercloud
+  when: not use_heat|bool
+  import_role:
+    name: tripleo.operator.tripleo_undercloud_install
+  vars:
+    tripleo_undercloud_install_yes: true
