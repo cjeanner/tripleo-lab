@@ -2,6 +2,12 @@
   set_fact:
     custom_container: "{{ modify_image|default([]) != [] }}"
 
+- name: Copy env-cleanup script to stack home
+  copy:
+    dest: /home/stack/env-cleanup.sh
+    src: env-cleanup.sh
+    mode: 0755
+
 - name: copy undercloud.conf sample
   copy:
     dest: /home/stack/undercloud.conf

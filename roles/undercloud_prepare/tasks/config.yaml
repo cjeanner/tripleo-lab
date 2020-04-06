@@ -1,5 +1,16 @@
 ---
+- name: Remove dracute useless interface
+  tags:
+    - lab
+    - undercloud-bootstrap
+  file:
+    path: /etc/sysconfig/network-scripts/ifcfg-ens3
+    state: absent
+
 - name: ensure sshd does not rely on gssapi
+  tags:
+    - lab
+    - undercloud-bootstrap
   replace:
     path: /etc/ssh/sshd_config
     regexp: '^GSSAPIAuthentication yes$'
@@ -7,10 +18,17 @@
   register: sshd_config
 
 - name: restart sshd upon config change
+  tags:
+    - lab
+    - undercloud-bootstrap
   service:
     name: sshd
     state: restarted
+
 - name: Set selinux to permissive
+  tags:
+    - lab
+    - undercloud-bootstrap
   selinux:
     state: permissive
     policy: targeted
@@ -18,6 +36,9 @@
     - disable_selinux|bool
 
 - name: Persist permissive
+  tags:
+    - lab
+    - undercloud-bootstrap
   when:
     - disable_selinux|bool
   copy:
@@ -27,91 +48,18 @@
       SELINUXTYPE=targeted
 
 - name: set hostname properly
+  tags:
+    - lab
+    - undercloud-bootstrap
   lineinfile:
     dest: /etc/hosts
     line: "127.0.0.1 undercloud.{{ansible_domain}} undercloud localhost localhost.localdomain"
     regexp: '^127\.0\.0\.1'
 
-- name: proxy configurations if required
-  when:
-    - proxy_host is defined
-  block:
-    - name: check dnf presence
-      stat:
-        path: /etc/dnf/dnf.conf
-      register: dnf_state
-
-    - name: set proxy for yum
-      ini_file:
-        backup: true
-        path: /etc/yum.conf
-        option: proxy
-        section: main
-        value: "http://{{proxy_host}}"
-
-    - name: inject proxy for dnf
-      when:
-        - dnf_state.stat.exists
-      ini_file:
-        backup: true
-        path: /etc/dnf/dnf.conf
-        option: proxy
-        section: main
-        value: "http://{{proxy_host}}"
-
-    - name: inject proxy in env
-      blockinfile:
-        path: /etc/environment
-        block: |
-          http_proxy=http://{{ proxy_host }}
-          https_proxy=http://{{ proxy_host }}
-          no_proxy={{ no_proxy }}
-          HTTP_PROXY=http://{{ proxy_host }}
-          HTTPS_PROXY=http://{{ proxy_host }}
-          NO_PROXY={{ no_proxy }}
-
-    - name: create base dir
-      file:
-        group: root
-        mode: 0755
-        owner: root
-        path: /etc/systemd/system/docker.service.d
-        state: directory
-    - name: create service file
-      copy:
-        content: |
-          [Service]
-          Environment="HTTP_PROXY=http://{{proxy_host}}/"
-          Environment="HTTPS_PROXY=http://{{proxy_host}}/"
-          Environment="NO_PROXY={{no_proxy}}"
-        dest: /etc/systemd/system/docker.service.d/http-proxy.conf
-        group: root
-        mode: 0644
-        owner: root
-
-- name: set delorean repository from upstream
-  when:
-    - base_image == 'centos'
-  import_tasks: "centos-{{ os_version }}.yaml"
-
-- name: do we have a swap file
-  stat:
-    path: /dev/sdb
-  register: swap_on
-
-- name: set fstab entry for swap if needed
-  mount:
-    backup: true
-    path: swap
-    src: /dev/sdb
-    state: present
-    opts: defaults
-    fstype: swap
-  when:
-    - swap_on.stat.exists
-    - swap_on.stat.isblk
-
 - name: set up custom repositories
+  tags:
+    - lab
+    - undercloud-bootstrap
   yum_repository:
     name: "{{ item.name }}"
     description: "{{ item.name }}"
@@ -121,6 +69,9 @@
   loop: "{{ custom_repositories }}"
 
 - name: add static routes for overclouds public endpoints
+  tags:
+    - lab
+    - undercloud-bootstrap
   when:
     - hostvars['builder']['nat_vm_addr'] is defined
   register: set_overcloud_pub_routes
@@ -129,12 +80,18 @@
     src: undercloud-static-routes.j2
 
 - name: add static route to the live system if needed
+  tags:
+    - lab
+    - undercloud-bootstrap
   when:
     - set_overcloud_pub_routes is defined
     - set_overcloud_pub_routes is changed
   command: ip ro add 10.20.1.0/24 via {{ hostvars['builder']['nat_vm_addr'].stdout|replace('/24','') }} dev eth0
 
 - name: Inject custom PS1
+  tags:
+    - lab
+    - undercloud-bootstrap
   copy:
     dest: /etc/profile.d/ps1.sh
     content: |

@@ -1,6 +1,5 @@
 - name: run on undercloud node
   tags:
-    - undercloud-bootstrap
     - lab
   block:
     - name: Gather facts
@@ -12,16 +11,19 @@
         base_image: "{{ ansible_facts['distribution'] | lower }}"
         overclouds_range: "{{ range(0, overclouds | default(1)) | list }}"
 
-    - import_tasks: config.yaml
-    - import_tasks: user.yaml
-    - import_tasks: rhos-release.yaml
-    - import_tasks: rhel.yaml
-
-    - name: install epel only on centos
-      when: base_image == 'centos'
-      import_tasks: epel.yaml
+    - name: Configure upstream repository
+      when:
+        - base_image == 'centos'
+      include_role:
+        name: tripleo.operator.tripleo_repos
+      vars:
+        tripleo_repos_extra_repos:
+          - ceph
+        tripleo_repos_version: "{{ tripleo_mod }}"
+        tripleo_repos_branch: "{{ tripleo_version }}"
 
     - import_tasks: packages.yaml
+
     - import_tasks: prepare-build.yaml
 
     - name: CentOS package building

@@ -1,0 +1,38 @@
+---
+- name: Ensure we do have DNS resolution
+  copy:
+    dest: /etc/resolv.conf
+    content: |
+      {% for nameserver in nameservers %}
+      nameserver {{ nameserver }}
+      {% endfor %}
+
+- name: Ensure rhos-release is installed via proxy
+  when:
+    - proxy_host is defined
+  package:
+    name: "{{ rhos_release_repo_url }}/rhos-release-latest.noarch.rpm"
+    state: installed
+  register: rhos_release
+  environment:
+    http_proxy: "http://{{ proxy_host }}"
+    https_proxy: "http://{{ proxy_host }}"
+
+- name: Ensure rhos-release is installed
+  when:
+    - proxy_host is not defined
+  package:
+    name: "{{ rhos_release_repo_url }}/rhos-release-latest.noarch.rpm"
+    state: installed
+  register: rhos_release
+
+- name: yum-clean-metadata
+  when:
+    - rhos_release is changed
+  command: yum clean metadata
+  args:
+    warn: false
+
+- name: Run rhos-release
+  command: rhos-release {{ rhos_release_opts|default('') }} {{ rhos_release_version }}
+  become: true

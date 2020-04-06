@@ -1,8 +1,0 @@
----
-- name: install epel-release
-  package:
-    name: epel-release
-    state: installed
-
-- name: ensure epel is deactivated
-  command: yum-config-manager --disable epel

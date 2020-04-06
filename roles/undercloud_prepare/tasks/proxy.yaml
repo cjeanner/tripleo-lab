@@ -1,0 +1,48 @@
+---
+- name: check dnf presence
+  stat:
+    path: /etc/dnf/dnf.conf
+  register: dnf_state
+
+- name: set proxy for yum
+  ini_file:
+    backup: true
+    path: /etc/yum.conf
+    option: proxy
+    section: main
+    value: "http://{{proxy_host}}"
+
+- name: inject proxy for dnf
+  when:
+    - dnf_state.stat.exists
+  ini_file:
+    backup: true
+    path: /etc/dnf/dnf.conf
+    option: proxy
+    section: main
+    value: "http://{{proxy_host}}"
+
+- name: inject proxy in env
+  blockinfile:
+    path: /etc/environment
+    block: |
+      http_proxy=http://{{ proxy_host }}
+      https_proxy=http://{{ proxy_host }}
+      no_proxy={{ no_proxy }}
+      HTTP_PROXY=http://{{ proxy_host }}
+      HTTPS_PROXY=http://{{ proxy_host }}
+      NO_PROXY={{ no_proxy }}
+
+- name: create base dir
+  file:
+    group: root
+    mode: 0755
+    owner: root
+    path: /etc/systemd/system/docker.service.d
+    state: directory
+- name: create service file
+  copy:
+    content: |
+      [Service]
+      Environment="HTTP_PROXY=http://{{proxy_host}}/"
+

@@ -1,0 +1,24 @@
+---
+- name: do we have a swap file
+  tags:
+    - lab
+    - undercloud-bootstrap
+  stat:
+    path: /dev/sdb
+  register: swap_on
+
+- name: set fstab entry for swap if needed
+  tags:
+    - lab
+    - undercloud-bootstrap
+  mount:
+    backup: true
+    path: swap
+    src: /dev/sdb
+    state: present
+    opts: defaults
+    fstype: swap
+  when:
+    - swap_on.stat.exists
+    - swap_on.stat.isblk
+

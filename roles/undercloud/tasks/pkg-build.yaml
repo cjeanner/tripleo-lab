@@ -15,6 +15,8 @@
     libselinux_python: libselinux-python
 
 - name: Install DLRN deps
+  become: true
+  become_user: root
   package:
     name:
       - createrepo
@@ -32,74 +34,75 @@
       - "python{{ py_major }}-virtualenv"
 
 - name: Install mock from EPEL
+  become: true
+  become_user: root
   package:
     name: mock
     enablerepo: epel
 
 - name: Create mock group
   become: true
+  become_user: root
   group:
     name: mock
     state: present
 
 - name: Add stack to mock group
+  become: true
+  become_user: root
   user:
     name: stack
     groups: mock
     append: true
 
-- name: Run as virtuser
-  become: true
-  become_user: stack
-  block:
-    - name: Clean DLRN directory
-      file:
-        path: "{{ build_dir }}/DLRN"
-        state: absent
-        force: true
+- name: Clean DLRN directory
+  file:
+    path: "{{ build_dir }}/DLRN"
+    state: absent
+    force: true
 
-    - name: Ensure DLRN directory is present
-      file:
-        path: "{{ build_dir }}/DLRN"
-        state: directory
+- name: Ensure DLRN directory is present
+  file:
+    path: "{{ build_dir }}/DLRN"
+    state: directory
 
-    - name: Ensure DLRN data subdirectory is present
-      file:
-        path: "{{ build_dir }}/DLRN/data"
-        state: directory
+- name: Ensure DLRN data subdirectory is present
+  file:
+    path: "{{ build_dir }}/DLRN/data"
+    state: directory
 
-    - name: Push projects config
-      template:
-        dest:  "{{ build_dir }}/DLRN/projects.ini"
-        src: projects.ini.j2
+- name: Push projects config
+  template:
+    dest:  "{{ build_dir }}/DLRN/projects.ini"
+    src: projects.ini.j2
 
-    - name: Install and update pip in venv
-      pip:
-        name: pip
-        state: latest
-        virtualenv: "{{ build_dir }}/dlrn-venv"
-        extra_args: '--upgrade'
+- name: Install and update pip in venv
+  pip:
+    name: pip
+    state: latest
+    virtualenv: "{{ build_dir }}/dlrn-venv"
+    extra_args: '--upgrade'
 
-    - name: Install rdopkg in virtualenv
-      pip:
-        name: rdopkg
-        virtualenv: "{{ build_dir }}/dlrn-venv"
-        version: 0.47.3
+- name: Install rdopkg in virtualenv
+  pip:
+    name: rdopkg
+    virtualenv: "{{ build_dir }}/dlrn-venv"
+    version: 0.47.3
 
-    - name: Install DLRN in virtualenv
-      pip:
-        name: dlrn
-        virtualenv: "{{ build_dir }}/dlrn-venv"
-        state: latest
+- name: Install DLRN in virtualenv
+  pip:
+    name: dlrn
+    virtualenv: "{{ build_dir }}/dlrn-venv"
+    state: latest
 
-    - name: Fetch rdoinfo
-      git:
-        repo: "https://github.com/redhat-openstack/rdoinfo"
-        dest: "{{ build_dir }}/rdoinfo"
-        version: master
+- name: Fetch rdoinfo
+  git:
+    repo: "https://github.com/redhat-openstack/rdoinfo"
+    dest: "{{ build_dir }}/rdoinfo"
+    version: master
 
-    - name: Build packages
-      include: rdo-project-build.yaml project={{ item }}
-      loop: "{{ synchronize }}"
-      loop_control:
-        label: "{{ item.name }}"
+- name: Build packages
+  include: rdo-project-build.yaml project={{ item }}
+  loop: "{{ synchronize }}"
+  loop_control:
+    label: "{{ item.name }}"

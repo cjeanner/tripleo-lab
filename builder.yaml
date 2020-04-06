@@ -8,8 +8,17 @@
     - builder
     - nat_vm
 
+# Connect as root first in order to push basic config and accesses
 - hosts: undercloud
   remote_user: root
+  vars_files:
+    - vars/main.yaml
+  roles:
+    - undercloud_prepare
+
+# Reconnect to the undercloud as stack user
+- hosts: undercloud
+  remote_user: stack
   vars_files:
     - vars/main.yaml
   roles:

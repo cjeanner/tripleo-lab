@@ -13,6 +13,8 @@
   when: tripleo_version not in ['queens', 'rocky']
   block:
     - name: Ensure we have image-serve
+      become: true
+      become_user: root
       command: |
         ansible -m include_role \
           -a role=tripleo-image-serve \
@@ -24,6 +26,8 @@
           - /var/lib/image-serve/v2
 
     - name: Ensure we have something for podman registry
+      become: true
+      become_user: root
       command: |
         ansible -m include_role \
           -a role=tripleo-podman \
@@ -35,6 +39,8 @@
           localhost
 
     - name: Ensure we have an entry for undercloud.ctlplane in /etc/hosts
+      become: true
+      become_user: root
       lineinfile:
         dest: /etc/hosts
         line: "127.0.0.1 undercloud.ctlplane undercloud.ctlplane.localdomain"
@@ -83,6 +89,8 @@
         replace: "push_destination: {{ local_registry }}"
 
     - name: "Run container image prepare (/var/log/tripleo-container-image-prepare.log)"
+      become: yes
+      become_user: root
       command: |
         openstack tripleo container image prepare \
         -e /home/stack/containers-prepare-parameter.yaml \
@@ -93,8 +101,9 @@
         creates: /home/stack/generated-container-prepare.yaml
 
     - name: Clean tweaked entry for undercloud.ctlplane in /etc/hosts
+      become: true
+      become_user: root
       lineinfile:
         dest: /etc/hosts
         line: "127.0.0.1 undercloud.ctlplane undercloud.ctlplane.localdomain"
         state: absent
-

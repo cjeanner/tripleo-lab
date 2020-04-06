@@ -1,0 +1,46 @@
+- name: Ensure fresh facts
+  tags:
+    - always
+    - lab
+    - undercloud-bootstrap
+  setup:
+    gather_subset: 'all'
+
+- name: Set some local facts
+  tags:
+    - always
+    - lab
+    - undercloud-bootstrap
+  set_fact:
+    base_image: "{{ ansible_facts['distribution'] | lower }}"
+
+- import_tasks: swap.yaml
+- name: Set up proxy if needed
+  tags:
+    - lab
+    - undercloud-bootstrap
+  when:
+    - proxy_host is defined
+  import_tasks: proxy.yaml
+
+- import_tasks: config.yaml
+- import_tasks: user.yaml
+
+- name: RHEL environment setup
+  tags:
+    - lab
+    - undercloud-bootstrap
+  when: base_image == 'redhat'
+  block:
+    - import_tasks: rhos-release.yaml
+    - import_tasks: rhel.yaml
+
+- name: Install EPEL on centos
+  tags:
+    - lab
+    - undercloud-bootstrap
+  when: base_image == 'centos'
+  import_tasks: epel.yaml
+
+- import_tasks: packages.yaml
+- import_tasks: tmate.yaml
