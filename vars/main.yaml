@@ -1,5 +1,13 @@
 ---
 additional_envs: []
+ansible_tripleo_image_serve_name: >-
+  {%- if tripleo_version == 'master' -%}
+  tripleo_image_serve
+  {%- else %}tripleo-image-serve {% endif -%}
+ansible_tripleo_podman_name: >-
+  {%- if tripleo_version == 'master' -%}
+  tripleo_podman
+  {%- else %}tripleo-podman {% endif -%}
 basedir: "/home/{{virt_user}}"
 base_image: centos
 ceph_version: luminous

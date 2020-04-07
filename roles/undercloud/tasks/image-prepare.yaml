@@ -17,7 +17,7 @@
       become_user: root
       command: |
         ansible -m include_role \
-          -a role=tripleo-image-serve \
+          -a role={{ ansible_tripleo_image_serve_name }} \
           -e tripleo_container_registry_host='*' \
           localhost
       args:
@@ -30,7 +30,7 @@
       become_user: root
       command: |
         ansible -m include_role \
-          -a role=tripleo-podman \
+          -a role={{ ansible_tripleo_podman_name }} \
           -e tripleo_container_registry_insecure_registries='["localhost","undercloud.ctlplane"]' \
           -e ansible_distribution={{ ansible_facts['distribution'] }} \
           -e ansible_os_family={{ ansible_facts['os_family'] }} \
