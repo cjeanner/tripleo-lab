@@ -1,0 +1,16 @@
+---
+- name: install package
+  package:
+    name: rhosp-director-images-x86_64
+    state: installed
+
+- name: uncompress images
+  register: uncompress_img
+  unarchive:
+    creates: "/home/stack/overcloud_imgs/{{item.content}}"
+    dest: "/home/stack/overcloud_imgs/"
+    remote_src: true
+    src: "/usr/share/rhosp-director-images/{{item.file}}"
+  loop: "{{ overcloud_images }}"
+  loop_control:
+    label: "{{item.file}}"

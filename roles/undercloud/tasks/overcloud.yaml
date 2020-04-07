@@ -1,4 +1,9 @@
 - name: install guestfs
+  tags:
+    - lab
+    - overcloud
+  become: true
+  become_user: root
   package:
     name: libguestfs-tools
     state: present
@@ -6,10 +11,19 @@
 # iscsi is a dependency of libguestfs-tools
 # but can conflict with the iscsi container on the undercloud
 - name: stat /lib/systemd/system/iscsid.socket
+  tags:
+    - lab
+    - overcloud
   stat:
     path: /lib/systemd/system/iscsid.socket
   register: stat_iscsid_socket
+
 - name: Stop and disable iscsid.socket service
+  tags:
+    - lab
+    - overcloud
+  become: true
+  become_user: root
   service:
     name: iscsid.socket
     state: stopped
@@ -17,12 +31,18 @@
   when: stat_iscsid_socket.stat.exists
 
 - name: get certmonger local CA
+  tags:
+    - lab
+    - overcloud
   when: enable_tls|default(False)|bool
   slurp:
     src: /etc/pki/ca-trust/source/anchors/cm-local-ca.pem
   register: certmonger_ca
 
 - name: inject certmonger CA in overcloud env file
+  tags:
+    - lab
+    - overcloud
   when: enable_tls|default(False)|bool
   template:
     dest: /home/stack/tls-inject-ca.yaml
@@ -33,198 +53,216 @@
 
 - name: image management on non-RHEL system
   tags:
-    - baremetal
+    - lab
+    - overcloud
     - overcloud-images
   when:
     - base_image == 'centos'
-  block:
-    - name: "fetch images for centos{{ os_version }}"
-      get_url:
-        dest: "/home/stack/overcloud_imgs/{{item.file}}"
-        group: stack
-        mode: 0644
-        owner: stack
-        url: "https://images.rdoproject.org/centos{{ os_version }}/{{tripleo_version}}/rdo_trunk/current-tripleo/{{item.file}}"
-      retries: 10
-      delay: 5
-      loop: "{{ overcloud_images }}"
-      loop_control:
-        label: "{{item.file}}"
-    - name: run commands as stack user
-      become: true
-      become_user: stack
-      tags:
-        - baremetal
-        - overcloud-images
-      block:
-        - name: uncompress images
-          unarchive:
-            creates: "/home/stack/overcloud_imgs/{{item.content}}"
-            dest: "/home/stack/overcloud_imgs/"
-            remote_src: true
-            src: "/home/stack/overcloud_imgs/{{item.file}}"
-          loop: "{{ overcloud_images }}"
-          loop_control:
-            label: "{{item.file}}"
+  import_tasks: centos-overcloud.yaml
 
 - name: manage image on RHEL
   tags:
-    - baremetal
+    - lab
+    - overcloud
     - overcloud-images
   when:
     - base_image != 'centos'
-  block:
-    - name: install package
-      package:
-        name: rhosp-director-images-x86_64
-        state: installed
-    - name: run commands as stack user
-      become: true
-      become_user: stack
-      tags:
-        - baremetal
-        - overcloud-images
-      block:
-        - name: uncompress images
-          unarchive:
-            creates: "/home/stack/overcloud_imgs/{{item.content}}"
-            dest: "/home/stack/overcloud_imgs/"
-            remote_src: true
-            src: "/usr/share/rhosp-director-images/{{item.file}}"
-          loop: "{{ overcloud_images }}"
-          loop_control:
-            label: "{{item.file}}"
-- name: common tag
+  import_tasks: rhel-overcloud.yaml
+
+- name: copy overcloud firstboot script
   tags:
+    - lab
+    - overcloud
     - overcloud-images
+  when:
+    - uncompress_img is changed
+    - overcloud_image_update|bool
+  template:
+    dest: /tmp/overcloud-firstboot
+    src: overcloud-firstboot.j2
+    mode: 0755
+
+- name: modify overcloud image
+  tags:
+    - lab
+    - overcloud
+    - overcloud-images
+  when:
+    - uncompress_img is changed
+    - overcloud_image_update|bool
+  shell: |
+    LIBGUESTFS_BACKEND="direct" virt-sysprep -a /home/stack/overcloud_imgs/overcloud-full.qcow2 \
+      --copy-in /etc/yum.conf:/etc/ \
+      --copy-in /etc/environment:/etc/ \
+      --copy-in /etc/selinux/config:/etc/selinux/ \
+      --copy-in /usr/local/src/:/usr/local/ \
+      --firstboot /tmp/overcloud-firstboot \
+      {% if base_image == 'centos' %}
+      --copy-in /etc/yum.repos.d/:/etc/ \
+      {% else %}
+      {% if package_use|default('dnf') == 'dnf' %}
+      --copy-in /etc/dnf/dnf.conf:/etc/dnf/ \
+      {% else %}
+      --copy-in /etc/yum.conf:/etc/ \
+      {% endif %}
+      --install {{ rhos_release_repo_url }}/rhos-release-latest.noarch.rpm \
+      --run-command "rhos-release {{ rhos_release_opts|default('') }} {{ rhos_release_version }}" \
+      {% endif %}
+      --network \
+      && \
+      touch /home/stack/overcloud_imgs/overcloud-full.qcow2.done
+  args:
+    creates: /home/stack/overcloud_imgs/overcloud-full.qcow2.done
+
+- name: update overcloud image
+  tags:
+    - lab
+    - overcloud
+    - overcloud-images
+  when:
+    - uncompress_img is changed
+    - overcloud_image_update|bool
+  shell: |
+    LIBGUESTFS_BACKEND="direct" virt-customize -a /home/stack/overcloud_imgs/overcloud-full.qcow2 \
+      --update \
+      --selinux-relabel \
+      --network \
+    && \
+    touch /home/stack/overcloud_imgs/overcloud-full.qcow2.updated
+  args:
+    creates: /home/stack/overcloud_imgs/overcloud-full.qcow2.updated
+
+- name: upload images to glance (container)
+  tags:
+    - lab
+    - overcloud
+    - overcloud-images
+  when:
+    - uncompress_img is changed
+    - containerized_undercloud|bool
+  import_role:
+    name: tripleo.operator.tripleo_overcloud_image_upload
+  vars:
+    tripleo_overcloud_image_upload_image_path: /home/stack/overcloud_imgs
+    tripleo_overcloud_image_upload_update_existing: true
+    tripleo_overcloud_image_upload_http_boot: /var/lib/ironic/httpboot
+
+- name: upload images to glance (bm)
+  tags:
+    - lab
+    - overcloud
+    - overcloud-images
+  when:
+    - uncompress_img is changed
+    - not containerized_undercloud|bool
+  import_role:
+    name: tripleo.operator.tripleo_overcloud_image_upload
+  vars:
+    tripleo_overcloud_image_upload_image_path: /home/stack/overcloud_imgs
+    tripleo_overcloud_image_upload_update_existing: true
+
+- name: check overcloud node import status
+  tags:
+    - lab
     - baremetal
-  block:
-    - name: run commands as stack user
-      become: true
-      become_user: stack
-      block:
-        - name: copy overcloud firstboot script
-          when: overcloud_image_update|bool
-          template:
-            dest: /tmp/overcloud-firstboot
-            src: overcloud-firstboot.j2
-            mode: 0755
-        - name: modify overcloud image
-          when: overcloud_image_update|bool
-          shell: |
-            LIBGUESTFS_BACKEND="direct" virt-sysprep -a /home/stack/overcloud_imgs/overcloud-full.qcow2 \
-              --copy-in /etc/yum.conf:/etc/ \
-              --copy-in /etc/environment:/etc/ \
-              --copy-in /etc/selinux/config:/etc/selinux/ \
-              --copy-in /usr/local/src/:/usr/local/ \
-              --firstboot /tmp/overcloud-firstboot \
-              {% if base_image == 'centos' %}
-              --copy-in /etc/yum.repos.d/:/etc/ \
-              {% else %}
-              {% if package_use|default('dnf') == 'dnf' %}
-              --copy-in /etc/dnf/dnf.conf:/etc/dnf/ \
-              {% else %}
-              --copy-in /etc/yum.conf:/etc/ \
-              {% endif %}
-              --install {{ rhos_release_repo_url }}/rhos-release-latest.noarch.rpm \
-              --run-command "rhos-release {{ rhos_release_opts|default('') }} {{ rhos_release_version }}" \
-              {% endif %}
-              --network \
-              && \
-              touch /home/stack/overcloud_imgs/overcloud-full.qcow2.done
-          args:
-            creates: /home/stack/overcloud_imgs/overcloud-full.qcow2.done
-        - name: update overcloud image
-          when: overcloud_image_update|bool
-          shell: |
-            LIBGUESTFS_BACKEND="direct" virt-customize -a /home/stack/overcloud_imgs/overcloud-full.qcow2 \
-              --update \
-              --selinux-relabel \
-              --network \
-            && \
-            touch /home/stack/overcloud_imgs/overcloud-full.qcow2.updated
-          args:
-            creates: /home/stack/overcloud_imgs/overcloud-full.qcow2.updated
-        - name: upload images to glance (container)
-          when:
-            - containerized_undercloud|bool
-          shell: |
-            source ~/stackrc
-            openstack overcloud image upload \
-              --image-path /home/stack/overcloud_imgs \
-              --http-boot /var/lib/ironic/httpboot \
-              --update-existing
-        - name: upload images to glance (bm)
-          when:
-            - not containerized_undercloud|bool
-          shell: |
-            source ~/stackrc
-            openstack overcloud image upload \
-              --image-path /home/stack/overcloud_imgs \
-              --update-existing
-        - name: common condition and tags
-          tags:
-            - baremetal
-            - overcloud
-          block:
-            - name: check overcloud node import status
-              when: vms|length > 0
-              shell: |
-                source ~/stackrc
-                openstack baremetal node list -f value -c UUID | wc -l
-              register: known_bm
-            - name: debug value
-              when: vms|length > 1
-              debug:
-                msg: "Got {{known_bm.stdout}} instances"
-            - name: import nodes in ironic
-              register: import_node
-              when:
-                - vms|length > 1
-                - known_bm.stdout == "0"
-              shell: |
-                source ~/stackrc
-                openstack overcloud node import  ~/baremetal.json 2>&1 > ~/import-nodes.log
-            - name: introspect nodes
-              when:
-                - vms|length > 1
-                - import_node is defined
-                - import_node is changed
-              shell: |
-                source ~/stackrc
-                openstack overcloud node introspect --all-manageable >&1 > ~/introspect-nodes.log
-            - name: provide nodes
-              when:
-                - vms|length > 1
-                - import_node is defined
-                - import_node is changed
-              shell: |
-                source ~/stackrc
-                openstack overcloud node provide --all-manageable >&1 > ~/provide-nodes.log
-            - name: update the ctlplane-subnet dns server
-              shell: |
-                source ~/stackrc
-                openstack subnet show ctlplane-subnet -f json | jq '.dns_nameservers' | grep "{{ undercloud_dns }}" ||
-                openstack subnet set ctlplane-subnet --dns-nameserver {{ undercloud_dns }}
+    - overcloud
+  when: vms|length > 0
+  shell: |
+    source ~/stackrc
+    openstack baremetal node list -f value -c UUID | wc -l
+  register: known_bm
 
-            - name: Metalsmith-based node deploy
-              when: metalsmith | default(false) | bool
-              import_tasks: metalsmith.yaml
+- name: debug value
+  tags:
+    - lab
+    - baremetal
+    - overcloud
+  when: vms|length > 1
+  debug:
+    msg: "Got {{known_bm.stdout}} instance(s) (should have {{ vms|length -1 }})"
 
-            - name: deploy the overcloud
-              when:
-                - vms|length > 1
-                - deploy_overcloud|bool
-              shell: |
-                bash /home/stack/deploy-overcloud-{{ item }}.sh
-              args:
-                chdir: /home/stack
-                creates: "/home/stack/overcloud-{{ item }}rc"
-              loop: "{{ range(0, overclouds)|list }}"
+- name: import nodes in ironic
+  tags:
+    - lab
+    - baremetal
+    - overcloud
+  when:
+    - vms|length > 1
+    - known_bm.stdout|int != (vms|length - 1)
+  import_role:
+    name: tripleo.operator.tripleo_overcloud_node_import
+  vars:
+    tripleo_overcloud_node_import_environment_file: ~/baremetal.json
 
-            - name: ensure we have success
-              when:
-                - vms|length > 1
-                - deploy_overcloud|bool
-              command: grep -q 'Overcloud configuration completed.' /home/stack/install-overcloud-{{ item }}.log
-              loop: "{{ range(0, overclouds)|list }}"
+- name: introspect nodes
+  tags:
+    - lab
+    - baremetal
+    - overcloud
+  when:
+    - vms|length > 1
+    - known_bm.stdout|int != (vms|length - 1)
+  import_role:
+    name: tripleo.operator.tripleo_overcloud_node_introspect
+  vars:
+    tripleo_overcloud_node_introspect_all_manageable: true
+
+- name: provide nodes
+  tags:
+    - lab
+    - baremetal
+    - overcloud
+  when:
+    - vms|length > 1
+    - known_bm.stdout|int != (vms|length - 1)
+  import_role:
+    name: tripleo.operator.tripleo_overcloud_node_provide
+  vars:
+    tripleo_overcloud_node_provide_all_manageable: true
+
+- name: update the ctlplane-subnet dns server
+  tags:
+    - lab
+    - baremetal
+    - overcloud
+  shell: |
+    source ~/stackrc
+    openstack subnet show ctlplane-subnet -f json | jq '.dns_nameservers' | grep "{{ undercloud_dns }}" ||
+    openstack subnet set ctlplane-subnet --dns-nameserver {{ undercloud_dns }}
+
+- name: Metalsmith-based node deploy
+  tags:
+    - lab
+    - baremetal
+    - overcloud
+  when:
+    - vms|length > 1
+    - known_bm.stdout|int != (vms|length - 1)
+    - metalsmith | default(false) | bool
+  import_tasks: metalsmith.yaml
+
+- name: deploy the overcloud
+  tags:
+    - lab
+    - baremetal
+    - overcloud
+  when:
+    - vms|length > 1
+    - deploy_overcloud|bool
+  shell: |
+    bash /home/stack/deploy-overcloud-{{ item }}.sh
+  args:
+    chdir: /home/stack
+    creates: "/home/stack/overcloud-{{ item }}rc"
+  loop: "{{ range(0, overclouds)|list }}"
+
+- name: ensure we have success
+  tags:
+    - lab
+    - baremetal
+    - overcloud
+  when:
+    - vms|length > 1
+    - deploy_overcloud|bool
+  command: grep -q 'Overcloud configuration completed.' /home/stack/install-overcloud-{{ item }}.log
+  loop: "{{ range(0, overclouds)|list }}"
