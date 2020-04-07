@@ -82,6 +82,7 @@
         - deploy_undercloud|bool
       block:
         - import_tasks: deploy.yaml
+        - import_tasks: overcloud.yaml
 - name: prepare and deploy standalone
   tags:
     - lab
