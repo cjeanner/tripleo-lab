@@ -1,3 +1,7 @@
+- name: create overclouds range
+  tags: always
+  set_fact:
+    overclouds_range: "{{ range(0, overclouds)|list }}"
 - name: common tags
   tags:
     - libvirt
@@ -204,9 +208,6 @@
       loop_control:
         label: "{{ item.name }}"
 
-    - name: create overclouds range
-      set_fact:
-        overclouds_range: "{{ range(0, overclouds)|list }}"
 
     - name: create empty image for non-undercloud
       when:
