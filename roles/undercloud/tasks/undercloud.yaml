@@ -1,0 +1,113 @@
+- name: let know tripleo-lab about custom container file
+  set_fact:
+    custom_container: "{{ modify_image|default([]) != [] }}"
+
+- name: Copy env-cleanup script to stack home
+  copy:
+    dest: /home/stack/env-cleanup.sh
+    src: env-cleanup.sh
+    mode: 0755
+
+- name: copy undercloud.conf sample
+  copy:
+    dest: /home/stack/undercloud.conf
+    src: "{{ undercloud_sample }}"
+    remote_src: true
+    owner: stack
+    group: stack
+    mode: 0640
+
+- name: Enable masquerading in undercloud.conf
+  ini_file:
+    path: /home/stack/undercloud.conf
+    section: ctlplane-subnet
+    option: masquerade
+    value: "true"
+    mode: 0640
+    backup: false
+
+- name: Set undercloud hostname
+  ini_file:
+    path: /home/stack/undercloud.conf
+    section: DEFAULT
+    option: undercloud_hostname
+    value: "{{ undercloud_hostname | default('undercloud.localdomain') }}"
+    mode: 0640
+    backup: false
+
+- name: Inject insecure registry in undercloud.conf
+  ini_file:
+    path: /home/stack/undercloud.conf
+    section: DEFAULT
+    option: container_insecure_registries
+    value: undercloud.ctlplane
+    backup: false
+
+- name: inject container-prepare file in the undercloud.conf
+  ini_file:
+    path: /home/stack/undercloud.conf
+    section: DEFAULT
+    option: container_images_file
+    value: /home/stack/containers-prepare-parameter.yaml
+    backup: false
+
+- name: Enable undercloud hieradata for low memory
+  ini_file:
+    path: /home/stack/undercloud.conf
+    section: DEFAULT
+    option: hieradata_override
+    value: /home/stack/hieradata_undercloud_low_memory.yaml
+    mode: 0640
+    backup: false
+  when: undercloud_low_memory|bool
+
+- name: Create hieradata_undercloud_low_memory.yaml
+  template:
+    dest: /home/stack/hieradata_undercloud_low_memory.yaml
+    src: hieradata_undercloud_low_memory.yaml.j2
+  when: undercloud_low_memory|bool
+
+- name: Disable SELinux if requested
+  when: disable_selinux|default(False)|bool
+  ini_file:
+    backup: false
+    path: /home/stack/undercloud.conf
+    section: DEFAULT
+    option: undercloud_enable_selinux
+    value: 'false'
+
+- name: Set undercloud NTP servers if needed
+  when: NtpServer is defined
+  ini_file:
+    backup: false
+    path: /home/stack/undercloud.conf
+    section: DEFAULT
+    option: undercloud_ntp_servers
+    value: "{{ NtpServer | join(',') }}"
+
+- name: include TLS config if needed
+  when: enable_tls|default(False)|bool
+  import_tasks: tls.yaml
+
+- name: custom configuration in undercloud.conf
+  ini_file:
+    path: /home/stack/undercloud.conf
+    section: "{{ item.section }}"
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+    mode: 0640
+    backup: false
+  loop: "{{ undercloud_config }}"
+  loop_control:
+    label: "{{ item.option }}"
+
+- name: Check if stackrc exists
+  register: stackrc_stat
+  stat:
+    path: /home/stack/stackrc
+
+- name: Deploy undercloud
+  when:
+    - deploy_undercloud|bool
+    - not stackrc_stat.stat.exists
+  import_tasks: deploy.yaml
