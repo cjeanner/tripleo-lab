@@ -1,0 +1,125 @@
+---
+- name: copy overcloud firstboot script
+  tags:
+    - lab
+    - overcloud
+    - overcloud-images
+  when:
+    - overcloud_image_update|bool
+  template:
+    dest: /tmp/overcloud-firstboot
+    src: overcloud-firstboot.j2
+    mode: 0755
+
+- name: create per overcloud yml directory
+  tags:
+    - lab
+    - overcloud
+    - baremetal
+  file:
+    path: "/home/stack/overcloud-{{ item }}-yml"
+    state: directory
+  loop: "{{ overclouds_range }}"
+
+- name: push common overcloud settings
+  tags:
+    - lab
+    - overcloud
+    - baremetal
+  copy:
+    dest: "/home/stack/"
+    src: "{{ item }}"
+  with_fileglob: 'files/overcloud/*.yaml'
+
+- name: push node placement
+  tags:
+    - lab
+    - overcloud
+    - baremetal
+  template:
+    dest: "/home/stack/overcloud-{{ item }}-yml/placement.yaml"
+    src: node-placement.yaml.j2
+  loop: "{{ overclouds_range }}"
+
+- name: push scale setting
+  tags:
+    - lab
+    - overcloud
+    - baremetal
+  template:
+    dest: "/home/stack/overcloud-{{ item }}-yml/scale.yaml"
+    src: scale.yaml.j2
+  loop: "{{ overclouds_range }}"
+
+- name: push per-overcloud network data
+  tags:
+    - lab
+    - overcloud
+    - baremetal
+  template:
+    dest: "/home/stack/oc{{ item }}-network-data.yaml"
+    src: oc-network-data.yaml.j2
+  loop: "{{ overclouds_range }}"
+
+- name: push per-overcloud network env
+  tags:
+    - lab
+    - overcloud
+    - baremetal
+  template:
+    dest: "/home/stack/overcloud-{{ item }}-yml/network-env.yaml"
+    src: oc-network-env.yaml.j2
+  loop: "{{ overclouds_range }}"
+
+- name: push ceph settings
+  tags:
+    - lab
+    - overcloud
+    - baremetal
+  template:
+    dest: "/home/stack/overcloud-{{ item }}-yml/ceph-params.yaml"
+    src: ceph-params.yaml.j2
+  loop: "{{ overclouds_range }}"
+  when:
+    - vms|map(attribute='name')|select("match", '^ceph')|list|length > 0
+
+- name: push container-cli setting
+  tags:
+    - lab
+    - overcloud
+    - baremetal
+  template:
+    dest: "/home/stack/overcloud-{{ item }}-yml/container-cli.yaml"
+    src: container-cli.yaml.j2
+  loop: "{{ overclouds_range }}"
+
+- name: push selinux setting
+  tags:
+    - lab
+    - overcloud
+    - baremetal
+  template:
+    dest: "/home/stack/overcloud-{{ item }}-yml/selinux-mode.yaml"
+    src: oc-selinux.yaml.j2
+  loop: "{{ overclouds_range }}"
+
+- name: push push-oc-img script
+  tags:
+    - lab
+    - overcloud
+    - baremetal
+  template:
+    dest: /home/stack/push-oc-img
+    src: push-oc-img
+    mode: 0750
+
+- name: push config-download script
+  tags:
+    - lab
+    - overcloud
+    - baremetal
+  template:
+    dest: "/home/stack/config-download-oc{{ item }}.sh"
+    src: overcloud-configdl.sh.j2
+    mode: 0750
+  loop: "{{ overclouds_range }}"

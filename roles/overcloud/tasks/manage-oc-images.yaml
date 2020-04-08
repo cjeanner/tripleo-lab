@@ -1,0 +1,79 @@
+---
+- name: Get CentOS based OC images
+  tags:
+    - lab
+    - overcloud
+    - baremetal
+    - overcloud-images
+  when:
+    - base_image == 'centos'
+  import_tasks: centos-overcloud.yaml
+
+- name: Get RHEL based OC images
+  tags:
+    - lab
+    - overcloud
+    - baremetal
+    - overcloud-images
+  when:
+    - base_image != 'centos'
+  import_tasks: rhel-overcloud.yaml
+
+- name: Set new image fact
+  tags:
+    - lab
+    - overcloud
+    - baremetal
+    - overcloud-images
+  set_fact:
+    new_oc_image: "{{ uncompress_centos_img is changed or uncompress_rhel_img is changed }}"
+
+- name: Modify overcloud image
+  tags:
+    - lab
+    - overcloud
+    - overcloud-images
+  when:
+    - overcloud_image_update|bool
+    - new_oc_image|bool
+  shell: |
+    LIBGUESTFS_BACKEND="direct" virt-sysprep -a /home/stack/overcloud_imgs/overcloud-full.qcow2 \
+      --copy-in /etc/yum.conf:/etc/ \
+      --copy-in /etc/environment:/etc/ \
+      --copy-in /etc/selinux/config:/etc/selinux/ \
+      --copy-in /usr/local/src/:/usr/local/ \
+      --firstboot /tmp/overcloud-firstboot \
+      {% if base_image == 'centos' %}
+      --copy-in /etc/yum.repos.d/:/etc/ \
+      {% else %}
+      {% if package_use|default('dnf') == 'dnf' %}
+      --copy-in /etc/dnf/dnf.conf:/etc/dnf/ \
+      {% else %}
+      --copy-in /etc/yum.conf:/etc/ \
+      {% endif %}
+      --install {{ rhos_release_repo_url }}/rhos-release-latest.noarch.rpm \
+      --run-command "rhos-release {{ rhos_release_opts|default('') }} {{ rhos_release_version }}" \
+      {% endif %}
+      --network \
+      && \
+      touch /home/stack/overcloud_imgs/overcloud-full.qcow2.done
+  args:
+    creates: /home/stack/overcloud_imgs/overcloud-full.qcow2.done
+
+- name: Update overcloud image
+  tags:
+    - lab
+    - overcloud
+    - overcloud-images
+  when:
+    - overcloud_image_update|bool
+    - new_oc_image|bool
+  shell: |
+    LIBGUESTFS_BACKEND="direct" virt-customize -a /home/stack/overcloud_imgs/overcloud-full.qcow2 \
+      --update \
+      --selinux-relabel \
+      --network \
+    && \
+    touch /home/stack/overcloud_imgs/overcloud-full.qcow2.updated
+  args:
+    creates: /home/stack/overcloud_imgs/overcloud-full.qcow2.updated

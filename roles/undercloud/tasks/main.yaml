@@ -9,7 +9,7 @@
     - always
   set_fact:
     base_image: "{{ ansible_facts['distribution'] | lower }}"
-    overclouds_range: "{{ range(0, overclouds | default(1)) | list }}"
+    overclouds_range: "{{ range(0, overclouds | default(1) | int) | list }}"
 
 - name: Configure upstream repository
   tags:
@@ -70,25 +70,25 @@
     - undercloud
     - image-prepare
 
-- name: deploy standard undercloud and stuff
+- name: Setup and deploy Undercloud
   tags:
     - lab
     - undercloud
-  when: not standalone|bool
-  block:
-    - import_tasks: prepare.yaml
-    - name: deploy undercloud and prepare overcloud
-      when:
-        - deploy_undercloud|bool
-      block:
-        - import_tasks: deploy.yaml
-        - import_tasks: overcloud.yaml
-- name: prepare and deploy standalone
+  when:
+    - not standalone|bool
+  import_tasks: undercloud.yaml
+
+- name: Setup Overcloud
   tags:
     - lab
     - undercloud
+  when:
+    - not standalone|bool
+    - deploy_undercloud|bool
+  import_role:
+    name: overcloud
+
+- name: Set up and deploy Standalone
   when: standalone|bool
-  block:
-    - name: go for standalone
-      import_role:
-        role: standalone
+  import_role:
+    role: standalone

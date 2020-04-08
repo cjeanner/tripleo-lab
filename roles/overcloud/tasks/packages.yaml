@@ -1,0 +1,32 @@
+- name: install guestfs
+  tags:
+    - lab
+    - overcloud
+  become: true
+  become_user: root
+  package:
+    name: libguestfs-tools
+    state: present
+
+# iscsi is a dependency of libguestfs-tools
+# but can conflict with the iscsi container on the undercloud
+- name: stat /lib/systemd/system/iscsid.socket
+  tags:
+    - lab
+    - overcloud
+  stat:
+    path: /lib/systemd/system/iscsid.socket
+  register: stat_iscsid_socket
+
+- name: Stop and disable iscsid.socket service
+  tags:
+    - lab
+    - overcloud
+  become: true
+  become_user: root
+  service:
+    name: iscsid.socket
+    state: stopped
+    enabled: false
+  when: stat_iscsid_socket.stat.exists
+

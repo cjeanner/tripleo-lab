@@ -1,0 +1,16 @@
+---
+- import_tasks: packages.yaml
+- import_tasks: config.yaml
+- import_tasks: scripts.yaml
+- import_tasks: manage-oc-images.yaml
+- import_tasks: upload.yaml
+- import_tasks: baremetal.yaml
+
+- name: Deploy all overclouds
+  tags:
+    - lab
+    - overcloud
+  loop: "{{ overclouds_range }}"
+  loop_control:
+    label: "Deploying overcloud {{ item }}"
+  include_tasks: deploy.yaml

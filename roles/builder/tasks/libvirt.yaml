@@ -1,7 +1,7 @@
 - name: create overclouds range
   tags: always
   set_fact:
-    overclouds_range: "{{ range(0, overclouds)|list }}"
+    overclouds_range: "{{ range(0, overclouds|int)|list }}"
 - name: common tags
   tags:
     - libvirt

@@ -3,13 +3,20 @@
   template:
     src: metalsmith.yaml.j2
     dest: "/home/stack/metalsmith-{{ item }}.yaml"
-  loop: "{{ range(0, overclouds)|list }}"
+  loop: "{{ overclouds_range }}"
+
+- name: Fetch known nodes
+  register: metalsmith_known_nodes
+  command: |
+    metalsmith --os-cloud undercloud -f value -c UUID list
 
 - name: Provision nodes
+  when:
+    - metalsmith_known_nodes.stdout_lines|length != (vms|length - 1)
   include_role:
     name: tripleo.operator.tripleo_overcloud_node_provision
   vars:
     tripleo_overcloud_node_provision_output_file: "overcloud-baremetal-deployed-{{ item }}.yaml"
     tripleo_overcloud_node_provision_stack: "overcloud-{{ item }}"
     tripleo_overcloud_node_provision_deployment_file: "~/metalsmith-{{ item }}.yaml"
-  loop: "{{ range(0, overclouds)|list }}"
+  loop: "{{ overclouds_range }}"

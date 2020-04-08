@@ -46,7 +46,7 @@
         nmcli con add type vlan con-name vlan-{{ item+1 }}9 ifname eth1.{{ item+1 }}9 dev eth1 id {{ item+1 }}9 ip4 "10.20.{{ item+1 }}.1/24"
       args:
         creates: "/etc/sysconfig/network-scripts/ifcfg-vlan{{ item+1 }}9"
-      loop: "{{ range(0, overclouds)|list }}"
+      loop: "{{ overclouds_range }}"
       loop_control:
         label: "vlan-{{item+1}}9"
 

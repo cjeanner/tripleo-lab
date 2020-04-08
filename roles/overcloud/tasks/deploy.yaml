@@ -1,0 +1,66 @@
+---
+- name: Set overcloud env files
+  tags:
+    - lab
+    - baremetal
+    - overcloud
+  set_fact:
+    oc_env_files: |-
+      {% if metalsmith | default(false) | bool %}
+      /usr/share/openstack-tripleo-heat-templates/environments/deployed-server-environment.yaml
+      /home/stack/overcloud-baremetal-deployed-{{ item }}.yaml
+      {% endif -%}
+      /usr/share/openstack-tripleo-heat-templates/environments/net-multiple-nics.yaml
+      /usr/share/openstack-tripleo-heat-templates/environments/network-isolation.yaml
+      /usr/share/openstack-tripleo-heat-templates/environments/network-environment.yaml
+      /usr/share/openstack-tripleo-heat-templates/environments/disable-telemetry.yaml
+      /usr/share/openstack-tripleo-heat-templates/environments/low-memory-usage.yaml
+      /usr/share/openstack-tripleo-heat-templates/environments/enable-swap.yaml
+      {% if vms|map(attribute='name')|select("match", '^ceph')|list|length > 0 -%}
+      /usr/share/openstack-tripleo-heat-templates/environments/ceph-ansible/ceph-ansible.yaml
+      {% endif -%}
+      {% if base_image == 'centos' and vms|map(attribute='name')|select("match", '^controller.+')|list|length > 1 -%}
+      /usr/share/openstack-tripleo-heat-templates/environments/docker-ha.yaml
+      {% else -%}
+      /usr/share/openstack-tripleo-heat-templates/environments/{{ overcloud_container_cli }}.yaml
+      {% endif -%}
+      {% if enable_tls|default(False)|bool -%}
+      /home/stack/tls-inject-ca.yaml
+      /usr/share/openstack-tripleo-heat-templates/environments/ssl/inject-trust-anchor-hiera.yaml
+      /usr/share/openstack-tripleo-heat-templates/environments/ssl/tls-everywhere-endpoints-dns.yaml
+      /usr/share/openstack-tripleo-heat-templates/environments/services/haproxy-public-tls-certmonger.yaml
+      /usr/share/openstack-tripleo-heat-templates/environments/ssl/enable-internal-tls.yaml
+      {% endif -%}
+      {% for env in additional_envs -%}
+      {{ env }}
+      {% endfor -%}
+
+- name: deploy the overcloud
+  tags:
+    - lab
+    - baremetal
+    - overcloud
+  when:
+    - vms|length > 1
+    - deploy_overcloud|bool
+  import_role:
+    name: tripleo.operator.tripleo_overcloud_deploy
+  vars:
+    tripleo_overcloud_deploy_templates: /usr/share/openstack-tripleo-heat-templates/
+    tripleo_overcloud_deploy_stack: "overcloud-{{ item }}"
+    tripleo_overcloud_deploy_networks_file: "/home/stack/oc{{ item }}-network-data.yaml"
+    tripleo_overcloud_deploy_environment_dirs: "/home/stack/overcloud-{{ item }}-yml"
+    tripleo_overcloud_deploy_deployed_server: "{{ metalsmith|bool }}"
+    tripleo_overcloud_deploy_libvirt_type: qemu
+    tripleo_overcloud_deploy_environment_files: "{{ oc_env_files.split('\n') }}"
+    tripleo_overcloud_deploy_disable_validations: "{{ metalsmith }}"
+
+- name: ensure we have success
+  tags:
+    - lab
+    - baremetal
+    - overcloud
+  when:
+    - vms|length > 1
+    - deploy_overcloud|bool
+  command: grep -q 'Overcloud configuration completed.' /home/stack/install-overcloud-{{ item }}.log

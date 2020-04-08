@@ -1,0 +1,40 @@
+---
+- name: Get certmonger local CA
+  tags:
+    - lab
+    - overcloud
+  when: enable_tls|default(False)|bool
+  slurp:
+    src: /etc/pki/ca-trust/source/anchors/cm-local-ca.pem
+  register: certmonger_ca
+
+- name: Inject certmonger CA in overcloud env file
+  tags:
+    - lab
+    - overcloud
+  when: enable_tls|default(False)|bool
+  template:
+    dest: /home/stack/tls-inject-ca.yaml
+    src: tls-inject-ca.yaml.j2
+    group: stack
+    mode: 0644
+    owner: stack
+
+- name: create image directory
+  tags:
+    - lab
+    - overcloud
+    - baremetal
+    - overcloud-images
+  file:
+    path: "/home/stack/overcloud_imgs"
+    state: directory
+
+- name: update the ctlplane-subnet dns server
+  tags:
+    - lab
+    - baremetal
+    - overcloud
+  shell: |
+    openstack --os-cloud undercloud subnet show ctlplane-subnet -f json | jq '.dns_nameservers' | grep "{{ undercloud_dns }}" ||
+    openstack --os-cloud undercloud subnet set ctlplane-subnet --dns-nameserver {{ undercloud_dns }}

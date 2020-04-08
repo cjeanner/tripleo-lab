@@ -1,0 +1,93 @@
+---
+- name: generate baremetal.json file
+  when:
+    - hostvars['builder'] is defined
+    - hostvars['builder']['oc_mac_addresses'] is defined
+  tags:
+    - lab
+    - overcloud
+    - baremetal
+  template:
+    dest: /home/stack/baremetal.json
+    mode: '0644'
+    src: baremetal.json.j2
+
+- name: Ensure baremetal.json is present
+  register: baremetal_exists
+  stat:
+    path: /home/stack/baremetal.json
+
+- name: Fail if baremetal.json doesn't exist
+  when: not baremetal_exists.stat.exists
+  fail:
+    msg: |
+      Playbook didn't generate baremetal.json.
+      This might be due to the lack of parameter.
+      Please re-run, ensuring -t domains is passed!
+- name: check overcloud node import status
+  tags:
+    - lab
+    - baremetal
+    - overcloud
+  when: vms|length > 0
+  command: |
+    openstack --os-cloud undercloud baremetal node list -f value -c UUID
+  register: known_bm
+
+- name: debug value
+  tags:
+    - lab
+    - baremetal
+    - overcloud
+  when: vms|length > 1
+  debug:
+    msg: "Got {{ known_bm.stdout_lines|length }} instance(s) (should have {{ vms|length -1 }})"
+
+- name: import nodes in ironic
+  tags:
+    - lab
+    - baremetal
+    - overcloud
+  when:
+    - vms|length > 1
+    - known_bm.stdout_lines|length != (vms|length - 1)
+  import_role:
+    name: tripleo.operator.tripleo_overcloud_node_import
+  vars:
+    tripleo_overcloud_node_import_environment_file: ~/baremetal.json
+
+- name: introspect nodes
+  tags:
+    - lab
+    - baremetal
+    - overcloud
+  when:
+    - vms|length > 1
+    - known_bm.stdout_lines|length != (vms|length - 1)
+  import_role:
+    name: tripleo.operator.tripleo_overcloud_node_introspect
+  vars:
+    tripleo_overcloud_node_introspect_all_manageable: true
+
+- name: provide nodes
+  tags:
+    - lab
+    - baremetal
+    - overcloud
+  when:
+    - vms|length > 1
+    - known_bm.stdout_lines|length != (vms|length - 1)
+  import_role:
+    name: tripleo.operator.tripleo_overcloud_node_provide
+  vars:
+    tripleo_overcloud_node_provide_all_manageable: true
+
+- name: Metalsmith-based node deploy
+  tags:
+    - lab
+    - baremetal
+    - overcloud
+  when:
+    - vms|length > 1
+    - metalsmith | default(false) | bool
+  import_tasks: metalsmith.yaml

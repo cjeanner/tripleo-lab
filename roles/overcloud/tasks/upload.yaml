@@ -1,0 +1,29 @@
+---
+- name: upload images to glance (container)
+  tags:
+    - lab
+    - overcloud
+    - overcloud-images
+  when:
+    - containerized_undercloud|bool
+    - new_oc_image|bool
+  import_role:
+    name: tripleo.operator.tripleo_overcloud_image_upload
+  vars:
+    tripleo_overcloud_image_upload_image_path: /home/stack/overcloud_imgs
+    tripleo_overcloud_image_upload_update_existing: true
+    tripleo_overcloud_image_upload_http_boot: /var/lib/ironic/httpboot
+
+- name: upload images to glance (bm)
+  tags:
+    - lab
+    - overcloud
+    - overcloud-images
+  when:
+    - not containerized_undercloud|bool
+    - new_oc_image|bool
+  import_role:
+    name: tripleo.operator.tripleo_overcloud_image_upload
+  vars:
+    tripleo_overcloud_image_upload_image_path: /home/stack/overcloud_imgs
+    tripleo_overcloud_image_upload_update_existing: true

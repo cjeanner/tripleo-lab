@@ -5,7 +5,7 @@
     state: installed
 
 - name: uncompress images
-  register: uncompress_img
+  register: uncompress_rhel_img
   unarchive:
     creates: "/home/stack/overcloud_imgs/{{item.content}}"
     dest: "/home/stack/overcloud_imgs/"
