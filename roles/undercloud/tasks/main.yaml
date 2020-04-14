@@ -22,8 +22,6 @@
   vars:
     tripleo_repos_extra_repos:
       - ceph
-    tripleo_repos_version: "{{ tripleo_mod }}"
-    tripleo_repos_branch: "{{ tripleo_version }}"
 
 - import_tasks: packages.yaml
   tags:

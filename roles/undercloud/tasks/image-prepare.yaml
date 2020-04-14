@@ -1,6 +1,6 @@
 ---
 - name: Only for older releases
-  when: tripleo_version in ['queens', 'rocky']
+  when: tripleo_repos_branch in ['queens', 'rocky']
   block:
     - name: Run container image prepare
       command: |
@@ -10,7 +10,7 @@
         creates: /home/stack/generated-container-prepare.yaml
 
 - name: Only for recent releases
-  when: tripleo_version not in ['queens', 'rocky']
+  when: tripleo_repos_branch not in ['queens', 'rocky']
   block:
     - name: Ensure we have image-serve
       become: true

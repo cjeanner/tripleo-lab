@@ -8,3 +8,5 @@
       import_tasks: image-prepare.yaml
     - name: Misc params
       import_tasks: misc.yaml
+    - name: Misc params
+      import_tasks: operator.yaml

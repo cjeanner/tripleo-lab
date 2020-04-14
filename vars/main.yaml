@@ -1,11 +1,11 @@
 ---
 additional_envs: []
 ansible_tripleo_image_serve_name: >-
-  {%- if tripleo_version == 'master' -%}
+  {%- if tripleo_repos_branch == 'master' -%}
   tripleo_image_serve
   {%- else %}tripleo-image-serve {% endif -%}
 ansible_tripleo_podman_name: >-
-  {%- if tripleo_version == 'master' -%}
+  {%- if tripleo_repos_branch == 'master' -%}
   tripleo_podman
   {%- else %}tripleo-podman {% endif -%}
 basedir: "/home/{{virt_user}}"
@@ -54,9 +54,9 @@ standalone_ceph: false
 synchronize: []
 synchronize_default_dest: /home/stack/tripleo/
 tmate_release: 2.3.1
-tripleo_mod: current-tripleo
+tripleo_repos_branch: master
+tripleo_repos_version: current-tripleo
 tripleoclient_pkgname: python-tripleoclient
-tripleo_version: master
 tripleo_generate_scripts: true
 undercloud_config: []
 undercloud_dns: 192.168.122.1

@@ -1,0 +1,12 @@
+---
+- name: Is tripleo_mod defined
+  when: tripleo_mod is defined
+  fail:
+    msg: |
+      tripleo_mod is deprecated. Please use tripleo_repos_version
+
+- name: Is tripleo_version defined
+  when: tripleo_version is defined
+  fail:
+    msg: |
+      tripleo_version is deprecated. Please use tripleo_repos_branch
