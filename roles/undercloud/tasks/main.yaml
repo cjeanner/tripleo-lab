@@ -87,6 +87,10 @@
     name: overcloud
 
 - name: Set up and deploy Standalone
+  tags:
+    - lab
+    - undercloud
+    - standalone
   when: standalone|bool
   import_role:
     role: standalone

@@ -2,6 +2,7 @@
 - name: if ceph is requested
   when: standalone_ceph|bool
   become: true
+  become_user: root
   block:
     - name: install lvm2
       package:
@@ -32,3 +33,9 @@
         lvcreate -n ceph_lv_data -l 1041 ceph_vg
       args:
         creates: /dev/mapper/ceph_vg-ceph_lv_wal
+
+- name: ceph params if requested
+  when: standalone_ceph|bool
+  copy:
+    dest: /home/stack/ceph_parameters.yaml
+    src: standalone_ceph.yaml

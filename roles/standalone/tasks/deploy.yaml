@@ -1,24 +1,26 @@
 ---
-- name: check if we have custom container image
+- name: Generate standalone environment
   set_fact:
-    custom_container: "{{ modify_image|default([]) != [] }}"
-
-- name: push deploy script
-  template:
-    dest: /home/stack/deploy.sh
-    src: deploy.sh.j2
-    mode: 0755
-  vars:
-    ip: '192.168.24.2'
+    standalone_env_files: |-
+      /usr/share/openstack-tripleo-heat-templates/environments/standalone/standalone-tripleo.yaml
+      {% if standalone_ceph|bool %}
+      /usr/share/openstack-tripleo-heat-templates/environments/ceph-ansible/ceph-ansible.yaml
+      {% endif %}
+      {% if standalone_ceph|bool %}
+      /home/stack/ceph_parameters.yaml
+      {% endif %}
+      {% for env in additional_envs %}
+      {{ env }}
+      {% endfor %}
+      /home/stack/generated-container-prepare.yaml
+      /home/stack/standalone_parameters.yaml
 
 - name: deploy standalone
   when: deploy_standalone|bool
-  become: true
-  become_user: stack
-  command: /home/stack/deploy.sh
-  args:
-    creates: /home/stack/install-standalone.log
-
-- name: ensure we have a success
-  when: deploy_standalone|bool
-  command: grep -q 'Deployment successful!' /home/stack/install-standalone.log
+  import_role:
+    name: tripleo.operator.tripleo_deploy
+  vars:
+    tripleo_deploy_standalone: true
+    tripleo_deploy_output_dir: /home/stack
+    tripleo_deploy_environment_files: "{{ standalone_env_files.split('\n') }}"
+    tripleo_deploy_local_ip: '192.168.24.2'

@@ -1,10 +1,14 @@
 ---
 - name: install lvm2 needed by cinder
+  become: true
+  become_user: root
   package:
     name: lvm2
     state: installed
 
 - name: Unmanage eth1
+  become: true
+  become_user: root
   when:
     - os_version > 7
   command: nmcli dev set eth1 managed no
@@ -19,14 +23,6 @@
   template:
     dest: /home/stack/standalone_parameters.yaml
     src: standalone_params.yaml.j2
-  vars:
-    ip: '192.168.24.2'
-
-- name: ceph params if requested
-  when: standalone_ceph|bool
-  copy:
-    dest: /home/stack/ceph_parameters.yaml
-    src: standalone_ceph.yaml
 
 - name: octavia param
   copy:

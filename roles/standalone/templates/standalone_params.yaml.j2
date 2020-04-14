@@ -3,7 +3,7 @@ parameter_defaults:
 {% if disable_selinux | default(false) | bool %}
   SELinuxMode: permissive
 {% endif %}
-  CloudName: {{ ip }}
+  CloudName: 192.168.24.2
   ControlPlaneStaticRoutes: []
   Debug: true
   ConfigDebug: true
@@ -11,7 +11,8 @@ parameter_defaults:
   DeploymentUser: stack
   DnsServers: {{ nameservers | to_yaml }}
   DockerInsecureRegistryAddress:
-    - {{ ip }}:8787
+    - 192.168.24.2:8787
+    - undercloud.ctlplane
   NeutronPublicInterface: eth1
   NeutronDnsDomain: localdomain
   StandaloneEnableRoutedNetworks: false
