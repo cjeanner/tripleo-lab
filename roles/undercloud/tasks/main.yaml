@@ -19,9 +19,6 @@
     - base_image == 'centos'
   import_role:
     name: tripleo.operator.tripleo_repos
-  vars:
-    tripleo_repos_extra_repos:
-      - ceph
 
 - import_tasks: packages.yaml
   tags:

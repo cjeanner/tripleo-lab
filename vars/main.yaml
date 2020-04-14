@@ -55,7 +55,9 @@ synchronize: []
 synchronize_default_dest: /home/stack/tripleo/
 tmate_release: 2.3.1
 tripleo_repos_branch: master
-tripleo_repos_version: current-tripleo
+tripleo_repos_repos:
+  - ceph
+  - current-tripleo
 tripleoclient_pkgname: python-tripleoclient
 tripleo_generate_scripts: true
 undercloud_config: []
