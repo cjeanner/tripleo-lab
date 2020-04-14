@@ -1,4 +1,9 @@
 ---
+# always ensure fresh operator content
+- hosts: localhost
+  roles:
+    - operators
+
 - hosts: builder
   remote_user: root
   vars_files:

@@ -2,9 +2,11 @@
 # Install tripleo-operator in current user environment
 # and provide plugins and roles to local ansible env.
 - name: Get installed packages
+  tags: always
   package_facts:
 
 - name: Check ansible version
+  tags: always
   when: ansible_facts.packages['ansible'][0]['version'] is version('2.9.0', 'lt', strict=True)
   fail:
     msg: Please update your ansible version to 2.9.x
@@ -27,6 +29,7 @@
     repo: https://opendev.org/openstack/tripleo-operator-ansible
 
 - name: Build operator collection
+  tags: always
   when: git_operator is changed
   command: "ansible-galaxy collection build --force --output-path /tmp/collections"
   register: collection_name
@@ -34,6 +37,7 @@
     chdir: ~/.ansible/tripleo-operator-ansible
 
 - name: Install operator collection
+  tags: always
   when: git_operator is changed
   command: "ansible-galaxy collection install --force {{ collection_name.stdout.split(' ')[-1] }}"
   args:
