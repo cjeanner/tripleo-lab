@@ -6,6 +6,7 @@
       - git
       - iotop
       - tmux
+      - util-linux
       - vim
     state: present
 
@@ -17,10 +18,11 @@
     state: present
 
 - name: install requested packages for ceph
+  when: vms|map(attribute='name')|select("match", '^ceph')|list|length > 0
   become: true
   become_user: root
   package:
-    name: [ceph-ansible, util-linux]
+    name: ceph-ansible
     state: installed
 
 - name: Install network-scripts-openvswitch
