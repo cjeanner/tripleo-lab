@@ -63,6 +63,7 @@
   yum_repository:
     name: "{{ item.name }}"
     description: "{{ item.name }}"
+    file: "{{ item.file | default(item.name) }}"
     baseurl: "{{ item.uri }}"
     gpgcheck: "{{ item.gpg |default(omit) }}"
     priority: "{{ item.priority |default(omit) }}"
