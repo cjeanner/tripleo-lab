@@ -40,3 +40,27 @@
   fail:
     msg: |
       no_proxy is deprecated. Please remove this parameter
+
+- name: Is ceph_version defined
+  when: ceph_version is defined
+  fail:
+    msg: |
+      ceph_version is deprecated. Please remove this parameter
+
+- name: Is ci_tools defined
+  when: ci_tools is defined
+  fail:
+    msg: |
+      ci_tools is deprecated. Please remove this parameter
+
+- name: Is container_registry_ip defined
+  when: container_registry_ip is defined
+  fail:
+    msg: |
+      container_registry_ip is deprecated. Please remove this parameter
+
+- name: Is modify_container defined
+  when: modify_container is defined
+  fail:
+    msg: |
+      ci_tools is deprecated. Please remove this parameter

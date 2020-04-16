@@ -10,10 +10,7 @@ ansible_tripleo_podman_name: >-
   {%- else %}tripleo-podman {% endif -%}
 basedir: "/home/{{virt_user}}"
 base_image: centos
-ceph_version: luminous
-ci_tools: true
 container_prepare_overrides: {}
-container_registry_ip: ''
 containerized_undercloud: true
 custom_ca: ''
 custom_repositories: []
@@ -38,9 +35,7 @@ overcloud_images:
   - file: overcloud-full.tar
     content: overcloud-full.qcow2
 overclouds: 1
-patches: []
 metalsmith: false
-modify_container: {}
 nameservers:
   - 1.1.1.1
   - 8.8.8.8

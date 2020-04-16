@@ -1,6 +1,5 @@
 ---
 growfs_part: '/'
-ci_tools: true
 metalsmith: true
 tripleoclient_pkgname: python3-tripleoclient
 undercloud_python_interpreter: /usr/libexec/platform-python

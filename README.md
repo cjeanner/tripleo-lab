@@ -145,9 +145,6 @@ undercloud_config:
   Whether to add `--use-heat` to undercloud install command (Boolean).
   Defaults "no"
 
-*ci_tools*
-  Install CI tools (Boolean)
-
 *deploy_undercloud*
   Boolean
 
@@ -156,16 +153,6 @@ undercloud_config:
 
 *proxy_host*
   Allows to use a proxy on the lab - put IP:PORT as value
-
-*patches*
-  List of hashes with the following entries:
-  - name (string) - package name
-  - refs (string) - patch reference
-```YAML
-patches:
-  - name: 'tripleo-heat-templates'
-    refs: '33/600533/8'
-```
 
 *synchronize*
   List of hashes with the following entries:
@@ -244,22 +231,6 @@ custom_repositories:
 
 *unmanage_iface*
   Point to the interface we want to unmanage from NetworkManager
-
-*modify_container*
-  List projects/container to modify on the fly during a standalone deploy.
-```YAML
-modify_container:
-  gerrit-project-name:
-    ref: change reference
-    container: container-name
-```
-For instance:
-```YAML
-modify_container:
-  neutron:
-    ref: refs/changes/60/661760/7
-    container: neutron-server
-```
 
 *container_prepare_overrides*
   Dict of overrides for the default container-image-prepare.

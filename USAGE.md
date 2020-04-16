@@ -1,18 +1,8 @@
 # Some examples and use-cases
 
 ## I want to test that patch from gerrit
-1. Create a "patch.yaml" in ```local_env``` directory
-2. Add the following content:
-```YAML
----
-patches:
-  - name: project-name
-    refs: xx/yyyyyy/a
-```
-3. Run the playbook with the following options:
-```Bash
-ansible-playbook builder.yaml -t lab -e @local_env/patch.yaml
-```
+1. Fetch the wanted patch in your local repository
+2. Follow "I want to test that local change on my computer"
 
 ## I want to test that local change on my computer
 1. Create a "patch.yaml" in ```local_env``` directory
@@ -118,13 +108,11 @@ Please note this is for Red Hat employees and was NOT tested for any other use
 ```YAML
 ---
 base_image: rhel
-ci_tools: false
 rhos_release_repo_url: http://xxxxxx
 proxy_host: xx.yy.zz.aa:PORT
 undercloud_sample: /usr/share/instack-undercloud/undercloud.conf.sample
 # Set up container things
 rhos_containers_registry: <some address>
-container_registry_ip: <some IP>
 ```
 3. Run the playbook with the following options:
 ```Bash
