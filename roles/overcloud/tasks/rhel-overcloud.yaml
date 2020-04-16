@@ -1,5 +1,7 @@
 ---
 - name: install package
+  become: true
+  become_user: root
   package:
     name: rhosp-director-images-x86_64
     state: installed

@@ -1,4 +1,6 @@
 - name: install custom RPM from remote link
+  become: true
+  become_user: root
   package:
     name: "{{ custom_rpms }}"
     state: installed
