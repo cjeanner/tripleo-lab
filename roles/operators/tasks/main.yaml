@@ -27,6 +27,7 @@
   git:
     dest: ~/.ansible/tripleo-operator-ansible
     repo: https://opendev.org/openstack/tripleo-operator-ansible
+    update: "{{ update_operator | bool }}"
 
 - name: Build operator collection
   tags: always

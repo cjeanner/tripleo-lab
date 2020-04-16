@@ -1,6 +1,8 @@
 ---
 # always ensure fresh operator content
 - hosts: localhost
+  vars_files:
+    - vars/main.yaml
   roles:
     - operators
 
