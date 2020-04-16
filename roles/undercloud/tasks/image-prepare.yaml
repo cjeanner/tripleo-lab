@@ -94,6 +94,7 @@
       vars:
         tripleo_container_image_prepare_environment_files: /home/stack/containers-prepare-parameter.yaml
         tripleo_container_image_prepare_output_env_file: /home/stack/generated-container-prepare.yaml
+        tripleo_container_image_prepare_log_output: true
 
     - name: Clean tweaked entry for undercloud.ctlplane in /etc/hosts
       become: true
