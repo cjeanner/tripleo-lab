@@ -34,3 +34,9 @@
   fail:
     msg: |
       centos_mirror_device is deprecated. Please remove this parameter
+
+- name: Is no_proxy defined
+  when: no_proxy is defined
+  fail:
+    msg: |
+      no_proxy is deprecated. Please remove this parameter
