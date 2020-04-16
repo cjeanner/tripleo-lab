@@ -220,6 +220,7 @@ semodules:
 ```YAML
 custom_repositories:
   - name: foo
+    file: (string, optional)
     uri: https://foo.bar
     gpg: (bool, optional)
     priority: (int, optional)

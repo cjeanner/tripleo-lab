@@ -32,6 +32,23 @@ custom_rpms:
 ansible-playbook builder.yaml -t lab -e @local_env/rpm.yaml
 ```
 
+## I want to ensure yum/dnf is using the same mirror
+This can be handy if you have a caching proxy, or if you have local mirrors
+1. Create a new env file, for instance "centos-repositories.yaml"
+2. add custom_repositories as follow:
+```YAML
+custom_repositories:
+  - name: BaseOS
+    file: CentOS-Base
+    uri: your-unique-mirror
+  - name: AppStream
+    file: CentOS-AppStream
+    uri: your-unique-mirror
+  - name: extras
+    file: CentOS-Extras
+    uri: your-unique-mirror
+```
+
 ## I want to mimic a slow system
 1. Create your vm listing and add some [iotune options](https://libvirt.org/formatdomain.html#elementsDisks)
 2. Enjoy a slow system
