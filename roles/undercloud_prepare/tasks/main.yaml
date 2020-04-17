@@ -15,17 +15,6 @@
   set_fact:
     base_image: "{{ ansible_facts['distribution'] | lower }}"
 
-- name: Ensure we get ceph repositories if needed
-  tags:
-    - lab
-    - undercloud-bootstrap
-  when:
-    - vms|map(attribute='name')|select("match", '^ceph')|list|length > 0
-    - '"ceph" not in tripleo_repos_repos list'
-  fail:
-    msg: |
-      Please activate ceph repository in tripleo_repos_repos
-
 - import_tasks: swap.yaml
 - name: Set up proxy if needed
   tags:
