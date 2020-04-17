@@ -1,0 +1,3 @@
+---
+tripleo_overcloud_node_provision_concurrency: 2
+metalsmith: true
