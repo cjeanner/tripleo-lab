@@ -1,4 +1,7 @@
 - name: "fetch images for centos{{ os_version }}"
+  environment:
+    http_proxy: "{{ proxy_host | default('') }}"
+    https_proxy: "{{ proxy_host | default('') }}"
   get_url:
     dest: "/home/stack/overcloud_imgs/{{item.file}}"
     mode: 0644
