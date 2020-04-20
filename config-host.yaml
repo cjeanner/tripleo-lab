@@ -1,4 +1,6 @@
 ---
 - hosts: localhost
+  vars:
+    update_operator: true
   roles:
     - operators
