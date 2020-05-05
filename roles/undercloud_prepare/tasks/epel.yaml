@@ -6,3 +6,6 @@
 
 - name: ensure epel is deactivated
   command: yum-config-manager --disable epel
+
+- name: ensure epel-modular is deactivated
+  command: yum-config-manager --disable epel-modular
