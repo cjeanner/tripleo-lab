@@ -66,11 +66,6 @@
     path: "{{ build_dir }}/DLRN"
     state: directory
 
-- name: Ensure DLRN data subdirectory is present
-  file:
-    path: "{{ build_dir }}/DLRN/data"
-    state: directory
-
 - name: Push projects config
   template:
     dest:  "{{ build_dir }}/DLRN/projects.ini"

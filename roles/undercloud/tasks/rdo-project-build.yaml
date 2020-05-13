@@ -1,4 +1,15 @@
 ---
+- name: Clear DLRN data subdirectory is present
+  file:
+    path: "{{ build_dir }}/DLRN/data"
+    state: absent
+    force: true
+
+- name: Ensure DLRN data subdirectory is present
+  file:
+    path: "{{ build_dir }}/DLRN/data"
+    state: directory
+
 - name: Map RDO project names
   register: mapped_name
   shell:
