@@ -1,16 +1,16 @@
 ---
-- name: Clear DLRN data subdirectory is present
+- name: "{{ project.name }}: Clear DLRN data subdirectory is present"
   file:
     path: "{{ build_dir }}/DLRN/data"
     state: absent
     force: true
 
-- name: Ensure DLRN data subdirectory is present
+- name: "{{ project.name }}: Ensure DLRN data subdirectory is present"
   file:
     path: "{{ build_dir }}/DLRN/data"
     state: directory
 
-- name: Map RDO project names
+- name: "{{ project.name }}: Map RDO project names"
   register: mapped_name
   shell:
     chdir: '{{ build_dir }}/DLRN'
@@ -22,13 +22,13 @@
         -l /home/stack/rdoinfo | \
         awk '/^name/{print $2}; {print "findpkg: " $0 > "/dev/stderr"}'
 
-- name: Copy content to build location
+- name: "{{ project.name }}: Copy content to build location"
   copy:
     src: "{{ project.dest | default(synchronize_default_dest) }}/{{ project.name }}/"
     dest: "{{ build_dir }}/DLRN/data/{{ mapped_name.stdout }}"
     remote_src: true
 
-- name: Build package
+- name: "{{ project.name }}: Build package"
   register: pkg_build
   args:
     chdir: "{{ build_dir }}/DLRN/"
@@ -51,7 +51,7 @@
       exit $?;
     done
 
-- name: Copy packages to their final location
+- name: "{{ project.name }}: Copy packages to their final location"
   when:
     - pkg_build is changed
   shell: |
