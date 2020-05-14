@@ -30,6 +30,8 @@
       /usr/share/openstack-tripleo-heat-templates/environments/services/haproxy-public-tls-certmonger.yaml
       /usr/share/openstack-tripleo-heat-templates/environments/ssl/enable-internal-tls.yaml
       {% endif -%}
+      /home/stack/containers-prepare-parameter.yaml
+      /home/stack/generated-container-prepare.yaml
       {% for env in additional_envs -%}
       {{ env }}
       {% endfor -%}
