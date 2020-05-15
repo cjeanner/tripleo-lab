@@ -108,6 +108,5 @@
 
 - name: Deploy undercloud
   when:
-    - deploy_undercloud|bool
     - not stackrc_stat.stat.exists
   import_tasks: deploy.yaml

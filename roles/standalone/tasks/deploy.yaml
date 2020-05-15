@@ -16,7 +16,6 @@
       /home/stack/standalone_parameters.yaml
 
 - name: deploy standalone
-  when: deploy_standalone|bool
   import_role:
     name: tripleo.operator.tripleo_deploy
   vars:
@@ -24,3 +23,4 @@
     tripleo_deploy_output_dir: /home/stack
     tripleo_deploy_environment_files: "{{ standalone_env_files.split('\n') }}"
     tripleo_deploy_local_ip: '192.168.24.2'
+    tripleo_deploy_generate_scripts_only: "{{ not deploy_standalone | bool }}"

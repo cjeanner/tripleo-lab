@@ -1,5 +1,7 @@
 - name: "deploy undercloud (explicit --use-heat)"
-  when: use_heat|bool
+  when:
+    - use_heat|bool
+    - deploy_undercloud|bool
   command: stdbuf -i0 -o0 -e0 openstack undercloud install --use-heat
   args:
     creates: /home/stack/stackrc
@@ -10,4 +12,4 @@
   import_role:
     name: tripleo.operator.tripleo_undercloud_install
   vars:
-    tripleo_undercloud_install_yes: true
+    tripleo_undercloud_install_generate_scripts_only: "{{ not deploy_undercloud | bool }}"
