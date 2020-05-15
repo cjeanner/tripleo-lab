@@ -41,12 +41,15 @@ custom_repositories:
   - name: BaseOS
     file: CentOS-Base
     uri: your-unique-mirror
+    priority: 100
   - name: AppStream
     file: CentOS-AppStream
     uri: your-unique-mirror
+    priority: 100
   - name: extras
     file: CentOS-Extras
     uri: your-unique-mirror
+    priority: 100
 ```
 
 ## I want to mimic a slow system
@@ -141,3 +144,88 @@ Notes:
 - The ```rhos_release``` stuff is internal to Red Hat
 - This will not take into account any registration to RHEL
 - The ```undercloud_sample``` is mandatory as long as instack-undercloud is used.
+
+## I want to use a local registry and a Squid proxy for the packages
+This is especially interesting on slow connection, or if you just want to avoid
+fetching 10G for each deploy. In order to do so, you can run a docker-registry
+on your builder, as well as a squid proxy.
+
+### Registry
+The docker-registry can be launched like this:
+```Bash
+podman create --name registry \
+  --net=host -d \
+  -v /srv/slow/registry:/var/lib/registry \
+  --conmon-pidfile=/srv/slow/registry/container.pid \
+  -e=REGISTRY_HTTP_ADDR=192.168.122.1:5000 registry:2
+```
+This will create the podman container, and add persistent storage using a
+dedicatec volume. Of course, update things accordingly. Beware of SELinux!
+
+Then start the container, using ```podman start registry``` and you're set.
+
+Note for CentOS-8 builder: firewalld needs some love:
+```Bash
+$ sudo firewall-cmd --zone=libvirt --add-service=docker-registry --permanent
+```
+This will actually allow your VMs to access the registry. Please note, if you
+decide to use another port than the default, you'll need to tweak the
+firewall-cmd as well.
+
+### Squid
+Here, you want to ensure things are actually getting cached. You can push this
+in your squid configuration:
+```
+# Leave coredumps in the first cache dir
+coredump_dir /var/spool/squid
+cache_dir ufs /srv/slow/squid 20000 16 256
+maximum_object_size 5 GB
+cache_replacement_policy heap LFUDA
+
+
+refresh_pattern -i .rpm$ 129600 100% 129600 refresh-ims override-expire
+refresh_pattern -i .iso$ 129600 100% 129600 refresh-ims override-expire
+refresh_pattern -i .deb$ 129600 100% 129600 refresh-ims override-expire
+```
+
+Note the cache_dir_ufs - I'm using a custom volume, you might want to update
+this path as well.
+
+Note for CentOS-8 builder: firewalld needs some love:
+```Bash
+$ sudo firewall-cmd --add-service=squid --zone=libvirt --permanent
+```
+This will ensure your VMs have access to this service. Here again, if you put a
+custom port for squid, you'll need to tweak a bit the firewalld command.
+
+### Use them all!
+Now you'll need to instruct tripleo-lab to use those two services. For Squid,
+create some local_env/proxy.yaml:
+```YAML
+---
+proxy_host: 192.168.122.1:3128
+custom_repositories:
+  - name: BaseOS
+    file: CentOS-Base
+    uri: http://miroir.univ-lorraine.fr/centos/$releasever/BaseOS/$basearch/os/
+    priority: 100
+  - name: AppStream
+    file: CentOS-AppStream
+    uri: http://miroir.univ-lorraine.fr/centos/$releasever/AppStream/$basearch/os
+    priority: 100
+  - name: extras
+    file: CentOS-Extras
+    uri: http://miroir.univ-lorraine.fr/centos/$releasever/extras/$basearch/os
+    priority: 100
+```
+
+For the registry, create some local_env/registry.yaml:
+```YAML
+---
+container_prepare_overrides:
+  ceph_namespace: 192.168.122.1:5000/ceph
+  ceph_prometheus_namespace: 192.168.122.1:5000/prom
+  namespace: 192.168.122.1:5000/tripleomaster
+```
+
+And just pass those two env files to your deploy. Enjoy faster deploy!
