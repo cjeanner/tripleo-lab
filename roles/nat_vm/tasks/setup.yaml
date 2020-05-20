@@ -19,6 +19,13 @@
         state: restarted
       when: sshd_config is changed
 
+    - name: Ensure correct /etc/hosts entry
+      lineinfile:
+        insertbefore: BOF
+        backup: false
+        line: "{{ nat_vm_addr.stdout|replace('/24','') }} {{ vm_prefix }}-nat-vm.{{ domain }}"
+        path: /etc/hosts
+
     - name: Remove dracute useless interface
       file:
         path: /etc/sysconfig/network-scripts/ifcfg-ens3
@@ -37,6 +44,33 @@
           BOOTPROTO="none"
           ONBOOT="yes"
           TYPE="Ethernet"
+
+    - name: set up custom repositories
+      yum_repository:
+        name: "{{ item.name }}"
+        description: "{{ item.name }}"
+        file: "{{ item.file | default(item.name) }}"
+        baseurl: "{{ item.uri }}"
+        gpgcheck: "{{ item.gpg |default(omit) }}"
+        priority: "{{ item.priority |default(omit) }}"
+      loop: "{{ custom_repositories }}"
+
+    - name: Configure proxy
+      import_role:
+        name: undercloud_prepare
+        tasks_from: proxy.yaml
+
+    - name: Install some tools
+      package:
+        name:
+          - firewalld
+          - tmux
+
+    - name: Start and enable firewalld
+      service:
+        name: firewalld
+        enabled: true
+        state: started
 
     - name: Start eth1
       shell: ifup eth1

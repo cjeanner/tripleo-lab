@@ -15,6 +15,7 @@ containerized_undercloud: true
 custom_ca: ''
 custom_repositories: []
 custom_rpms: []
+deploy_ipa: false
 deploy_standalone: true
 deploy_overcloud: false
 deploy_undercloud: true
@@ -23,6 +24,9 @@ dlrn_baseurl: >-
     {%- if ansible_distribution == "RedHat" and ansible_distribution_major_version|int == 8 -%}
     https://trunk.rdoproject.org/rhel8-master
     {%- else %}https://trunk.rdoproject.org/centos{{ os_version }}/{% endif -%}
+domain: mydomain.tld
+freeipa_admin_password: change-me-password
+freeipa_directory_password: ChangeMePassword
 guestfs_appliance: "appliance-1.38.0.tar.xz"
 growfs_part: /dev/sda1
 local_registry: 'true'
@@ -57,7 +61,7 @@ tripleoclient_pkgname: python-tripleoclient
 tripleo_generate_scripts: true
 undercloud_config: []
 undercloud_dns: 192.168.122.1
-undercloud_hostname: undercloud.localdomain
+undercloud_hostname: undercloud.{{ domain }}
 undercloud_low_memory: false
 undercloud_password: fooBar
 undercloud_python_interpreter: /usr/bin/python

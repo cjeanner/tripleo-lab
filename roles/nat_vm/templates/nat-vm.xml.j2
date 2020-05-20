@@ -1,7 +1,12 @@
 <domain type='kvm'>
   <name>{{vm_prefix}}-nat-vm</name>
+  {% if deploy_ipa | bool %}
+  <memory unit='MB'>8192</memory>
+  <vcpu placement='static'>4</vcpu>
+  {% else %}
   <memory unit='MB'>1024</memory>
   <vcpu placement='static'>1</vcpu>
+  {% endif %}
   <os>
     <type arch="x86_64">hvm</type>
     <bios useserial='yes' rebootTimeout='0'/>

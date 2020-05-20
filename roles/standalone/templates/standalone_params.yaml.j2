@@ -14,7 +14,7 @@ parameter_defaults:
     - 192.168.24.2:8787
     - undercloud.ctlplane
   NeutronPublicInterface: eth1
-  NeutronDnsDomain: localdomain
+  NeutronDnsDomain: {{ domain }}
   StandaloneEnableRoutedNetworks: false
   StandaloneHomeDir: /home/stack
   StandaloneLocalMtu: 1500

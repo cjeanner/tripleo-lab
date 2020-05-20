@@ -53,7 +53,7 @@
     - undercloud-bootstrap
   lineinfile:
     dest: /etc/hosts
-    line: "127.0.0.1 undercloud.{{ansible_domain}} undercloud localhost localhost.localdomain"
+    line: "127.0.0.1 {{ undercloud_hostname }} localhost.{{ domain }} undercloud localhost"
     regexp: '^127\.0\.0\.1'
 
 - name: set up custom repositories

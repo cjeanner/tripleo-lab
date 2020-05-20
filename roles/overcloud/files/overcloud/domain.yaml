@@ -1,8 +1,0 @@
----
-parameter_defaults:
-  CloudName: overcloud.localdomain
-  CloudNameInternal: overcloud.internalapi.localdomain
-  CloudNameStorage: overcloud.storage.localdomain
-  CloudNameStorageManagement: overcloud.storagemgmt.localdomain
-  CloudNameCtlplane: overcloud.ctlplane.localdomain
-  CloudDomain: localdomain

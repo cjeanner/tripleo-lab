@@ -21,15 +21,14 @@
     state: directory
   loop: "{{ overclouds_range }}"
 
-- name: push common overcloud settings
+- name: Push domain setting
   tags:
     - lab
     - overcloud
     - baremetal
-  copy:
-    dest: "/home/stack/"
-    src: "{{ item }}"
-  with_fileglob: 'files/overcloud/*.yaml'
+  template:
+    dest: "/home/stack/domain.yaml"
+    src: "domain.yaml.j2"
 
 - name: push node placement
   tags:

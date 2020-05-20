@@ -1,0 +1,53 @@
+---
+- name: Open firewall for freeipa-ldap
+  firewalld:
+    service: freeipa-ldap
+    immediate: true
+    permanent: true
+    state: enabled
+
+- name: Open firewall for freeipa-ldaps
+  firewalld:
+    service: freeipa-ldaps
+    immediate: true
+    permanent: true
+    state: enabled
+
+- name: "Enable yum module idm:DL1"
+  command: |
+    yum module enable -y idm:DL1
+
+- name: Install freeIPA packages
+  package:
+    name:
+      - ipa-server
+      - ipa-server-dns
+      - bind-dyndb-ldap
+
+- name: "Deploy freeIPA - follow in /root/install-ipa.log"
+  command: >
+    ipa-server-install -U
+      --ds-password {{ freeipa_directory_password }}
+      --admin-password {{ freeipa_admin_password }}
+      -n {{ domain }}
+      -r {{ domain | upper }}
+      --hostname {{ vm_prefix }}-nat-vm.{{ domain }}
+      --setup-dns --setup-kra
+      --auto-forwarders --auto-reverse
+      --no-dnssec-validation
+      --log-file /root/install-ipa.log
+  args:
+    creates: /etc/ipa/ca.crt
+
+- name: configure FreeIPA to publish Master CRL at start
+  register: ipa_crl
+  lineinfile:
+    path: /etc/pki/pki-tomcat/ca/CS.cfg
+    regexp: '^ca.crl.MasterCRL.publishOnStart=(.*)$'
+    line: 'ca.crl.MasterCRL.publishOnStart=true'
+
+- name: restart FreeIPA server
+  when: ipa_crl is changed
+  service:
+    name: ipa
+    state: restarted

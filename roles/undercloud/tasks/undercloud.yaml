@@ -31,7 +31,7 @@
     path: /home/stack/undercloud.conf
     section: DEFAULT
     option: undercloud_hostname
-    value: "{{ undercloud_hostname | default('undercloud.localdomain') }}"
+    value: "{{ undercloud_hostname }}"
     mode: 0640
     backup: false
 

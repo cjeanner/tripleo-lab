@@ -10,7 +10,7 @@
       tags:
         - images
       command: |
-        qemu-img create -o backing_file=../images/centos-8.qcow2,backing_fmt=qcow2 -f qcow2 "{{ vm_prefix }}-nat-vm.qcow2" "10G"
+        qemu-img create -o backing_file=../images/centos-8.qcow2,backing_fmt=qcow2 -f qcow2 "{{ vm_prefix }}-nat-vm.qcow2" "20G"
       args:
         creates: "{{ basedir }}/workload/{{ vm_prefix }}-nat-vm.qcow2"
         chdir: "{{ basedir }}/workload"
@@ -21,7 +21,7 @@
           --firstboot-command "systemctl enable --now acpid" \
           --network \
           --uninstall cloud-init \
-          --hostname "{{ vm_prefix }}-nat-vm" \
+          --hostname "{{ vm_prefix }}-nat-vm.{{ domain }}" \
           --selinux-relabel \
           --install acpid,iptables \
           --ssh-inject root:file:{{ basedir }}/.ssh/authorized_keys &> "{{basedir}}/workload/{{vm_prefix}}-nat-vm.qcow2.done"
@@ -49,6 +49,14 @@
       delay: 10
       until:
         - nat_vm_addr.stdout != ""
+
+- name: Export nat_vm IP address
+  tags:
+    - lab
+    - nat-vm
+  set_fact:
+    nat_vm_addr_value: "{{ nat_vm_addr.stdout|replace('/24','') }}"
+    cacheable: true
 
 - name: inject config on ansible host
   tags:
