@@ -70,6 +70,7 @@
   become_user: "{{ virt_user }}"
   tags:
     - lab
+    - domains
   block:
     - name: export LIBVIRT_DEFAULT_URI
       lineinfile:
