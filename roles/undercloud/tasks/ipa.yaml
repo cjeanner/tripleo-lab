@@ -1,0 +1,30 @@
+---
+# https://review.opendev.org/#/c/725607/17/deploy-guide/source/features/tls-everywhere.rst
+- name: Inject freeIPA server name in /etc/hosts
+  become: true
+  become_user: root
+  lineinfile:
+    insertbefore: BOF
+    path: /etc/hosts
+    backup: false
+    line: "{{ hostvars['builder']['nat_vm_addr_value'] }} {{ vm_prefix }}-nat-vm.{{ domain }}"
+
+- name: Register the undercloud against a freeIPA server
+  become: true
+  become_user: root
+  environment:
+    IPA_DOMAIN: "{{ domain }}"
+    IPA_REALM: "{{ domain | upper }}"
+    IPA_ADMIN_USER: "admin"
+    IPA_ADMIN_PASSWORD: "{{ freeipa_admin_password }}"
+    IPA_SERVER_HOSTNAME: "{{ vm_prefix }}-nat-vm.{{ domain }}"
+    UNDERCLOUD_FQDN: "{{ undercloud_hostname }}"
+    CLOUD_DOMAIN: "{{ domain }}"
+    USER: 'stack'
+  args:
+    creates: /etc/ipa/ca.crt
+  command: >-
+    ansible-playbook
+    --ssh-extra-args "-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
+    -i 'localhost,'
+    /usr/share/ansible/tripleo-playbooks/undercloud-ipa-install.yaml

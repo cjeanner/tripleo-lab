@@ -13,6 +13,13 @@
     permanent: true
     state: enabled
 
+- name: Open firewall for DNS
+  firewalld:
+    service: dns
+    immediate: true
+    permanent: true
+    state: enabled
+
 - name: "Enable yum module idm:DL1"
   command: |
     yum module enable -y idm:DL1

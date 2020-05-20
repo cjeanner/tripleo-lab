@@ -1,0 +1,4 @@
+#jinja2:lstrip_blocks: True
+# {{ ansible_managed }}
+search {{ domain }}
+nameserver {{ hostvars['builder']['nat_vm_addr_value']  }}

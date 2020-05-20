@@ -65,6 +65,13 @@
     - undercloud
     - image-prepare
 
+- name: Configure IPA client if needed
+  when: deploy_ipa|bool
+  tags:
+    - lab
+    - undercloud-bootstrap
+  import_tasks: ipa.yaml
+
 - name: Setup and deploy Undercloud
   tags:
     - lab

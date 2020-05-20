@@ -17,13 +17,12 @@
     group: stack
     mode: 0640
 
-- name: Enable masquerading in undercloud.conf
+- name: Set domain in undercloud.conf
   ini_file:
     path: /home/stack/undercloud.conf
-    section: ctlplane-subnet
-    option: masquerade
-    value: "true"
-    mode: 0640
+    section: DEFAULT
+    option: overcloud_domain_name
+    value: "{{ domain }}"
     backup: false
 
 - name: Set undercloud hostname
@@ -32,7 +31,6 @@
     section: DEFAULT
     option: undercloud_hostname
     value: "{{ undercloud_hostname }}"
-    mode: 0640
     backup: false
 
 - name: Inject insecure registry in undercloud.conf
@@ -43,7 +41,7 @@
     value: undercloud.ctlplane
     backup: false
 
-- name: inject container-prepare file in the undercloud.conf
+- name: Inject container-prepare file in the undercloud.conf
   ini_file:
     path: /home/stack/undercloud.conf
     section: DEFAULT
@@ -57,9 +55,17 @@
     section: DEFAULT
     option: hieradata_override
     value: /home/stack/hieradata_undercloud_low_memory.yaml
-    mode: 0640
     backup: false
   when: undercloud_low_memory|bool
+
+- name: Set IPA as servername if in use
+  when: deploy_ipa | bool
+  ini_file:
+    path: /home/stack/undercloud.conf
+    section: DEFAULT
+    option: undercloud_nameservers
+    value: "{{ hostvars['builder']['nat_vm_addr_value']  }}"
+    backup: false
 
 - name: Create hieradata_undercloud_low_memory.yaml
   template:
@@ -95,7 +101,6 @@
     section: "{{ item.section }}"
     option: "{{ item.option }}"
     value: "{{ item.value }}"
-    mode: 0640
     backup: false
   loop: "{{ undercloud_config }}"
   loop_control:

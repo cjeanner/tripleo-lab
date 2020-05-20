@@ -1,12 +1,4 @@
 ---
-- name: Remove dracute useless interface
-  tags:
-    - lab
-    - undercloud-bootstrap
-  file:
-    path: /etc/sysconfig/network-scripts/ifcfg-ens3
-    state: absent
-
 - name: ensure sshd does not rely on gssapi
   tags:
     - lab
@@ -24,6 +16,52 @@
   service:
     name: sshd
     state: restarted
+
+- name: Remove dracute useless interface
+  tags:
+    - lab
+    - undercloud-bootstrap
+  file:
+    path: /etc/sysconfig/network-scripts/ifcfg-ens3
+    state: absent
+
+- name: ensure that DHCP doesn't overwrite DNS settings (CentOS/RHEL <= 7)
+  tags:
+    - lab
+    - undercloud-bootstrap
+  lineinfile:
+    path: /etc/sysconfig/network-scripts/ifcfg-eth0
+    regexp: '^PEERDNS='
+    line: PEERDNS=no
+    state: present
+  when:
+    - deploy_ipa|bool
+    - ansible_os_family == 'RedHat'
+    - ansible_facts['distribution_version'] is version('8.0', 'lt', strict=True)
+
+- name: ensure that DHCP doesn't overwite DNS settings (CentOS/RHEL >= 8)
+  tags:
+    - lab
+    - undercloud-bootstrap
+  lineinfile:
+    path: /etc/NetworkManager/NetworkManager.conf
+    regexp: '^dns='
+    insertafter: '^[main]'
+    line: 'dns=none'
+  when:
+    - deploy_ipa|bool
+    - ansible_os_family == 'RedHat'
+    - ansible_facts['distribution_version'] is version('8.0', 'gt', strict=False)
+
+- name: update /etc/resolv.conf
+  tags:
+    - lab
+    - undercloud-bootstrap
+  template:
+    src: "resolv.conf.j2"
+    dest: "/etc/resolv.conf"
+  when:
+    - deploy_ipa|bool
 
 - name: Set selinux to permissive
   tags:
