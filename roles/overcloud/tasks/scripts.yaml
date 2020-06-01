@@ -123,3 +123,14 @@
     src: overcloud-configdl.sh.j2
     mode: 0750
   loop: "{{ overclouds_range }}"
+
+- name: Push IPA env things
+  tags:
+    - lab
+    - overcloud
+  when:
+    - deploy_ipa|bool
+  template:
+    dest: "/home/stack/overcloud-{{ item }}-yml/ipa.yaml"
+    src: ipa.yaml.j2
+  loop: "{{ overclouds_range }}"

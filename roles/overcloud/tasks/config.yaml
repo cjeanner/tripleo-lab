@@ -3,7 +3,8 @@
   tags:
     - lab
     - overcloud
-  when: enable_tls|default(False)|bool
+  when:
+    - enable_tls|default(False)|bool
   slurp:
     src: /etc/pki/ca-trust/source/anchors/cm-local-ca.pem
   register: certmonger_ca
@@ -12,7 +13,8 @@
   tags:
     - lab
     - overcloud
-  when: enable_tls|default(False)|bool
+  when:
+    - enable_tls|default(False)|bool
   template:
     dest: /home/stack/tls-inject-ca.yaml
     src: tls-inject-ca.yaml.j2
