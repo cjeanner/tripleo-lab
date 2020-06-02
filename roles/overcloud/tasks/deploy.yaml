@@ -37,6 +37,7 @@
       {% endif -%}
       /home/stack/containers-prepare-parameter.yaml
       /home/stack/generated-container-prepare.yaml
+      /home/stack/domain.yaml
       {% for env in additional_envs -%}
       {{ env }}
       {% endfor -%}
