@@ -2,6 +2,8 @@
 - import_tasks: libvirt.yaml
 - import_tasks: setup.yaml
 - name: install and configure IPA service
+  when:
+    - deploy_ipa | bool
   delegate_to: nat-vm
   delegate_facts: false
   tags:
