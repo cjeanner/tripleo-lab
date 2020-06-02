@@ -131,6 +131,5 @@
   when:
     - deploy_ipa|bool
   template:
-    dest: "/home/stack/overcloud-{{ item }}-yml/ipa.yaml"
+    dest: "/home/stack/ipa.yaml"
     src: ipa.yaml.j2
-  loop: "{{ overclouds_range }}"
