@@ -51,7 +51,6 @@
     tripleo_overcloud_deploy_networks_file: "/home/stack/oc{{ item }}-network-data.yaml"
     tripleo_overcloud_deploy_environment_dirs: "/home/stack/overcloud-{{ item }}-yml"
     tripleo_overcloud_deploy_deployed_server: "{{ metalsmith|bool }}"
-    tripleo_overcloud_deploy_libvirt_type: qemu
     tripleo_overcloud_deploy_environment_files: "{{ oc_env_files.split('\n') }}"
     tripleo_overcloud_deploy_disable_validations: "{{ metalsmith }}"
     tripleo_overcloud_deploy_generate_scripts_only: "{{ not deploy_overcloud | bool }}"
