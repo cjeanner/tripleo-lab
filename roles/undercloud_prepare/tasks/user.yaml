@@ -105,6 +105,15 @@
     user: root
     key: "{{ root_pubkey['content'] |b64decode }}"
 
+- name: Authorize custom keys on the undercloud
+  tags:
+    - lab
+    - undercloud-bootstrap
+  authorized_key:
+    user: stack
+    key: "{{ item }}"
+  loop: "{{ stack_ssh_keys | default([]) }}"
+
 - name: ensure free access to the overcloud nodes
   tags:
     - lab

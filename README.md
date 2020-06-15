@@ -247,3 +247,6 @@ container_prepare_overrides:
 
 *num_osds*
   The number of OSD disks created per ceph node (int, default 1)
+
+*stack_ssh_keys*
+  Additional ssh keys you want to add on the undercloud "stack" user
