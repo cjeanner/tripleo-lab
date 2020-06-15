@@ -8,6 +8,14 @@
     - config
     - builder-bootstrap
   block:
+    - name: Set nested KVM if wanted
+      when: nested_kvm | default(False) | bool
+      copy:
+        dest: /etc/modprobe.d/nested-kvm.conf
+        content: |
+          options kvm-intel nested=1
+          options kvm-amd nested=1
+
     - name: create virt_user
       user:
         comment: "Virtual user for tripleo lab"
