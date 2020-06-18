@@ -1,0 +1,61 @@
+#!/bin/bash
+
+set -e
+
+source /home/stack/overcloud-{{ item }}rc
+
+if [ -z "`openstack network list | grep private`" ];then
+  openstack network create private
+  openstack subnet create --gateway 192.168.100.1 --dhcp --network private --subnet-range 192.168.100.0/24 private
+  openstack subnet set --dns-nameserver 10.34.32.1 --dns-nameserver 10.34.32.3 private
+  echo "****************************************Private network created****************************************************"
+fi
+
+SID=$(openstack network list| awk '/private/ {print $2}' | head -n 1)
+
+EXT_NW=$(openstack network list --long -c "Router Type" -c Name | grep -i external | head -n 1 | awk '{print $2}')
+if [ -z "$EXT_NW" ]; then
+  openstack network create --share --external --provider-physical-network datacentre --provider-network-type flat public
+  openstack subnet create --network public --allocation-pool start=10.0.0.210,end=10.0.0.250 --gateway 10.0.0.1 --subnet-range 10.0.0.0/24 public
+  EXT_NW="public"
+fi
+
+if [ -z "`openstack router list | grep testrouter`" ];then
+    openstack router create testrouter
+    openstack router set --external-gateway $EXT_NW testrouter
+    openstack router add subnet testrouter private
+  echo "****************************************Router and subnet created*************************************************"
+fi
+
+SECID=$(openstack security group list | grep `openstack project show admin -f value -c id` | head -n 1 | awk '{print $2}')
+
+#if [ "$RELEASE" -lt 12 ];then
+#  nova secgroup-add-rule default icmp -1 -1 0.0.0.0/0 2>/dev/null || true
+#  nova secgroup-add-rule default tcp 22 22 0.0.0.0/0 2>/dev/null || true
+#else
+openstack security group rule create $SECID --protocol tcp --dst-port 22 --remote-ip 0.0.0.0/0 2>/dev/null || true
+openstack security group rule create $SECID --protocol icmp --dst-port -1 --remote-ip 0.0.0.0/0 2>/dev/null || true
+#fi
+
+CIRROS="cirros-0.5.1-x86_64-disk.img"
+
+if [ ! -f ${CIRROS} ];then curl -O http://download.cirros-cloud.net/0.5.1/${CIRROS}; fi
+
+IMGNAME=$(basename $CIRROS \-x86_64-disk.img)
+if [ -z "`openstack image list | grep ${IMGNAME}`" ];then
+  openstack image create $IMGNAME --disk-format qcow2 --container-format bare --file ${CIRROS}
+  echo "****************************************Image uploaded to glance**************************************************"
+fi
+
+if [ -z "`openstack flavor list | grep m1.tiny`" ];then
+  openstack flavor create --public m1.tiny --id auto --ram 512 --disk 1 --vcpus 1
+fi
+
+COUNTVAR=$RANDOM
+openstack server create --image $IMGNAME --flavor m1.tiny test-$COUNTVAR --nic net-id=$SID --wait
+
+IP=$(openstack floating ip create $EXT_NW -f value -c floating_ip_address)
+openstack server add floating ip test-$COUNTVAR $IP
+
+openstack server list --long
+echo "Please login to the instance as a cirros user (passwd: gocubsgo) : ssh -i ~/.ssh/id_rsa cirros@$IP"

@@ -1,9 +1,0 @@
-#!/bin/sh
-source ~/stackrc
-openstack overcloud image upload \
-  --image-path /home/stack/overcloud_imgs \
-{% if containerized_undercloud|bool %}
-  --http-boot /var/lib/ironic/httpboot \
-{% endif %}
-  --update-existing
-openstack overcloud node configure --all-manageable

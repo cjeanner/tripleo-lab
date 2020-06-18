@@ -103,15 +103,16 @@
     src: oc-selinux.yaml.j2
   loop: "{{ overclouds_range }}"
 
-- name: push push-oc-img script
+- name: push per-overcloud test script
   tags:
     - lab
     - overcloud
     - baremetal
   template:
-    dest: /home/stack/push-oc-img
-    src: push-oc-img
-    mode: 0750
+    dest: "/home/stack/run-instance-oc{{ item }}.sh"
+    src: run-instance.sh.j2
+    mode: 0550
+  loop: "{{ overclouds_range }}"
 
 - name: push config-download script
   tags:
