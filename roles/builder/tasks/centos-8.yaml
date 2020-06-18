@@ -1,7 +1,7 @@
 ---
 - name: Get latest centos-8 image name
   shell: |
-    curl -s http://cloud.centos.org/centos/8/x86_64/images/ | awk '/GenericCloud/ { print $8 }'|cut -d '"' -f 2
+    curl -s http://cloud.centos.org/centos/8/x86_64/images/ | awk '/GenericCloud/ { print $8 }'|cut -d '"' -f 2 | tail -1
   register: latest_centos8
 
 - name: Get latest centos-8 image checksum
