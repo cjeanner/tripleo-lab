@@ -30,8 +30,9 @@
     - baremetal
     - overcloud
   when: vms|length > 0
-  command: |
-    openstack --os-cloud undercloud baremetal node list -f value -c UUID
+  shell: |
+    source ~/stackrc
+    openstack baremetal node list -f value -c UUID
   register: known_bm
 
 - name: debug value

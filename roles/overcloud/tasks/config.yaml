@@ -36,5 +36,6 @@
     - baremetal
     - overcloud
   shell: |
-    openstack --os-cloud undercloud subnet show ctlplane-subnet -f json | jq '.dns_nameservers' | grep "{{ undercloud_dns }}" ||
-    openstack --os-cloud undercloud subnet set ctlplane-subnet --dns-nameserver {{ undercloud_dns }}
+    source ~/stackrc
+    openstack subnet show ctlplane-subnet -f json | jq '.dns_nameservers' | grep "{{ undercloud_dns }}" ||
+    openstack subnet set ctlplane-subnet --dns-nameserver {{ undercloud_dns }}
