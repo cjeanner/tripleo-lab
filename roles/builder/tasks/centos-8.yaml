@@ -4,14 +4,8 @@
     curl -s http://cloud.centos.org/centos/8/x86_64/images/ | awk '/GenericCloud/ { print $8 }'|cut -d '"' -f 2 | tail -1
   register: latest_centos8
 
-- name: Get latest centos-8 image checksum
-  shell: |
-    curl -s http://cloud.centos.org/centos/8/x86_64/images/CHECKSUM | awk '/SHA256.*GenericCloud/ {print $4}'
-  register: c8_checksum
-
 - name: Fetch latest centos-8 image
   get_url:
     url: "http://cloud.centos.org/centos/8/x86_64/images/{{ latest_centos8.stdout }}"
     dest: "{{ basedir }}/images/centos-8.qcow2"
     mode: 0664
-    checksum: "sha256:{{ c8_checksum.stdout }}"
