@@ -77,3 +77,21 @@
     touch /home/stack/overcloud_imgs/overcloud-full.qcow2.updated
   args:
     creates: /home/stack/overcloud_imgs/overcloud-full.qcow2.updated
+
+- name: Inject custom RPMs in OC image
+  tags:
+    - lab
+    - overcloud
+    - overcloud-images
+  when:
+    - oc_image_rpms is defined
+    - oc_image_rpms | length > 0
+  shell: |
+    LIBGUESTFS_BACKEND="direct" virt-customize -a /home/stack/overcloud_imgs/overcloud-full.qcow2 \
+      --install {{ oc_image_rpms|join(',') }}\
+      --selinux-relabel \
+      --network \
+    && \
+    touch /home/stack/overcloud_imgs/overcloud-full.qcow2.modified
+  args:
+    creates: /home/stack/overcloud_imgs/overcloud-full.qcow2.modified

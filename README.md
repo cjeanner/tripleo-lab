@@ -250,3 +250,6 @@ container_prepare_overrides:
 
 *stack_ssh_keys*
   Additional ssh keys you want to add on the undercloud "stack" user
+
+*oc_image_rpms*
+  List of RPMs/packages you want to inject in the overcloud image.

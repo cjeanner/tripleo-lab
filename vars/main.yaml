@@ -26,6 +26,7 @@ dlrn_baseurl: >-
 guestfs_appliance: "appliance-1.38.0.tar.xz"
 growfs_part: /dev/sda1
 local_registry: 'true'
+oc_image_rpms: []
 os_version: 7
 overcloud_container_cli: podman
 overcloud_image_update: true
