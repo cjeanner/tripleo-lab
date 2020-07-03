@@ -24,8 +24,7 @@
           --hostname "{{ vm_prefix }}-nat-vm" \
           --selinux-relabel \
           --install acpid,iptables \
-          --ssh-inject root:file:{{ basedir }}/.ssh/authorized_keys &&
-          touch "{{basedir}}/workload/{{vm_prefix}}-nat-vm.qcow2.done"
+          --ssh-inject root:file:{{ basedir }}/.ssh/authorized_keys &> "{{basedir}}/workload/{{vm_prefix}}-nat-vm.qcow2.done"
       args:
         creates: "{{basedir}}/workload/{{vm_prefix}}-nat-vm.qcow2.done"
 

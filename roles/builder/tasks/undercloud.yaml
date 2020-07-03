@@ -25,8 +25,7 @@
           --uninstall cloud-init \
           --selinux-relabel \
           --root-password "password:{{undercloud_password}}" \
-          --ssh-inject root:file:{{ basedir }}/.ssh/authorized_keys  && \
-          touch "{{basedir}}/workload/{{vm_prefix}}-{{ item.name }}.qcow2.done"
+          --ssh-inject root:file:{{ basedir }}/.ssh/authorized_keys &> "{{basedir}}/workload/{{vm_prefix}}-{{ item.name }}.qcow2.done"
       args:
         creates: "{{basedir}}/workload/{{vm_prefix}}-{{ item.name }}.qcow2.done"
       when:

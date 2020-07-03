@@ -54,9 +54,7 @@
       --install {{ rhos_release_repo_url }}/rhos-release-latest.noarch.rpm \
       --run-command "rhos-release {{ rhos_release_opts|default('') }} {{ rhos_release_version }}" \
       {% endif %}
-      --network \
-      && \
-      touch /home/stack/overcloud_imgs/overcloud-full.qcow2.done
+      --network &> /home/stack/overcloud_imgs/overcloud-full.qcow2.done
   args:
     creates: /home/stack/overcloud_imgs/overcloud-full.qcow2.done
 
@@ -72,9 +70,7 @@
     LIBGUESTFS_BACKEND="direct" virt-customize -a /home/stack/overcloud_imgs/overcloud-full.qcow2 \
       --update \
       --selinux-relabel \
-      --network \
-    && \
-    touch /home/stack/overcloud_imgs/overcloud-full.qcow2.updated
+      --network &> /home/stack/overcloud_imgs/overcloud-full.qcow2.updated
   args:
     creates: /home/stack/overcloud_imgs/overcloud-full.qcow2.updated
 
@@ -90,8 +86,6 @@
     LIBGUESTFS_BACKEND="direct" virt-customize -a /home/stack/overcloud_imgs/overcloud-full.qcow2 \
       --install {{ oc_image_rpms|join(',') }}\
       --selinux-relabel \
-      --network \
-    && \
-    touch /home/stack/overcloud_imgs/overcloud-full.qcow2.modified
+      --network &> /home/stack/overcloud_imgs/overcloud-full.qcow2.modified
   args:
     creates: /home/stack/overcloud_imgs/overcloud-full.qcow2.modified
