@@ -44,4 +44,6 @@
   import_tasks: epel.yaml
 
 - import_tasks: packages.yaml
-- import_tasks: tmate.yaml
+- name: Install and configure tmate if wanted
+  when: install_tmate | default(true) | bool
+  import_tasks: tmate.yaml
