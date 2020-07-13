@@ -12,3 +12,8 @@ parameter_defaults:
   OvercloudBlockStorageFlavor: baremetal
   OvercloudSwiftStorageFlavor: baremetal
 
+  BlockStorageHostnameFormat: "oc{{ item }}-blkstore%index%"
+  CephStorageHostnameFormat: "oc{{ item }}-ceph%index%"
+  ComputeHostnameFormat: "oc{{ item }}-compute%index%"
+  ControllerHostnameFormat: "oc{{ item }}-controller%index%"
+  ObjectStorageHostnameFormat: "oc{{ item }}-objstore%index%"
