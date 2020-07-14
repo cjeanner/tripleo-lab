@@ -1,1 +1,3 @@
-10.20.1.0/24 via {{ hostvars['builder']['nat_vm_addr'].stdout|replace('/24','') }} dev eth0
+{% for i in overclouds_range -%}
+192.168.{{ i + 100 }}.0/24 via {{ hostvars['builder']['nat_vm_addr'].stdout|replace('/24','') }} dev eth0
+{% endfor -%}

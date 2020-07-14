@@ -77,9 +77,9 @@
 
     - name: Create vlan interface
       command: |
-        nmcli con add type vlan con-name vlan-{{ item+1 }}9 ifname eth1.{{ item+1 }}9 dev eth1 id {{ item+1 }}9 ip4 "10.20.{{ item+1 }}.1/24"
+        nmcli con add type vlan con-name vlan-{{ item + 100 }} ifname eth1.{{ item + 100 }} dev eth1 id {{ item + 100 }} ip4 "192.168.{{ 100 + item }}.1/24"
       args:
-        creates: "/etc/sysconfig/network-scripts/ifcfg-vlan{{ item+1 }}9"
+        creates: "/etc/sysconfig/network-scripts/ifcfg-vlan{{ item + 100 }}"
       loop: "{{ overclouds_range }}"
       loop_control:
         label: "vlan-{{item+1}}9"

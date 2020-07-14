@@ -1,4 +1,4 @@
-{% set base_ip = 1+ item|int %}
+{% set base_ip = 1 + item|int %}
 - name: Storage
   vip: true
   vlan: {{ base_ip }}1
@@ -40,13 +40,13 @@
   vip: true
   name_lower: external_cloud_{{ item }}
   service_net_map_replace: external
-  vlan: {{ base_ip }}9
-  ip_subnet: '10.20.{{ base_ip }}.0/24'
-  allocation_pools: [{'start': '10.20.{{ base_ip }}.15', 'end': '10.20.{{ base_ip }}.100'}]
-  gateway_ip: '10.20.{{ base_ip }}.1'
-  ipv6_subnet: '2001:db8:fd00:1{{ base_ip }}00::/64'
-  ipv6_allocation_pools: [{'start': '2001:db8:fd00:1{{ base_ip }}00::10', 'end': '2001:db8:fd00:1{{ base_ip }}00:ffff:ffff:ffff:fffe'}]
-  gateway_ipv6: '2001:db8:fd00:1{{ base_ip }}00::1'
+  vlan: {{ item + 100 }}
+  ip_subnet: '192.168.{{ item + 100 }}.0/24'
+  allocation_pools: [{'start': '192.168.{{ item + 100 }}.15', 'end': '192.168.{{ item + 100 }}.100'}]
+  gateway_ip: '192.168.{{ item + 100 }}.1'
+  ipv6_subnet: '2001:db8:fd00:1{{ item + 100 }}::/64'
+  ipv6_allocation_pools: [{'start': '2001:db8:fd00:1{{ item + 100 }}::10', 'end': '2001:db8:fd00:1{{ item + 100 }}:ffff:ffff:ffff:fffe'}]
+  gateway_ipv6: '2001:db8:fd00:1{{ item + 100 }}::1'
 - name: Management
   # Management network is enabled by default for backwards-compatibility, but
   # is not included in any roles by default. Add to role definitions to use.

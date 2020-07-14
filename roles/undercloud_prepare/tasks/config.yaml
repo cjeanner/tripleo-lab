@@ -123,7 +123,8 @@
   when:
     - set_overcloud_pub_routes is defined
     - set_overcloud_pub_routes is changed
-  command: ip ro add 10.20.1.0/24 via {{ hostvars['builder']['nat_vm_addr'].stdout|replace('/24','') }} dev eth0
+  command: ip ro add 192.168.{{ item + 100 }}.0/24 via {{ hostvars['builder']['nat_vm_addr'].stdout|replace('/24','') }} dev eth0
+  loop: "{{ overclouds_range }}"
 
 - name: Inject custom PS1
   tags:

@@ -14,6 +14,7 @@
     - undercloud-bootstrap
   set_fact:
     base_image: "{{ ansible_facts['distribution'] | lower }}"
+    overclouds_range: "{{ range(0, overclouds | default(1) | int) | list }}"
 
 - import_tasks: swap.yaml
 - name: Set up proxy if needed
