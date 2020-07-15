@@ -6,4 +6,4 @@ parameter_defaults:
   CloudNameStorageManagement: overcloud.storagemgmt.{{ domain }}
   CloudNameCtlplane: overcloud.ctlplane.{{ domain }}
   CloudDomain: {{ domain }}
-  DnsSearchDomains: {{ domain }}
+  DnsSearchDomains: ["{{ domain }}"]
