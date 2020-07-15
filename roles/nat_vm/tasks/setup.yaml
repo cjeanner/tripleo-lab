@@ -63,6 +63,8 @@
     - name: Install some tools
       package:
         name:
+          - bash-completion
+          - tcpdump
           - firewalld
           - tmux
 
@@ -90,15 +92,10 @@
         value: '1'
         state: present
 
-    - name: Set MASQUERADE on POSTROUTING
-      iptables:
-        chain: POSTROUTING
-        table: nat
-        out_interface: eth0
-        jump: MASQUERADE
-
-    - name: Set FORWARD
-      iptables:
-        chain: FORWARD
-        in_interface: eth1
-        jump: ACCEPT
+    - name: Add masquerade on public zone
+      firewalld:
+        masquerade: yes
+        zone: public
+        immediate: true
+        permanent: true
+        state: enabled
