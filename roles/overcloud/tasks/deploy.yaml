@@ -38,7 +38,7 @@
       {% endif -%}
       /home/stack/containers-prepare-parameter.yaml
       /home/stack/generated-container-prepare.yaml
-      /home/stack/domain.yaml
+      /home/stack/oc{{ item }}-domain.yaml
       {% for env in additional_envs -%}
       {{ env }}
       {% endfor -%}
@@ -61,3 +61,4 @@
     tripleo_overcloud_deploy_environment_files: "{{ oc_env_files.split('\n') }}"
     tripleo_overcloud_deploy_disable_validations: "{{ metalsmith }}"
     tripleo_overcloud_deploy_generate_scripts_only: "{{ not deploy_overcloud | bool }}"
+    tripleo_overcloud_deploy_log: "/home/stack/overcloud_deploy_overcloud-{{ item }}.log"

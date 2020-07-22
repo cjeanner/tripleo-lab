@@ -27,8 +27,9 @@
     - overcloud
     - baremetal
   template:
-    dest: "/home/stack/domain.yaml"
+    dest: "/home/stack/oc{{item}}-domain.yaml"
     src: "domain.yaml.j2"
+  loop: "{{ overclouds_range }}"
 
 - name: push node placement
   tags:
