@@ -3,7 +3,13 @@
   when: tripleo_mod is defined
   fail:
     msg: |
-      tripleo_mod is deprecated. Please use tripleo_repos_version
+      tripleo_mod is deprecated. Please use tripleo_repos_repos
+
+- name: Is tripleo_repos_version defined
+  when: tripleo_repos_version is defined
+  fail:
+    msg: |
+      tripleo_repos_version is deprecated. Please use tripleo_repos_repos
 
 - name: Is tripleo_version defined
   when: tripleo_version is defined
