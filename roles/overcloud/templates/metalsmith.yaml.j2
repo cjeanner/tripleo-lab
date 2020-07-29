@@ -3,7 +3,7 @@
   count: {{ (vms|map(attribute='name')|select("match", 'controller.+')|list|length)|int }}
   instances:
 {% for ctl in (vms|map(attribute='name')|select("match", 'controller.+')|list) %}
-    - hostname: {{ ctl }}
+    - hostname: oc{{ item }}-{{ ctl }}
       name: oc{{item}}-{{ ctl }}
 {% endfor -%}
 
@@ -12,7 +12,7 @@
   count: {{ (vms|map(attribute='name')|select("match", 'compute.+')|list|length)|int }}
   instances:
 {% for compute in (vms|map(attribute='name')|select("match", 'compute.+')|list) %}
-    - hostname: {{ compute }}
+    - hostname: oc{{ item }}-{{ compute }}
       name: oc{{item}}-{{ compute }}
 {% endfor -%}
 {% endif -%}
@@ -22,7 +22,7 @@
   count: {{ (vms|map(attribute='name')|select("match", 'ceph.+')|list|length)|int }}
   instances:
 {% for ceph in (vms|map(attribute='name')|select("match", 'ceph.+')|list) %}
-    - hostname: {{ ceph }}
+    - hostname: oc{{ item }}-{{ ceph }}
       name: oc{{item}}-{{ ceph }}
 {% endfor -%}
 {% endif -%}
