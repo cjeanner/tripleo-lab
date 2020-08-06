@@ -56,6 +56,7 @@
       loop: "{{ custom_repositories }}"
 
     - name: Configure proxy
+      when: proxy_host is defined
       import_role:
         name: undercloud_prepare
         tasks_from: proxy.yaml
