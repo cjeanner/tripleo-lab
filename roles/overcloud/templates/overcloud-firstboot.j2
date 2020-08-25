@@ -1,8 +1,4 @@
 #!/bin/sh
-{% if base_image == 'redhat' %}
-yum install -y {{ rhos_release_repo_url }}/rhos-release-latest.noarch.rpm
-rhos-release {{ rhos_release_opts|default('') }} {{ rhos_release_version }}
-{% endif %}
 pushd /usr/local/src/
 for i in *.te; do
   n=$(basename $i .te)
@@ -11,3 +7,8 @@ for i in *.te; do
   semodule -i ${n}.pp
 done
 popd
+
+rm -f /etc/yum.repos.d/*.repo
+{% if (base_image | lower) in ['rhel', 'redhat'] -%}
+touch /etc/yum.repos.d/redhat.repo
+{% endif -%}
