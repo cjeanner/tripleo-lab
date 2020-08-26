@@ -74,10 +74,10 @@ on centos-8.
 ## I want to mimic a slow system
 1. Create your vm listing and add some [iotune options](https://libvirt.org/formatdomain.html#elementsDisks)
 2. Enjoy a slow system
-You can take the [./environments/standalone-slow.yaml] as an example. A deploy
-generate a constant load of 3-4 with that setup on my builder, ensuring you
-will hit any race conditions/timeouts you can find in upstream CI. Although
-those values are, probably, a bit too harsh :).
+You can take the [./environments/standalone-slow.yaml](./environments/standalone-slow.yaml)
+as an example. A deploy generate a constant load of 3-4 with that setup on my
+builder, ensuring you will hit any race conditions/timeouts you can find in
+upstream CI. Although those values are, probably, a bit too harsh :).
 
 ## I want to customize my tmate
 1. create local_envs/tmate.yaml
