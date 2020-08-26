@@ -1,5 +1,20 @@
 # Some examples and use-cases
 
+## I want to enable masquerade on the undercloud
+1. Create a "masquerade.yaml" in ```local_env``` directory
+2. Add the following content:
+```YAML
+---
+undercloud_config:
+  - section: "ctlplane-subnet"
+    option: "masquerade"
+    value: "true"
+```
+3. Run the playbook with the following options:
+```Bash
+ansible-playbook builder.yaml -t lab -e @local_env/masquerade.yaml
+```
+
 ## I want to test that patch from gerrit
 1. Fetch the wanted patch in your local repository
 2. Follow "I want to test that local change on my computer"
@@ -51,6 +66,10 @@ custom_repositories:
     uri: your-unique-mirror
     priority: 100
 ```
+
+:warning: This setting is used on both the nat-vm and undercloud nodes. Therefore
+you can't use it when deploying centos-7 undercloud, since the nat-vm is running
+on centos-8.
 
 ## I want to mimic a slow system
 1. Create your vm listing and add some [iotune options](https://libvirt.org/formatdomain.html#elementsDisks)
@@ -119,7 +138,6 @@ modify_image:
 ```Bash
 ansible-playbook builder.yaml -e @local_env/container-modify.yaml -e @local_env/patches.yaml
 ```
-
 
 ## I want to deploy Red Hat Director
 Please note this is for Red Hat employees and was NOT tested for any other use
