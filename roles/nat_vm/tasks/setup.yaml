@@ -19,6 +19,32 @@
         state: restarted
       when: sshd_config is changed
 
+    - name: set up custom repositories
+      yum_repository:
+        name: "{{ item.name }}"
+        description: "{{ item.name }}"
+        file: "{{ item.file | default(item.name) }}"
+        baseurl: "{{ item.uri }}"
+        gpgcheck: "{{ item.gpg |default(omit) }}"
+        priority: "{{ item.priority |default(omit) }}"
+        gpgkey: "{{ item.gpgkey |default(omit) }}"
+      loop: "{{ custom_repositories }}"
+
+    - name: Update all packages
+      dnf:
+        name: "*"
+        state: latest
+        update_cache: true
+
+    - name: Authorize custom keys on the undercloud
+      tags:
+        - lab
+        - undercloud-bootstrap
+      authorized_key:
+        user: root
+        key: "{{ item }}"
+      loop: "{{ stack_ssh_keys | default([]) }}"
+
     - name: Ensure correct /etc/hosts entry
       lineinfile:
         insertbefore: BOF
@@ -44,16 +70,6 @@
           BOOTPROTO="none"
           ONBOOT="yes"
           TYPE="Ethernet"
-
-    - name: set up custom repositories
-      yum_repository:
-        name: "{{ item.name }}"
-        description: "{{ item.name }}"
-        file: "{{ item.file | default(item.name) }}"
-        baseurl: "{{ item.uri }}"
-        gpgcheck: "{{ item.gpg |default(omit) }}"
-        priority: "{{ item.priority |default(omit) }}"
-      loop: "{{ custom_repositories }}"
 
     - name: Configure proxy
       when: proxy_host is defined
@@ -95,7 +111,7 @@
 
     - name: Add masquerade on public zone
       firewalld:
-        masquerade: yes
+        masquerade: "true"
         zone: public
         immediate: true
         permanent: true
