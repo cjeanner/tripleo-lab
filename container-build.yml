@@ -1,0 +1,88 @@
+---
+# always ensure fresh operator content
+- hosts: localhost
+  connection: local
+  vars_files:
+    - vars/main.yaml
+  roles:
+    - operators
+
+- hosts: builder
+  remote_user: root
+  vars_files:
+    - vars/main.yaml
+  vars:
+    nat_vm_memory: 16384
+    nat_vm_size: 100G
+  roles:
+    - validations
+    - deprecations
+    - builder
+    - nat_vm
+
+- hosts: nat-vm
+  remote_user: root
+  collections:
+    - tripleo.operator
+  vars_files:
+    - vars/main.yaml
+  tasks:
+    - name: Common tag
+      tags:
+        - lab
+        - nat-vm
+        - container-builder
+      block:
+        - name: Turn off container-tools rhel8 module
+          command: dnf module disable container-tools:rhel8 -y
+
+        - name: Turn on container-tools 2.0
+          command: dnf module enable container-tools:2.0 -y
+
+        - name: Install some packages
+          package:
+            state: present
+            name:
+              - sudo
+
+        - name: Gather only needed facts
+          setup:
+            gather_subset:
+              - '!all'
+              - '!any'
+              - '!min'
+              - distribution_major_version
+              - distribution
+
+        - name: Setup repositories
+          include_role:
+            name: tripleo_repos
+
+        - name: Install python3-tripleoclient
+          package:
+            name: python3-tripleoclient
+            state: latest
+
+        - name: Generate container files
+          include_role:
+            name: tripleo_container_image_build
+          vars:
+            tripleo_container_image_build_push: true
+            tripleo_container_image_build_registry: 192.168.122.1:5000
+
+
+# Connect as root first in order to push basic config and accesses
+- hosts: undercloud
+  remote_user: root
+  vars_files:
+    - vars/main.yaml
+  roles:
+    - undercloud_prepare
+
+# Reconnect to the undercloud as stack user
+- hosts: undercloud
+  remote_user: stack
+  vars_files:
+    - vars/main.yaml
+  roles:
+    - undercloud
