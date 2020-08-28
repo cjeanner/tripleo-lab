@@ -10,7 +10,7 @@
       tags:
         - images
       command: |
-        qemu-img create -o backing_file=../images/centos-8.qcow2,backing_fmt=qcow2 -f qcow2 "{{ vm_prefix }}-nat-vm.qcow2" "20G"
+        qemu-img create -o backing_file=../images/centos-8.qcow2,backing_fmt=qcow2 -f qcow2 "{{ vm_prefix }}-nat-vm.qcow2" "{{ nat_vm_size|default('20G') }}"
       args:
         creates: "{{ basedir }}/workload/{{ vm_prefix }}-nat-vm.qcow2"
         chdir: "{{ basedir }}/workload"
@@ -19,6 +19,8 @@
       shell: |
         virt-sysprep -a "{{basedir}}/workload/{{vm_prefix}}-nat-vm.qcow2" \
           --firstboot-command "systemctl enable --now acpid" \
+          --firstboot-command "growpart /dev/sda 1" \
+          --firstboot-command "xfs_growfs /" \
           --network \
           --uninstall cloud-init \
           --hostname "{{ vm_prefix }}-nat-vm.{{ domain }}" \
