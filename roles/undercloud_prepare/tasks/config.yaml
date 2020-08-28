@@ -103,6 +103,7 @@
     baseurl: "{{ item.uri }}"
     gpgcheck: "{{ item.gpg |default(omit) }}"
     priority: "{{ item.priority |default(omit) }}"
+    gpgkey: "{{ item.gpgkey |default(omit) }}"
   loop: "{{ custom_repositories }}"
 
 - name: add static routes for overclouds public endpoints
