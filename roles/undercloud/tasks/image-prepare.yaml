@@ -94,13 +94,14 @@
           Follow container image prepare in this file
           /var/log/tripleo-container-image-prepare.log
 
-    - name: "Run container image prepare (/var/log/tripleo-container-image-prepare.log)"
+    - name: "Run container image prepare (follow in /home/stack/tripleo-image-prepare.log)"
       include_role:
         name: tripleo.operator.tripleo_container_image_prepare
       vars:
         tripleo_container_image_prepare_environment_files: /home/stack/containers-prepare-parameter.yaml
         tripleo_container_image_prepare_output_env_file: /home/stack/generated-container-prepare.yaml
-        tripleo_container_image_prepare_log_file: /var/log/tripleo-image-prepare.log
+        tripleo_container_image_prepare_log_file: /home/stack/tripleo-image-prepare.log
+        tripleo_container_image_prepare_become: false
 
     - name: Clean tweaked entry for undercloud.ctlplane in /etc/hosts
       become: true
