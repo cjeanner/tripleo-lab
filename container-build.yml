@@ -63,12 +63,20 @@
             name: python3-tripleoclient
             state: latest
 
+        - name: Copy dnf directory
+          copy:
+            dest: /srv/container-dnf
+            remote_src: true
+            src: /etc/dnf/
+
         - name: Generate container files
           include_role:
             name: tripleo_container_image_build
           vars:
             tripleo_container_image_build_push: true
             tripleo_container_image_build_registry: 192.168.122.1:5000
+            tripleo_container_image_build_volumes:
+              - /srv/container-dnf:/etc/dnf/:z
 
 
 # Connect as root first in order to push basic config and accesses
