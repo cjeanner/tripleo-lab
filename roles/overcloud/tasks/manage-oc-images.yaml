@@ -19,7 +19,12 @@
     - base_image != 'centos'
   import_tasks: rhel-overcloud.yaml
 
-- name: Set new image fact
+- name: Check for raw image availability
+  register: raw_image
+  stat:
+    path: /home/stack/overcloud_imgs/overcloud-full.raw
+
+- name: Set some facts
   tags:
     - lab
     - overcloud
@@ -27,6 +32,12 @@
     - overcloud-images
   set_fact:
     new_oc_image: "{{ uncompress_centos_img is changed or uncompress_rhel_img is changed }}"
+    oc_image_name: >-
+      {% if raw_image.stat.exists %}
+      overcloud-full.raw
+      {% else %}
+      overcloud-full.qcow2
+      {% endif %}
 
 - name: Modify overcloud image
   tags:
@@ -37,7 +48,7 @@
     - overcloud_image_update|bool
     - new_oc_image|bool
   shell: |
-    LIBGUESTFS_BACKEND="direct" virt-sysprep -a /home/stack/overcloud_imgs/overcloud-full.qcow2 \
+    LIBGUESTFS_BACKEND="direct" virt-sysprep -a /home/stack/overcloud_imgs/{{ oc_image_name }} \
       --copy-in /etc/yum.conf:/etc/ \
       --copy-in /etc/environment:/etc/ \
       --copy-in /etc/selinux/config:/etc/selinux/ \
@@ -54,9 +65,9 @@
       --install {{ rhos_release_repo_url }}/rhos-release-latest.noarch.rpm \
       --run-command "rhos-release {{ rhos_release_opts|default('') }} {{ rhos_release_version }}" \
       {% endif %}
-      --network &> /home/stack/overcloud_imgs/overcloud-full.qcow2.done
+      --network &> /home/stack/overcloud_imgs/overcloud-full.done
   args:
-    creates: /home/stack/overcloud_imgs/overcloud-full.qcow2.done
+    creates: /home/stack/overcloud_imgs/overcloud-full.done
 
 - name: Update overcloud image
   tags:
@@ -67,12 +78,12 @@
     - overcloud_image_update|bool
     - new_oc_image|bool
   shell: |
-    LIBGUESTFS_BACKEND="direct" virt-customize -a /home/stack/overcloud_imgs/overcloud-full.qcow2 \
+    LIBGUESTFS_BACKEND="direct" virt-customize -a /home/stack/overcloud_imgs/{{ oc_image_name }} \
       --update \
       --selinux-relabel \
-      --network &> /home/stack/overcloud_imgs/overcloud-full.qcow2.updated
+      --network &> /home/stack/overcloud_imgs/overcloud-full.updated
   args:
-    creates: /home/stack/overcloud_imgs/overcloud-full.qcow2.updated
+    creates: /home/stack/overcloud_imgs/overcloud-full.updated
 
 - name: Inject custom RPMs in OC image
   tags:
@@ -83,9 +94,9 @@
     - oc_image_rpms is defined
     - oc_image_rpms | length > 0
   shell: |
-    LIBGUESTFS_BACKEND="direct" virt-customize -a /home/stack/overcloud_imgs/overcloud-full.qcow2 \
+    LIBGUESTFS_BACKEND="direct" virt-customize -a /home/stack/overcloud_imgs/{{ oc_image_name }} \
       --install {{ oc_image_rpms|join(',') }}\
       --selinux-relabel \
-      --network &> /home/stack/overcloud_imgs/overcloud-full.qcow2.modified
+      --network &> /home/stack/overcloud_imgs/overcloud-full.modified
   args:
-    creates: /home/stack/overcloud_imgs/overcloud-full.qcow2.modified
+    creates: /home/stack/overcloud_imgs/overcloud-full.modified
