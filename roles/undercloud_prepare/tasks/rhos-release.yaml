@@ -13,6 +13,7 @@
   package:
     name: "{{ rhos_release_repo_url }}/rhos-release-latest.noarch.rpm"
     state: installed
+    disable_gpg_check: true
   register: rhos_release
   environment:
     http_proxy: "http://{{ proxy_host }}"
@@ -24,6 +25,7 @@
   package:
     name: "{{ rhos_release_repo_url }}/rhos-release-latest.noarch.rpm"
     state: installed
+    disable_gpg_check: true
   register: rhos_release
 
 - name: yum-clean-metadata
