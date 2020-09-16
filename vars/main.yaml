@@ -53,6 +53,7 @@ standalone_ceph: false
 synchronize: []
 synchronize_default_dest: /home/stack/tripleo/
 tmate_release: 2.4.0
+tripleo_container_image_prepare_become: false
 tripleo_log_redirect: '|tee'
 tripleo_repos_branch: master
 tripleo_repos_repos:
