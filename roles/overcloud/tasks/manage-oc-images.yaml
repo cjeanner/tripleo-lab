@@ -20,6 +20,11 @@
   import_tasks: rhel-overcloud.yaml
 
 - name: Check for raw image availability
+  tags:
+    - lab
+    - overcloud
+    - baremetal
+    - overcloud-images
   register: raw_image
   stat:
     path: /home/stack/overcloud_imgs/overcloud-full.raw
@@ -33,11 +38,11 @@
   set_fact:
     new_oc_image: "{{ uncompress_centos_img is changed or uncompress_rhel_img is changed }}"
     oc_image_name: >-
-      {% if raw_image.stat.exists %}
+      {%- if raw_image.stat.exists -%}
       overcloud-full.raw
-      {% else %}
+      {%- else -%}
       overcloud-full.qcow2
-      {% endif %}
+      {%- endif -%}
 
 - name: Modify overcloud image
   tags:
