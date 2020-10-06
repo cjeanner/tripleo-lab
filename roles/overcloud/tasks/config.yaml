@@ -41,3 +41,20 @@
     source ~/stackrc
     openstack subnet show ctlplane-subnet -f json | jq '.dns_nameservers' | grep "{{ undercloud_dns }}" ||
     openstack subnet set ctlplane-subnet --dns-nameserver {{ undercloud_dns }}
+
+- name: Get generated role-data
+  tags:
+    - lab
+    - baremetal
+    - overcloud
+  command: openstack overcloud roles generate -o /tmp/roledata.yaml Compute Controller CephStorage
+  args:
+    creates: /tmp/roledata.yaml
+
+- name: Update networks in role-data
+  tags:
+    - lab
+    - baremetal
+    - overcloud
+  include_tasks: update-network-role.yaml
+  loop: "{{ overclouds_range }}"

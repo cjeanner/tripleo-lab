@@ -1,0 +1,29 @@
+---
+# Generate per-overcloud stack role-data.yaml and update values for subnets
+
+- name: "Output generated content to oc{{ item }}-role-data.yaml"
+  tags:
+    - lab
+    - overcloud
+  copy:
+    dest: "/home/stack/oc{{ item }}-role-data.yaml"
+    remote_src: true
+    src: /tmp/roledata.yaml
+
+- name: "Update subnets for oc{{ item }}"
+  tags:
+    - lab
+    - overcloud
+  replace:
+    path: "/home/stack/oc{{ item }}-role-data.yaml"
+    regexp: "subnet: {{ subnet }}_subnet"
+    replace: "subnet: {{ subnet }}_cloud_{{ item }}_subnet"
+  loop:
+    - storage
+    - storage_mgmt
+    - internal_api
+    - tenant
+    - external
+    - management
+  loop_control:
+    loop_var: subnet

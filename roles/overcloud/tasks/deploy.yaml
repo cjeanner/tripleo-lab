@@ -10,7 +10,6 @@
       /usr/share/openstack-tripleo-heat-templates/environments/deployed-server-environment.yaml
       /home/stack/overcloud-baremetal-deployed-{{ item }}.yaml
       {% endif -%}
-      /usr/share/openstack-tripleo-heat-templates/environments/net-multiple-nics.yaml
       /usr/share/openstack-tripleo-heat-templates/environments/network-isolation.yaml
       /usr/share/openstack-tripleo-heat-templates/environments/network-environment.yaml
       /usr/share/openstack-tripleo-heat-templates/environments/disable-telemetry.yaml
@@ -54,6 +53,7 @@
     name: tripleo.operator.tripleo_overcloud_deploy
   vars:
     tripleo_overcloud_deploy_templates: /usr/share/openstack-tripleo-heat-templates/
+    tripleo_overcloud_deploy_roles_file: "/home/stack/oc{{ item }}-role-data.yaml"
     tripleo_overcloud_deploy_stack: "overcloud-{{ item }}"
     tripleo_overcloud_deploy_networks_file: "/home/stack/oc{{ item }}-network-data.yaml"
     tripleo_overcloud_deploy_environment_dirs: "/home/stack/overcloud-{{ item }}-yml"

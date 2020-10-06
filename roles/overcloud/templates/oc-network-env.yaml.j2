@@ -38,10 +38,3 @@ parameter_defaults:
         end: '172.16.{{ base_ip }}4.250'
     TenantNetCidr: '172.16.{{ base_ip }}4.0/24'
     TenantNetworkVlanID: {{ base_ip }}4
-resource_registry:
-    OS::TripleO::BlockStorage::Net::SoftwareConfig: /usr/share/openstack-tripleo-heat-templates/network/config/multiple-nics/cinder-storage.yaml
-    OS::TripleO::CephStorage::Net::SoftwareConfig: /usr/share/openstack-tripleo-heat-templates/network/config/multiple-nics/ceph-storage.yaml
-    OS::TripleO::Compute::Net::SoftwareConfig: /usr/share/openstack-tripleo-heat-templates/network/config/multiple-nics/compute.yaml
-    OS::TripleO::Controller::Net::SoftwareConfig: /usr/share/openstack-tripleo-heat-templates/network/config/multiple-nics/controller.yaml
-    OS::TripleO::ObjectStorage::Net::SoftwareConfig: /usr/share/openstack-tripleo-heat-templates/network/config/multiple-nics/swift-storage.yaml
-
