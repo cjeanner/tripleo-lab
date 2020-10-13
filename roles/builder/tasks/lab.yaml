@@ -129,8 +129,7 @@
     create: true
     mode: 0600
     block: |
-      Host {{ item.item.name }} {{ item.stdout|replace('/24','') }}
-        #ProxyCommand ssh -o 'ForwardAgent yes' {{ virt_user }}@{{ ansible_host }} 'ssh-add && nc {{ item.stdout|replace('/24','') }} %p'
+      Host {{ vm_prefix }}-{{ item.item.name }} {{ item.item.name }} {{ item.stdout|replace('/24','') }}
         ProxyJump {{ virt_user }}@{{ ansible_host }}
         Hostname {{ item.stdout|replace('/24','') }}
         User root
