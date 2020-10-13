@@ -109,6 +109,7 @@
   tags:
     - lab
     - undercloud-bootstrap
+    - ssh-key
   authorized_key:
     user: stack
     key: "{{ item }}"
