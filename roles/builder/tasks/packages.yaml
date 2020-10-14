@@ -75,8 +75,16 @@
     - name: install virtualbmc from pip
       when:
         - ansible_facts['python_version'] is version('3.0', 'gt', strict=False)
-      pip:
-        name: virtualbmc
+      block:
+        - name: Install direct dependencies
+          package:
+            name:
+              - libvirt-devel
+              - gcc
+              - platform-python-devel
+        - name: Install vbmc
+          pip:
+            name: virtualbmc
 
     - name: install virtualbmc from packages
       when:
