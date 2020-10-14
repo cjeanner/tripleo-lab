@@ -32,6 +32,7 @@
   tags:
     - lab
     - undercloud-bootstrap
+    - rhos-release
   when: base_image == 'redhat'
   block:
     - import_tasks: rhos-release.yaml
