@@ -1,5 +1,6 @@
 {% set base_ip = 1+ item|int %}
 parameter_defaults:
+    ValidateControllersIcmp: false
     ControlPlaneDefaultRoute: 192.168.24.1
     ControlPlaneSubnetCidr: '24'
     DnsServers:
