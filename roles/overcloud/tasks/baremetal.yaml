@@ -44,7 +44,7 @@
   debug:
     msg: "Got {{ known_bm.stdout_lines|length }} instance(s) (should have {{ vms|length -1 }})"
 
-- name: import nodes in ironic
+- name: Import and provide for metalsmith
   tags:
     - lab
     - baremetal
@@ -52,12 +52,16 @@
   when:
     - vms|length > 1
     - known_bm.stdout_lines|length != (vms|length - 1)
-  import_role:
-    name: tripleo.operator.tripleo_overcloud_node_import
-  vars:
-    tripleo_overcloud_node_import_environment_file: ~/baremetal.json
+    - metalsmith | default(false) | bool
+  block:
+    - name: Import nodes in Ironic and provide them
+      import_role:
+        name: tripleo.operator.tripleo_overcloud_node_import
+      vars:
+        tripleo_overcloud_node_import_environment_file: ~/baremetal.json
+        tripleo_overcloud_node_import_provide: true
 
-- name: introspect nodes
+- name: Import and provide for nova based deploy
   tags:
     - lab
     - baremetal
@@ -65,23 +69,33 @@
   when:
     - vms|length > 1
     - known_bm.stdout_lines|length != (vms|length - 1)
-  import_role:
-    name: tripleo.operator.tripleo_overcloud_node_introspect
-  vars:
-    tripleo_overcloud_node_introspect_all_manageable: true
+    - not metalsmith | default(false) | bool
+  block:
+    - name: import nodes in ironic
+      import_role:
+        name: tripleo.operator.tripleo_overcloud_node_import
+      vars:
+        tripleo_overcloud_node_import_environment_file: ~/baremetal.json
 
-- name: provide nodes
-  tags:
-    - lab
-    - baremetal
-    - overcloud
-  when:
-    - vms|length > 1
-    - known_bm.stdout_lines|length != (vms|length - 1)
-  import_role:
-    name: tripleo.operator.tripleo_overcloud_node_provide
-  vars:
-    tripleo_overcloud_node_provide_all_manageable: true
+    - name: introspect nodes
+      tags:
+        - lab
+        - baremetal
+        - overcloud
+      import_role:
+        name: tripleo.operator.tripleo_overcloud_node_introspect
+      vars:
+        tripleo_overcloud_node_introspect_all_manageable: true
+
+    - name: provide nodes
+      tags:
+        - lab
+        - baremetal
+        - overcloud
+      import_role:
+        name: tripleo.operator.tripleo_overcloud_node_provide
+      vars:
+        tripleo_overcloud_node_provide_all_manageable: true
 
 - name: Metalsmith-based node deploy
   tags:
