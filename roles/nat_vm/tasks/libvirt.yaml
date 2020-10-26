@@ -67,7 +67,7 @@
   local_action:
     module: blockinfile
     path: ~/.ssh/config
-    marker: "## {mark} nat-vm"
+    marker: "## {mark} {{ vm_prefix }}-nat-vm"
     create: true
     mode: 0600
     block: |

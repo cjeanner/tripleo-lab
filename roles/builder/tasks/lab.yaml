@@ -125,7 +125,7 @@
   local_action:
     module: blockinfile
     path: ~/.ssh/config
-    marker: "## {mark} {{ item.item.name }}"
+    marker: "## {mark} {{ vm_prefix }}-{{ item.item.name }}"
     create: true
     mode: 0600
     block: |
