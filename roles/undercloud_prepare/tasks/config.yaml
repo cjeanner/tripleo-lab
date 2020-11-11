@@ -140,11 +140,3 @@
       {% else %}
       export PS1='[{{ ansible_facts['distribution'] }}-{{ ansible_facts['distribution_version'] }} - \u@\h \W]\$ '
       {% endif %}
-
-- name: "Enable container-tools:2.0"
-  tags:
-    - lab
-    - undercloud-bootstrap
-  dnf:
-    name: "@container-tools:2.0"
-    state: present
