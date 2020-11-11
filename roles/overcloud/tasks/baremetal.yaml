@@ -52,7 +52,6 @@
   when:
     - vms|length > 1
     - known_bm.stdout_lines|length != (vms|length - 1)
-    - metalsmith | default(false) | bool
   block:
     - name: Import nodes in Ironic and provide them
       import_role:
@@ -61,48 +60,12 @@
         tripleo_overcloud_node_import_environment_file: ~/baremetal.json
         tripleo_overcloud_node_import_provide: true
 
-- name: Import and provide for nova based deploy
-  tags:
-    - lab
-    - baremetal
-    - overcloud
-  when:
-    - vms|length > 1
-    - known_bm.stdout_lines|length != (vms|length - 1)
-    - not metalsmith | default(false) | bool
-  block:
-    - name: import nodes in ironic
-      import_role:
-        name: tripleo.operator.tripleo_overcloud_node_import
-      vars:
-        tripleo_overcloud_node_import_environment_file: ~/baremetal.json
-
-    - name: introspect nodes
-      tags:
-        - lab
-        - baremetal
-        - overcloud
-      import_role:
-        name: tripleo.operator.tripleo_overcloud_node_introspect
-      vars:
-        tripleo_overcloud_node_introspect_all_manageable: true
-
-    - name: provide nodes
-      tags:
-        - lab
-        - baremetal
-        - overcloud
-      import_role:
-        name: tripleo.operator.tripleo_overcloud_node_provide
-      vars:
-        tripleo_overcloud_node_provide_all_manageable: true
-
 - name: Metalsmith-based node deploy
   tags:
     - lab
     - baremetal
     - overcloud
   when:
+    - metalsmith | default(false)
     - vms|length > 1
-    - metalsmith | default(false) | bool
   import_tasks: metalsmith.yaml
