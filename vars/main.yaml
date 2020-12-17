@@ -57,7 +57,7 @@ tripleo_container_image_prepare_become: false
 tripleo_log_redirect: '|tee'
 tripleo_repos_branch: master
 tripleo_repos_repos:
-  - current-tripleo
+  - current-tripleo-dev
 tripleoclient_pkgname: python-tripleoclient
 tripleo_generate_scripts: true
 undercloud_config: []
