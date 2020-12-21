@@ -106,6 +106,16 @@
     gpgkey: "{{ item.gpgkey |default(omit) }}"
   loop: "{{ custom_repositories }}"
 
+- name: Set up custom dnf module streams
+  tags:
+    - lab
+    - undercloud-bootstrap
+  when: dnf_state.stat.exists
+  dnf:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ dnf_modules_stream |default([]) }}"
+
 - name: add static routes for overclouds public endpoints
   tags:
     - lab
