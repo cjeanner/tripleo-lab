@@ -12,6 +12,7 @@
       {% for env in additional_envs %}
       {{ env }}
       {% endfor %}
+      /home/stack/containers-prepare-parameter.yaml
       /home/stack/generated-container-prepare.yaml
       /home/stack/standalone_parameters.yaml
 
