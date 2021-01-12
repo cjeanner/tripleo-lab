@@ -1,5 +1,6 @@
 parameter_defaults:
   ContainerCli: {{ standalone_container_cli | default('podman') }}
+  CloudDomain: {{ domain }}
 {% if disable_selinux | default(false) | bool %}
   SELinuxMode: permissive
 {% endif %}
@@ -11,8 +12,7 @@ parameter_defaults:
   DeploymentUser: stack
   DnsServers: {{ nameservers | to_yaml }}
   DockerInsecureRegistryAddress:
-    - 192.168.24.2:8787
-    - undercloud.ctlplane
+    - undercloud.ctlplane.mydomain.tld:8787
   NeutronPublicInterface: eth1
   NeutronDnsDomain: {{ domain }}
   StandaloneEnableRoutedNetworks: false
