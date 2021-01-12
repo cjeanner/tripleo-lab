@@ -42,7 +42,7 @@
         - libvirt-client
         - libvirt-daemon
         - libvirt-daemon-kvm
-        - "python{{python_version|default('')}}-lxml"
+        - "python{{ansible_facts['python_version'].split('.')[0]}}-lxml"
         - tmux
         - vim
         - wget
