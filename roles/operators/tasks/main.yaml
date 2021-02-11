@@ -1,10 +1,6 @@
 ---
 # Install tripleo-operator in current user environment
 # and provide plugins and roles to local ansible env.
-- name: Get installed packages
-  tags: always
-  package_facts:
-
 - name: Check ansible version
   tags: always
   when: ansible_version.full is version('2.9.0', 'lt', strict=True)
