@@ -1,10 +1,19 @@
 ---
-- name: fetch and uncompress libguestfs appliance
+- name: fetch libguestfs appliance
   tags:
     - builder-bootstrap
+  get_url:
+    dest: "{{ basedir }}/images/appliance-{{ guestfs_appliance_version }}.tar.xz"
+    checksum: "{{ guestfs_appliance_checksum }}"
+    url: http://download.libguestfs.org/binaries/appliance/appliance-{{ guestfs_appliance_version }}.tar.xz
+  register: appliance_archive
+
+- name: uncompress libguestfs appliance
+  tags:
+    - builder-bootstrap
+  when: appliance_archive is changed
   unarchive:
-    creates: /usr/local/src/appliance
-    src: "http://download.libguestfs.org/binaries/appliance/{{ guestfs_appliance }}"
+    src: "{{ appliance_archive.dest }}"
     dest: "/usr/local/src/"
     remote_src: true
 
