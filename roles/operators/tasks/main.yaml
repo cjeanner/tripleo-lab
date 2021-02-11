@@ -7,7 +7,7 @@
 
 - name: Check ansible version
   tags: always
-  when: ansible_facts.packages['ansible'][0]['version'] is version('2.9.0', 'lt', strict=True)
+  when: ansible_version.full is version('2.9.0', 'lt', strict=True)
   fail:
     msg: Please update your ansible version to 2.9.x
 
