@@ -1,11 +1,26 @@
 ---
+- name: Set facts according to CentOS variant
+  set_fact:
+    baseURI: >-
+      {% if centos_variant == "stream" -%}
+      https://cloud.centos.org/centos/{{ os_version }}-stream/x86_64/images/
+      {% else -%}
+      http://cloud.centos.org/centos/{{ os_version }}/x86_64/images/
+      {% endif -%}
+    destImg: >-
+      {%- if centos_variant == "stream" -%}
+      centos-{{ os_version }}-stream.qcow2
+      {%- else -%}
+      centos-{{ os_version }}.qcow2
+      {%- endif -%}
+
 - name: Get latest centos-8 image name
-  shell: |
-    curl -s http://cloud.centos.org/centos/8/x86_64/images/ | awk '/GenericCloud/ { print $8 }'|cut -d '"' -f 2 | tail -1
+  shell: >-
+    curl -s "{{ baseURI |trim}}" | awk '/GenericCloud/ { print $8 }' | cut -d '"' -f 2 | tail -1
   register: latest_centos8
 
 - name: Fetch latest centos-8 image
   get_url:
-    url: "http://cloud.centos.org/centos/8/x86_64/images/{{ latest_centos8.stdout }}"
-    dest: "{{ basedir }}/images/centos-8.qcow2"
+    url: "{{ baseURI |trim}}{{ latest_centos8.stdout |trim}}"
+    dest: "{{ basedir }}/images/{{ destImg |trim}}"
     mode: 0664

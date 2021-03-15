@@ -10,6 +10,7 @@ ansible_tripleo_podman_name: >-
   {%- else %}tripleo-podman {% endif -%}
 basedir: "/home/{{virt_user}}"
 base_image: centos
+centos_variant: ""
 container_prepare_overrides: {}
 containerized_undercloud: true
 custom_ca: ''
