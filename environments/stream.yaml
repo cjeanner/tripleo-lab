@@ -1,2 +1,3 @@
 ---
 centos_variant: "stream"
+tripleo_repos_stream: true
