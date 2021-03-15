@@ -6,11 +6,20 @@
     - lab
     - nat-vm
   block:
+    - name: Set base image name for actual lab
+      set_fact:
+        natVmImg: >-
+          {%- if centos_variant == "stream" -%}
+          centos-8-stream.qcow2
+          {%- else -%}
+          centos-8.qcow2
+          {%- endif -%}
+
     - name: create nat-vm image based on centos-8
       tags:
         - images
       command: |
-        qemu-img create -o backing_file=../images/centos-8.qcow2,backing_fmt=qcow2 -f qcow2 "{{ vm_prefix }}-nat-vm.qcow2" "{{ nat_vm_size|default('20G') }}"
+        qemu-img create -o backing_file=../images/{{ natVmImg|trim }},backing_fmt=qcow2 -f qcow2 "{{ vm_prefix }}-nat-vm.qcow2" "{{ nat_vm_size|default('20G') }}"
       args:
         creates: "{{ basedir }}/workload/{{ vm_prefix }}-nat-vm.qcow2"
         chdir: "{{ basedir }}/workload"
