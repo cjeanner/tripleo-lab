@@ -158,6 +158,15 @@
         path: "{{ basedir }}/workload/"
       register: deploy_exists
 
+    - name: Set base image name for actual lab
+      set_fact:
+        vmImg: >-
+          {%- if centos_variant == "stream" -%}
+          centos-{{ os_version }}-stream.qcow2
+          {%- else -%}
+          centos-{{ os_version }}.qcow2
+          {%- endif -%}
+
     - name: update image in-place
       when:
         - base_image == 'centos'
@@ -167,7 +176,7 @@
         - image-update
       shell: |
         export LIBGUESTFS_BACKEND=direct
-        virt-sysprep -a "{{ basedir }}/images/centos-{{ os_version }}.qcow2" \
+        virt-sysprep -a "{{ basedir }}/images/{{ vmImg |trim}}" \
           --network \
           --uninstall cloud-init \
           --selinux-relabel \
@@ -180,7 +189,7 @@
       tags:
         - images
       command: |
-        qemu-img create -o backing_file=../images/centos-{{ os_version }}.qcow2,backing_fmt=qcow2 -f qcow2 "{{ vm_prefix }}-{{ item.name }}.qcow2" "{{ item.disksize|default ('100') }}G"
+        qemu-img create -o backing_file=../images/{{ vmImg |trim}},backing_fmt=qcow2 -f qcow2 "{{ vm_prefix }}-{{ item.name }}.qcow2" "{{ item.disksize|default ('100') }}G"
       args:
         creates: "{{ basedir }}/workload/{{ vm_prefix }}-{{ item.name }}.qcow2"
         chdir: "{{ basedir }}/workload"
