@@ -10,7 +10,8 @@ ansible_tripleo_podman_name: >-
   {%- else %}tripleo-podman {% endif -%}
 basedir: "/home/{{virt_user}}"
 base_image: centos
-centos_variant: ""
+centos_variant: "stream"
+tripleo_repos_stream: true
 container_prepare_overrides: {}
 containerized_undercloud: true
 custom_ca: ''
@@ -33,7 +34,7 @@ guestfs_appliance_checksum: "sha1:525522aaf4fcc4f5212cc2a9e98ee873d125536e"
 growfs_part: /dev/sda1
 local_registry: 'true'
 oc_image_rpms: []
-os_version: 7
+os_version: 8
 overcloud_container_cli: podman
 overcloud_image_update: true
 overcloud_images:
