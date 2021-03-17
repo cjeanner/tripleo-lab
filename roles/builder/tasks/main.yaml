@@ -1,4 +1,5 @@
 - import_tasks: packages.yaml
+- import_tasks: user.yaml
 - import_tasks: libguestfs.yaml
 - import_tasks: services.yaml
 - import_tasks: libvirt.yaml

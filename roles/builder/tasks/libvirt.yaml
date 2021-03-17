@@ -16,55 +16,6 @@
           options kvm-intel nested=1
           options kvm-amd nested=1
 
-    - name: create virt_user
-      user:
-        comment: "Virtual user for tripleo lab"
-        create_home: true
-        generate_ssh_key: true
-        groups:
-          - libvirt
-          - kvm
-          - qemu
-        home: "{{ basedir }}"
-        name: "{{ virt_user }}"
-        shell: "/bin/bash"
-        ssh_key_bits: 4096
-        state: present
-
-    - name: set virt_user home rights
-      file:
-        state: directory
-        path: "{{ basedir }}"
-        mode: 0750
-        group: qemu
-
-    - name: push authorized_keys
-      copy:
-        src: /root/.ssh/authorized_keys
-        remote_src: true
-        dest: "{{ basedir }}/.ssh/authorized_keys"
-        group: "{{ virt_user }}"
-        mode: 0600
-        owner: "{{ virt_user }}"
-
-    - name: push polkit config
-      template:
-        dest: /etc/polkit-1/rules.d/50-org.libvirt.unix.manage.rules
-        src: "50-org.libvirt.unix.manage.rules.j2"
-        group: root
-        mode: 0644
-        owner: root
-        serole: object_r
-        setype: etc_t
-        seuser: system_u
-    - name: create temp dir for virt_user
-      file:
-        path: "/home/{{ virt_user }}/.ansible/tmp"
-        state: directory
-        group: "{{ virt_user }}"
-        mode: 0700
-        owner: "{{ virt_user }}"
-
     - name: Create symlink if needed
       when:
         ansible_facts['distribution'] == 'Fedora'
@@ -130,19 +81,6 @@
         state: active
         autostart: true
         name: ctlplane
-
-    - name: create some directories
-      tags:
-        - config
-      file:
-        state: directory
-        group: qemu
-        path: "{{ basedir }}/{{ item }}"
-        mode: 02770
-      with_items:
-        - images
-        - workload
-        - configs
 
     - name: centos-7
       import_tasks: centos-7.yaml

@@ -28,7 +28,8 @@ dlrn_baseurl: >-
 domain: mydomain.tld
 freeipa_admin_password: change-me-password
 freeipa_directory_password: ChangeMePassword
-guestfs_appliance: "appliance-1.38.0.tar.xz"
+guestfs_appliance_version: "1.40.1"
+guestfs_appliance_checksum: "sha1:525522aaf4fcc4f5212cc2a9e98ee873d125536e"
 growfs_part: /dev/sda1
 local_registry: 'true'
 oc_image_rpms: []
