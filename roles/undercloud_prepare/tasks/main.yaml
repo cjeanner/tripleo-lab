@@ -17,12 +17,6 @@
     overclouds_range: "{{ range(0, overclouds | default(1) | int) | list }}"
 
 - import_tasks: swap.yaml
-
-- name: check dnf presence
-  stat:
-    path: /etc/dnf/dnf.conf
-  register: dnf_state
-
 - name: Set up proxy if needed
   tags:
     - lab

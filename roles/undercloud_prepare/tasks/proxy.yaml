@@ -1,4 +1,9 @@
 ---
+- name: check dnf presence
+  stat:
+    path: /etc/dnf/dnf.conf
+  register: dnf_state
+
 - name: set proxy for yum
   ini_file:
     backup: true
