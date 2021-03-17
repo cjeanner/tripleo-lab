@@ -1,4 +1,4 @@
 ---
-- import_tasks: ceph.yaml
-- import_tasks: prepare.yaml
-- import_tasks: deploy.yaml
+- include_tasks: ceph.yaml
+- include_tasks: prepare.yaml
+- include_tasks: deploy.yaml

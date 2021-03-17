@@ -16,7 +16,7 @@
     base_image: "{{ ansible_facts['distribution'] | lower }}"
     overclouds_range: "{{ range(0, overclouds | default(1) | int) | list }}"
 
-- import_tasks: swap.yaml
+- include_tasks: swap.yaml
 
 - name: check dnf presence
   stat:
@@ -29,10 +29,10 @@
     - undercloud-bootstrap
   when:
     - proxy_host is defined
-  import_tasks: proxy.yaml
+  include_tasks: proxy.yaml
 
-- import_tasks: config.yaml
-- import_tasks: user.yaml
+- include_tasks: config.yaml
+- include_tasks: user.yaml
 
 - name: RHEL environment setup
   tags:
@@ -41,17 +41,17 @@
     - rhos-release
   when: base_image == 'redhat'
   block:
-    - import_tasks: rhos-release.yaml
-    - import_tasks: rhel.yaml
+    - include_tasks: rhos-release.yaml
+    - include_tasks: rhel.yaml
 
 - name: Install EPEL on centos
   tags:
     - lab
     - undercloud-bootstrap
   when: base_image == 'centos'
-  import_tasks: epel.yaml
+  include_tasks: epel.yaml
 
-- import_tasks: packages.yaml
+- include_tasks: packages.yaml
 - name: Install and configure tmate if wanted
   when: install_tmate | default(true) | bool
-  import_tasks: tmate.yaml
+  include_tasks: tmate.yaml

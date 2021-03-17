@@ -93,7 +93,7 @@
 
 - name: include TLS config if needed
   when: enable_tls|default(False)|bool
-  import_tasks: tls.yaml
+  include_tasks: tls.yaml
 
 - name: custom configuration in undercloud.conf
   ini_file:
@@ -114,4 +114,4 @@
 - name: Deploy undercloud
   when:
     - not stackrc_stat.stat.exists
-  import_tasks: deploy.yaml
+  include_tasks: deploy.yaml

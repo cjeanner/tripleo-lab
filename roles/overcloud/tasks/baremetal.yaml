@@ -68,4 +68,4 @@
   when:
     - metalsmith | default(false)
     - vms|length > 1
-  import_tasks: metalsmith.yaml
+  include_tasks: metalsmith.yaml

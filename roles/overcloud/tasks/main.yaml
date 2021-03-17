@@ -1,10 +1,10 @@
 ---
-- import_tasks: packages.yaml
-- import_tasks: config.yaml
-- import_tasks: scripts.yaml
-- import_tasks: manage-oc-images.yaml
-- import_tasks: upload.yaml
-- import_tasks: baremetal.yaml
+- include_tasks: packages.yaml
+- include_tasks: config.yaml
+- include_tasks: scripts.yaml
+- include_tasks: manage-oc-images.yaml
+- include_tasks: upload.yaml
+- include_tasks: baremetal.yaml
 
 - name: Deploy all overclouds
   tags:

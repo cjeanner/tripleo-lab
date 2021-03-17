@@ -5,8 +5,8 @@
     - deprecations
   block:
     - name: Image prepare parameters
-      import_tasks: image-prepare.yaml
+      include_tasks: image-prepare.yaml
     - name: Misc params
-      import_tasks: misc.yaml
+      include_tasks: misc.yaml
     - name: Misc params
-      import_tasks: operator.yaml
+      include_tasks: operator.yaml

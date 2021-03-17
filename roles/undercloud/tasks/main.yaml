@@ -20,12 +20,12 @@
   import_role:
     name: tripleo.operator.tripleo_repos
 
-- import_tasks: packages.yaml
+- include_tasks: packages.yaml
   tags:
     - lab
     - undercloud
 
-- import_tasks: prepare-build.yaml
+- include_tasks: prepare-build.yaml
   tags:
     - lab
     - undercloud
@@ -38,7 +38,7 @@
   when:
     - base_image == 'centos'
   block:
-    - import_tasks: pkg-build.yaml
+    - include_tasks: pkg-build.yaml
 
 - name: Install built RPMs on CentOS
   tags:
@@ -47,19 +47,19 @@
     - custom-packages
   when:
     - base_image == 'centos'
-  import_tasks: install-built-rpms.yaml
+  include_tasks: install-built-rpms.yaml
 
-- import_tasks: install-custom-selinux.yaml
+- include_tasks: install-custom-selinux.yaml
   tags:
     - lab
     - undercloud
 
-- import_tasks: remote-pkg.yaml
+- include_tasks: remote-pkg.yaml
   tags:
     - lab
     - undercloud
 
-- import_tasks: image-prepare.yaml
+- include_tasks: image-prepare.yaml
   tags:
     - lab
     - undercloud
@@ -70,7 +70,7 @@
   tags:
     - lab
     - undercloud-bootstrap
-  import_tasks: ipa.yaml
+  include_tasks: ipa.yaml
 
 - name: Setup and deploy Undercloud
   tags:
@@ -78,7 +78,7 @@
     - undercloud
   when:
     - not standalone|bool
-  import_tasks: undercloud.yaml
+  include_tasks: undercloud.yaml
 
 - name: Setup Overcloud
   tags:

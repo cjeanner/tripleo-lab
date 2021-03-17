@@ -7,7 +7,7 @@
     - overcloud-images
   when:
     - base_image == 'centos'
-  import_tasks: centos-overcloud.yaml
+  include_tasks: centos-overcloud.yaml
 
 - name: Get RHEL based OC images
   tags:
@@ -17,7 +17,7 @@
     - overcloud-images
   when:
     - base_image != 'centos'
-  import_tasks: rhel-overcloud.yaml
+  include_tasks: rhel-overcloud.yaml
 
 - name: Check for raw image availability
   tags:
