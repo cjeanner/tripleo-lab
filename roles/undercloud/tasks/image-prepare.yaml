@@ -37,6 +37,10 @@
         ansible -m include_role \
           -a role={{ ansible_tripleo_podman_name }} \
           -e tripleo_container_registry_insecure_registries='["localhost","undercloud.ctlplane","192.168.122.1"]' \
+          -e ansible_distribution={{ ansible_facts['distribution'] }} \
+          -e ansible_os_family={{ ansible_facts['os_family'] }} \
+          -e ansible_distribution_version={{ ansible_facts['distribution_version'] }} \
+          -e ansible_distribution_major_version={{ ansible_facts['distribution_major_version'] }} \
           -e @/tmp/ansible-facts.json \
           localhost
 
