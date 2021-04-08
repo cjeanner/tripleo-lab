@@ -4,4 +4,4 @@ tripleoclient_pkgname: python3-tripleoclient
 undercloud_python_interpreter: /usr/libexec/platform-python
 os_version: 8
 dnf_modules_stream:
-  - '@container-tools:2.0'
+  - '@container-tools:3.0'
