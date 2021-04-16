@@ -1,0 +1,11 @@
+---
+- name: "Reset module: {{ module }}"
+  tags: always
+  command: |
+    dnf module reset -y {{ module.split(":")[0] }}
+
+- name: "Set module stream: {{ module }}"
+  tags: always
+  command: |
+    dnf module enable -y {{ module }}
+

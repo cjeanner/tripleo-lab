@@ -116,10 +116,11 @@
     - lab
     - undercloud-bootstrap
   when: dnf_state.stat.exists
-  dnf:
-    name: "{{ item }}"
-    state: present
+  include_tasks: stream.yaml
   loop: "{{ dnf_modules_stream |default([]) }}"
+  loop_control:
+    loop_var: "module"
+    label: "{{ module }}"
 
 - name: add static routes for overclouds public endpoints
   tags:
