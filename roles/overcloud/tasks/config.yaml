@@ -33,6 +33,8 @@
     state: directory
 
 - name: update the ctlplane-subnet dns server
+  when:
+    - deploy_undercloud|bool
   tags:
     - lab
     - baremetal

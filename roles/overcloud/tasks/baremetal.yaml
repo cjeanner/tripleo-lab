@@ -18,18 +18,22 @@
     path: /home/stack/baremetal.json
 
 - name: Fail if baremetal.json doesn't exist
-  when: not baremetal_exists.stat.exists
+  when:
+    - not baremetal_exists.stat.exists
   fail:
     msg: |
       Playbook didn't generate baremetal.json.
       This might be due to the lack of parameter.
       Please re-run, ensuring -t domains is passed!
+
 - name: check overcloud node import status
   tags:
     - lab
     - baremetal
     - overcloud
-  when: vms|length > 0
+  when:
+    - deploy_undercloud|bool
+    - vms|length > 1
   shell: |
     source ~/stackrc
     openstack baremetal node list -f value -c UUID
@@ -40,7 +44,9 @@
     - lab
     - baremetal
     - overcloud
-  when: vms|length > 1
+  when:
+    - deploy_undercloud|bool
+    - vms|length > 1
   debug:
     msg: "Got {{ known_bm.stdout_lines|length }} instance(s) (should have {{ vms|length -1 }})"
 
@@ -51,12 +57,13 @@
     - overcloud
   when:
     - vms|length > 1
-    - known_bm.stdout_lines|length != (vms|length - 1)
+    - known_bm.stdout_lines|default([])|length != (vms|length - 1)
   block:
     - name: Import nodes in Ironic and provide them
       import_role:
         name: tripleo.operator.tripleo_overcloud_node_import
       vars:
+        tripleo_overcloud_node_import_generate_scripts_only: "{{ not deploy_undercloud | bool }}"
         tripleo_overcloud_node_import_environment_file: ~/baremetal.json
         tripleo_overcloud_node_import_provide: true
 
@@ -66,6 +73,6 @@
     - baremetal
     - overcloud
   when:
-    - metalsmith | default(false)
+    - metalsmith | default(true)
     - vms|length > 1
   import_tasks: metalsmith.yaml

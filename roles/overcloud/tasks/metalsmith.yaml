@@ -6,16 +6,19 @@
   loop: "{{ overclouds_range }}"
 
 - name: Fetch known nodes
+  when:
+    - deploy_undercloud|bool
   register: metalsmith_known_nodes
   command: |
     metalsmith --os-cloud undercloud -f value -c UUID list
 
 - name: Provision nodes
   when:
-    - metalsmith_known_nodes.stdout_lines|length != (vms|length - 1)
+    - metalsmith_known_nodes.stdout_lines|default([])|length != (vms|length - 1)
   include_role:
     name: tripleo.operator.tripleo_overcloud_node_provision
   vars:
+    tripleo_overcloud_node_provision_generate_scripts_only: "{{ not deploy_undercloud | bool }}"
     tripleo_overcloud_node_provision_output_file: "overcloud-baremetal-deployed-{{ item }}.yaml"
     tripleo_overcloud_node_provision_stack: "overcloud-{{ item }}"
     tripleo_overcloud_node_provision_deployment_file: "~/metalsmith-{{ item }}.yaml"

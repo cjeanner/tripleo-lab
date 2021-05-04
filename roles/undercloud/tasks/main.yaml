@@ -86,7 +86,6 @@
     - undercloud
   when:
     - not standalone|bool
-    - deploy_undercloud|bool
   import_role:
     name: overcloud
 

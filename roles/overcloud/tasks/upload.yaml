@@ -5,6 +5,7 @@
     - overcloud
     - overcloud-images
   when:
+    - deploy_undercloud|bool
     - containerized_undercloud|bool
     - new_oc_image|bool
   import_role:
@@ -20,6 +21,7 @@
     - overcloud
     - overcloud-images
   when:
+    - deploy_undercloud|bool
     - not containerized_undercloud|bool
     - new_oc_image|bool
   import_role:
