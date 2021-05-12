@@ -1,5 +1,14 @@
 {% set base_ip = 1+ item|int %}
 parameter_defaults:
+    VipSubnetMap:
+        ctlplane: ctlplane-subnet
+        InternalApi: internal_api_cloud_{{ item }}_subnet
+        Storage: storage_cloud_{{ item }}_subnet
+        StorageMgmt: storage_mgmt_cloud_{{ item }}_subnet
+        Tenant: tenant_cloud_{{ item }}_subnet
+        External: external_cloud_{{ item }}_subnet
+        redis: internal_api_cloud_{{ item }}_subnet
+        ovn_dbs: internal_api_cloud_{{ item }}_subnet
     ValidateControllersIcmp: false
     ControlPlaneDefaultRoute: 192.168.24.1
     ControlPlaneSubnetCidr: '24'
