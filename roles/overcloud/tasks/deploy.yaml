@@ -6,11 +6,6 @@
     - overcloud
   set_fact:
     oc_env_files: |-
-      {% if metalsmith | default(false) | bool %}
-      /usr/share/openstack-tripleo-heat-templates/environments/deployed-server-environment.yaml
-      /home/stack/overcloud-baremetal-deployed-{{ item }}.yaml
-      {% endif -%}
-      /usr/share/openstack-tripleo-heat-templates/environments/network-isolation.yaml
       /usr/share/openstack-tripleo-heat-templates/environments/network-environment.yaml
       /usr/share/openstack-tripleo-heat-templates/environments/disable-telemetry.yaml
       /usr/share/openstack-tripleo-heat-templates/environments/low-memory-usage.yaml
@@ -38,6 +33,11 @@
       /home/stack/containers-prepare-parameter.yaml
       /home/stack/generated-container-prepare.yaml
       /home/stack/oc{{ item }}-domain.yaml
+      {% if metalsmith | default(true) | bool %}
+      /home/stack/overcloud-baremetal-deployed-{{ item }}.yaml
+      {% endif -%}
+      /home/stack/overcloud-networks-provisioned-{{ item }}.yaml
+      /home/stack/overcloud-vips-provisioned-{{ item }}.yaml
       {% for env in additional_envs -%}
       {{ env }}
       {% endfor -%}

@@ -43,7 +43,7 @@ overcloud_images:
   - file: overcloud-full.tar
     content: overcloud-full.qcow2
 overclouds: 1
-metalsmith: false
+metalsmith: true
 nameservers:
   - 1.1.1.1
   - 8.8.8.8

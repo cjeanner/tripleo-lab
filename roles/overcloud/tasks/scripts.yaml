@@ -61,6 +61,16 @@
     src: oc-network-data.yaml.j2
   loop: "{{ overclouds_range }}"
 
+- name: push per-overcloud network data
+  tags:
+    - lab
+    - overcloud
+    - baremetal
+  template:
+    dest: "/home/stack/vip-data-{{ item }}.yaml"
+    src: vip-data.yaml.j2
+  loop: "{{ overclouds_range }}"
+
 - name: push per-overcloud network env
   tags:
     - lab

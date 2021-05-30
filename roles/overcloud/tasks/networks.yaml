@@ -1,0 +1,16 @@
+---
+- name: Provision Networks
+  shell: |
+    source ~/stackrc
+    openstack overcloud network provision \
+        /home/stack/oc{{ item }}-network-data.yaml -y \
+        --output /home/stack/overcloud-networks-provisioned-{{ item }}.yaml
+  loop: "{{ overclouds_range }}"
+- name: Provision Vips
+  shell: |
+    source ~/stackrc
+    openstack overcloud network vip provision \
+        /home/stack/vip-data-{{ item }}.yaml \
+        --stack overcloud-{{ item }} -y \
+        --output /home/stack/overcloud-vips-provisioned-{{ item }}.yaml
+  loop: "{{ overclouds_range }}"
