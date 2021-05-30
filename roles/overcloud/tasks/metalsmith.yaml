@@ -22,4 +22,5 @@
     tripleo_overcloud_node_provision_output_file: "overcloud-baremetal-deployed-{{ item }}.yaml"
     tripleo_overcloud_node_provision_stack: "overcloud-{{ item }}"
     tripleo_overcloud_node_provision_deployment_file: "~/metalsmith-{{ item }}.yaml"
+    tripleo_overcloud_node_provision_network_ports: true
   loop: "{{ overclouds_range }}"

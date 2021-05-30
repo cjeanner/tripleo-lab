@@ -4,6 +4,7 @@
 - import_tasks: scripts.yaml
 - import_tasks: manage-oc-images.yaml
 - import_tasks: upload.yaml
+- import_tasks: networks.yaml
 - import_tasks: baremetal.yaml
 
 - name: Deploy all overclouds

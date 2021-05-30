@@ -5,7 +5,21 @@
 {% for ctl in (vms|map(attribute='name')|select("match", 'controller.+')|list) %}
     - hostname: oc{{ item }}-{{ ctl }}
       name: oc{{item}}-{{ ctl }}
-{% endfor -%}
+{% endfor %}
+  defaults:
+    networks:
+      - network: ctlplane
+        vif: true
+      - network: external_cloud_{{ item }}
+        subnet: external_cloud_{{ item }}_subnet
+      - network: internal_api_cloud_{{ item }}
+        subnet: internal_api_cloud_{{ item }}_subnet
+      - network: storage_cloud_{{ item }}
+        subnet: storage_cloud_{{ item }}_subnet
+      - network: storage_mgmt_cloud_{{ item }}
+        subnet: storage_mgmt_cloud_{{ item }}_subnet
+      - network: tenant_cloud_{{ item }}
+        subnet: tenant_cloud_{{ item }}_subnet
 
 {% if (vms|map(attribute='name')|select("match", 'compute.+')|list|length)|int > 0 %}
 - name: Compute
@@ -14,7 +28,17 @@
 {% for compute in (vms|map(attribute='name')|select("match", 'compute.+')|list) %}
     - hostname: oc{{ item }}-{{ compute }}
       name: oc{{item}}-{{ compute }}
-{% endfor -%}
+{% endfor %}
+  defaults:
+    networks:
+      - network: ctlplane
+        vif: true
+      - network: internal_api_cloud_{{ item }}
+        subnet: internal_api_cloud_{{ item }}_subnet
+      - network: storage_cloud_{{ item }}
+        subnet: storage_cloud_{{ item }}_subnet
+      - network: tenant_cloud_{{ item }}
+        subnet: tenant_cloud_{{ item }}_subnet
 {% endif -%}
 
 {% if (vms|map(attribute='name')|select("match", 'ceph.+')|list|length)|int > 0 %}
@@ -24,5 +48,13 @@
 {% for ceph in (vms|map(attribute='name')|select("match", 'ceph.+')|list) %}
     - hostname: oc{{ item }}-{{ ceph }}
       name: oc{{item}}-{{ ceph }}
-{% endfor -%}
+{% endfor %}
+  defaults:
+    networks:
+      - network: ctlplane
+        vif: true
+      - network: storage_cloud_{{ item }}
+        subnet: storage_cloud_{{ item }}_subnet
+      - network: storage_mgmt_cloud_{{ item }}
+        subnet: storage_mgmt_cloud_{{ item }}_subnet
 {% endif -%}
