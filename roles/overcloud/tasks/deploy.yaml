@@ -36,8 +36,12 @@
       {% if metalsmith | default(true) | bool %}
       /home/stack/overcloud-baremetal-deployed-{{ item }}.yaml
       {% endif -%}
+      {% if network_data_v2 | default(true) | bool %}
       /home/stack/overcloud-networks-provisioned-{{ item }}.yaml
       /home/stack/overcloud-vips-provisioned-{{ item }}.yaml
+      {% else %}
+      /usr/share/openstack-tripleo-heat-templates/environments/network-isolation.yaml
+      {% endif -%}
       {% for env in additional_envs -%}
       {{ env }}
       {% endfor -%}

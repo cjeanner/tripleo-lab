@@ -44,6 +44,8 @@ overcloud_images:
     content: overcloud-full.qcow2
 overclouds: 1
 metalsmith: true
+network_data_v2: true
+network_config_before_stack: false
 nameservers:
   - 1.1.1.1
   - 8.8.8.8

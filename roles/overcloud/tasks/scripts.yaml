@@ -51,6 +51,29 @@
     src: scale.yaml.j2
   loop: "{{ overclouds_range }}"
 
+- name: generate files for network-data-v2
+  block:
+  - name: push per-overcloud network data
+    tags:
+      - lab
+      - overcloud
+      - baremetal
+    template:
+      dest: "/home/stack/oc{{ item }}-network-data.yaml"
+      src: oc-network-data-v2.yaml.j2
+    loop: "{{ overclouds_range }}"
+
+  - name: generate vip data
+    tags:
+      - lab
+      - overcloud
+      - baremetal
+    template:
+      dest: "/home/stack/vip-data-{{ item }}.yaml"
+      src: vip-data.yaml.j2
+    loop: "{{ overclouds_range }}"
+  when: network_data_v2 | bool
+
 - name: push per-overcloud network data
   tags:
     - lab
@@ -60,16 +83,7 @@
     dest: "/home/stack/oc{{ item }}-network-data.yaml"
     src: oc-network-data.yaml.j2
   loop: "{{ overclouds_range }}"
-
-- name: push per-overcloud network data
-  tags:
-    - lab
-    - overcloud
-    - baremetal
-  template:
-    dest: "/home/stack/vip-data-{{ item }}.yaml"
-    src: vip-data.yaml.j2
-  loop: "{{ overclouds_range }}"
+  when: not (network_data_v2 | bool)
 
 - name: push per-overcloud network env
   tags:
