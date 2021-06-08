@@ -23,4 +23,5 @@
     tripleo_overcloud_node_provision_stack: "overcloud-{{ item }}"
     tripleo_overcloud_node_provision_deployment_file: "~/metalsmith-{{ item }}.yaml"
     tripleo_overcloud_node_provision_network_ports: true
+    tripleo_overcloud_node_provision_network_config: "{{ network_config_before_stack }}"
   loop: "{{ overclouds_range }}"

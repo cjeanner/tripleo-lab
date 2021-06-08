@@ -1,0 +1,58 @@
+{% set base_ip = 1 + item|int %}
+- name: Storage
+  vip: true
+  name_lower: storage_cloud_{{ item }}
+  service_net_map_replace: storage
+  subnets:
+    storage_cloud_{{ item }}_subnet:
+      ip_subnet: '172.16.{{ base_ip }}1.0/24'
+      allocation_pools: [{'start': '172.16.{{ base_ip }}1.4', 'end': '172.16.{{ base_ip }}1.250'}]
+      vlan: {{ base_ip }}1
+- name: StorageMgmt
+  vip: true
+  name_lower: storage_mgmt_cloud_{{ item }}
+  service_net_map_replace: storage_mgmt
+  subnets:
+    storage_mgmt_cloud_{{ item }}_subnet:
+      ip_subnet: '172.16.{{ base_ip }}2.0/24'
+      allocation_pools: [{'start': '172.16.{{ base_ip }}2.4', 'end': '172.16.{{ base_ip }}2.250'}]
+      vlan: {{ base_ip }}2
+- name: InternalApi
+  vip: true
+  name_lower: internal_api_cloud_{{ item }}
+  service_net_map_replace: internal_api
+  subnets:
+    internal_api_cloud_{{ item }}_subnet:
+      ip_subnet: '172.16.{{ base_ip }}3.0/24'
+      allocation_pools: [{'start': '172.16.{{ base_ip }}3.4', 'end': '172.16.{{ base_ip }}3.250'}]
+      vlan: {{ base_ip }}3
+- name: Tenant
+  vip: false  # Tenant network does not use VIPs
+  name_lower: tenant_cloud_{{ item }}
+  service_net_map_replace: tenant
+  subnets:
+    tenant_cloud_{{ item }}_subnet:
+      ip_subnet: '172.16.{{ base_ip }}4.0/24'
+      allocation_pools: [{'start': '172.16.{{ base_ip }}4.4', 'end': '172.16.{{ base_ip }}4.250'}]
+      vlan: {{ base_ip }}4
+- name: External
+  vip: true
+  name_lower: external_cloud_{{ item }}
+  service_net_map_replace: external
+  subnets:
+    external_cloud_{{ item }}_subnet:
+      ip_subnet: '192.168.{{ item + 100 }}.0/24'
+      allocation_pools: [{'start': '192.168.{{ item + 100 }}.15', 'end': '192.168.{{ item + 100 }}.100'}]
+      gateway_ip: '192.168.{{ item + 100 }}.1'
+      vlan: {{ item + 100 }}
+- name: Management
+  # Management network is enabled by default for backwards-compatibility, but
+  # is not included in any roles by default. Add to role definitions to use.
+  vip: false  # Management network does not use VIPs
+  name_lower: management_cloud_{{ item }}
+  service_net_map_replace: management
+  subnets:
+    management_cloud_{{ item }}_subnet:
+      ip_subnet: '10.0.2{{ base_ip }}.0/24'
+      allocation_pools: [{'start': '10.0.2{{ base_ip }}.4', 'end': '10.0.2{{ base_ip }}.250'}]
+      vlan: {{ base_ip }}6

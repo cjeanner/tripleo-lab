@@ -22,7 +22,7 @@
     - custom-packages
   local_action:
     module: command
-    _raw_params: "rsync -a --delete {{ item.base  }}/{{ item.name }} stack@{{vm_prefix }}-undercloud:{{ item.dest | default(synchronize_default_dest) }}"
+    _raw_params: "rsync -au --delete {{ item.base  }}/{{ item.name }} stack@{{vm_prefix }}-undercloud:{{ item.dest | default(synchronize_default_dest) }}"
   loop: "{{ synchronize }}"
   loop_control:
     label: "{{ item.name }}"
