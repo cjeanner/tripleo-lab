@@ -7,7 +7,6 @@
   set_fact:
     oc_env_files: |-
       /usr/share/openstack-tripleo-heat-templates/environments/network-environment.yaml
-      /usr/share/openstack-tripleo-heat-templates/environments/disable-telemetry.yaml
       /usr/share/openstack-tripleo-heat-templates/environments/low-memory-usage.yaml
       /usr/share/openstack-tripleo-heat-templates/environments/enable-swap.yaml
       {% if vms|map(attribute='name')|select("match", '^ceph')|list|length > 0 -%}
