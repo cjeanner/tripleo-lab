@@ -18,7 +18,9 @@
     state: present
 
 - name: install requested packages for ceph
-  when: vms|map(attribute='name')|select("match", '^ceph')|list|length > 0
+  when:
+    - vms|map(attribute='name')|select("match", '^ceph')|list|length > 0
+    - tripleo_repos_branch in ['train', 'ussuri', 'victoria']
   become: true
   become_user: root
   package:
