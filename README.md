@@ -20,7 +20,7 @@ The amount of used memory for that env is about 52G, and about 20 CPU cores.
 
 ## Prerequisite
 ### Working ssh-agent on ansible-host
-A working ssh-agent must be runnin on the host launching ansible playbook. It
+A working ssh-agent must be running on the host launching ansible playbook. It
 is needed in order to hot-load the private ssh key for the undercloud access.
 
 In case you're running the playbook for a "middle machine", you can just forward
