@@ -65,6 +65,7 @@ tripleo_repos_repos:
   - current-tripleo-dev
 tripleoclient_pkgname: python-tripleoclient
 tripleo_generate_scripts: true
+tripleo_overcloud_deploy_skip_nodes_and_networks: true
 undercloud_config: []
 undercloud_dns: 192.168.122.1
 undercloud_hostname: undercloud.{{ domain }}
