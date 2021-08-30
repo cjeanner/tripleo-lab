@@ -79,12 +79,18 @@
         - name: Install direct dependencies
           package:
             name:
+              - cargo
               - libvirt-devel
               - gcc
+              - openssl-devel
               - platform-python-devel
+              - rust
         - name: Install vbmc
           pip:
-            name: virtualbmc
+            name:
+              - setuptools-rust
+              - wheel
+              - virtualbmc
 
     - name: install virtualbmc from packages
       when:
