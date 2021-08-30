@@ -23,7 +23,7 @@
     network_config:
       template: templates/single_nic_vlans/single_nic_vlans.j2
       default_route_network:
-        - external
+        - external_cloud_{{ item }}
 
 {% if (vms|map(attribute='name')|select("match", 'compute.+')|list|length)|int > 0 %}
 - name: Compute
