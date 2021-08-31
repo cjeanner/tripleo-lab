@@ -24,14 +24,15 @@ deploy_overcloud: false
 deploy_undercloud: true
 disable_selinux: false
 dlrn_baseurl: >-
-    {%- if ansible_distribution == "RedHat" and ansible_distribution_major_version|int == 8 -%}
-    https://trunk.rdoproject.org/rhel8-master
+    {%- if ansible_distribution == "RedHat" -%}
+    https://trunk.rdoproject.org/rhel{{ ansible_distribution_major_version }}-master
     {%- else %}https://trunk.rdoproject.org/centos{{ os_version }}/{% endif -%}
 domain: mydomain.tld
 freeipa_admin_password: change-me-password
 freeipa_directory_password: ChangeMePassword
-guestfs_appliance_version: "1.40.1"
-guestfs_appliance_checksum: "sha1:525522aaf4fcc4f5212cc2a9e98ee873d125536e"
+guestfs_appliance_version: "1.46.0"
+guestfs_appliance_checksum: "sha1:b614c0dc09accca057f79ec35843651ad64035f8"
+guestfs_appliance_base_uri: 'http://download.libguestfs.org/binaries/appliance'
 growfs_part: /dev/sda1
 local_registry: 'true'
 nova_tpm: false
@@ -68,7 +69,9 @@ tripleo_repos_repos:
 tripleoclient_pkgname: python-tripleoclient
 tripleo_generate_scripts: true
 tripleo_overcloud_image_upload_http_boot: /var/lib/ironic/httpboot
+uc_libguestfs_pkg: "libguestfs-tools"
 undercloud_config: []
+undercloud_custom_repositories: []
 undercloud_dns: 192.168.122.1
 undercloud_hostname: undercloud.{{ domain }}
 undercloud_low_memory: false

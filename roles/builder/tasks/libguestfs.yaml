@@ -2,8 +2,9 @@
 - name: fetch libguestfs appliance
   tags:
     - builder-bootstrap
+    - guestfs-appliance
   get_url:
-    url: "http://download.libguestfs.org/binaries/appliance/appliance-{{ guestfs_appliance_version }}.tar.xz"
+    url: "{{ guestfs_appliance_base_uri }}/appliance-{{ guestfs_appliance_version }}.tar.xz"
     dest: "{{ basedir }}/images/appliance-{{ guestfs_appliance_version }}.tar.xz"
     checksum: "{{ guestfs_appliance_checksum }}"
     owner: "{{ virt_user }}"
@@ -12,6 +13,7 @@
 - name: uncompress libguestfs if needed
   tags:
     - builder-bootstrap
+    - guestfs-appliance
   when: appliance_archive is changed
   unarchive:
     src: "{{ appliance_archive.dest }}"
@@ -21,6 +23,7 @@
 - name: inject appliance in env
   tags:
     - builder-bootstrap
+    - guestfs-appliance
   lineinfile:
     path: /etc/environment
     line: "export LIBGUESTFS_PATH=/usr/local/src/appliance"

@@ -1,3 +1,6 @@
+- name: "Link for CentOS{{os_version}} OC images"
+  debug:
+    msg: "https://images.rdoproject.org/centos{{ os_version }}/{{tripleo_repos_branch}}/rdo_trunk/{{ oc_img_line | default('current-tripleo') }}/"
 - name: "fetch images for centos{{ os_version }}"
   environment:
     http_proxy: "{{ proxy_host | default('') }}"
@@ -5,7 +8,7 @@
   get_url:
     dest: "/home/stack/overcloud_imgs/{{item.file}}"
     mode: 0644
-    url: "https://images.rdoproject.org/centos{{ os_version }}/{{tripleo_repos_branch}}/rdo_trunk/current-tripleo/{{item.file}}"
+    url: "https://images.rdoproject.org/centos{{ os_version }}/{{tripleo_repos_branch}}/rdo_trunk/{{ oc_img_line | default('current-tripleo') }}/{{item.file}}"
   retries: 10
   delay: 5
   loop: "{{ overcloud_images }}"

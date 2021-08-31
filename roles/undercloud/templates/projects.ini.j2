@@ -6,7 +6,13 @@ distro=rpm-master
 source=master
 {% if ansible_distribution | lower == 'centos' %}
 {% if os_version == 8 %}
-target=centos8
+{% if centos_variant == "stream" %}
+target=centos{{os_version}}-stream
+{% else %}
+target=centos{{os_version}}
+{% endif %}
+{% elif os_version >= 9 %}
+target=centos-stream-{{os_version}}
 {% else %}
 target=centos
 {% endif -%}

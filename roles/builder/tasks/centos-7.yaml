@@ -4,3 +4,7 @@
     url: "http://cloud.centos.org/centos/7/images/CentOS-7-x86_64-GenericCloud.qcow2"
     dest: "{{ basedir }}/images/centos-7.qcow2"
     mode: 0664
+
+- name: Set base_image_name fact
+  set_fact:
+    base_image_name: "centos-7.qcow2"

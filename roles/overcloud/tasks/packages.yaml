@@ -5,7 +5,7 @@
   become: true
   become_user: root
   package:
-    name: libguestfs-tools
+    name: "{{ uc_libguestfs_pkg }}"
     state: present
 
 # iscsi is a dependency of libguestfs-tools

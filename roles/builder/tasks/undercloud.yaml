@@ -13,6 +13,7 @@
 
     - name: undercloud image settings
       shell: |
+        export LIBGUESTFS_BACKEND=direct
         virt-sysprep -a "{{basedir}}/workload/{{vm_prefix}}-{{ item.name }}.qcow2" \
           --firstboot-command "growpart /dev/sda {{ root_device }}" \
           --firstboot-command "xfs_growfs {{ growfs_part }}" \

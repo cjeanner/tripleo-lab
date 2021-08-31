@@ -109,7 +109,8 @@
     gpgcheck: "{{ item.gpg |default(omit) }}"
     priority: "{{ item.priority |default(omit) }}"
     gpgkey: "{{ item.gpgkey |default(omit) }}"
-  loop: "{{ custom_repositories }}"
+    enabled: true
+  loop: "{{ undercloud_custom_repositories }}"
 
 - name: Set up custom dnf module streams
   tags:

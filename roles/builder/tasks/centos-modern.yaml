@@ -14,13 +14,17 @@
       centos-{{ os_version }}.qcow2
       {%- endif -%}
 
-- name: Get latest centos-8 image name
+- name: "Get latest centos-{{ os_version }} image name"
   shell: >-
-    curl -s "{{ baseURI |trim}}" | awk '/GenericCloud/ { print $8 }' | cut -d '"' -f 2 | tail -1
+    curl -s "{{ baseURI |trim}}" | awk '/GenericCloud.*\.qcow2</ { print $8 }' | cut -d '"' -f 2 | tail -1
   register: latest_centos8
 
-- name: Fetch latest centos-8 image
+- name: "Fetch latest centos-{{ os_version }} image"
   get_url:
     url: "{{ baseURI |trim}}{{ latest_centos8.stdout |trim}}"
     dest: "{{ basedir }}/images/{{ destImg |trim}}"
     mode: 0664
+
+- name: Set base_image_name fact
+  set_fact:
+    base_image_name: "{{ destImg |trim}}"
