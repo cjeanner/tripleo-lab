@@ -64,3 +64,9 @@
   fail:
     msg: |
       ci_tools is deprecated. Please remove this parameter
+
+- name: Is rhel_image_name defined
+  when: rhel_image_name is defined
+  fail:
+    msg: |
+      rhel_image_name is deprecated. Please use base_image_name instead!

@@ -26,6 +26,7 @@
 
     - name: nat-vm image settings
       shell: |
+        export LIBGUESTFS_BACKEND=direct
         virt-sysprep -a "{{basedir}}/workload/{{vm_prefix}}-nat-vm.qcow2" \
           --firstboot-command "systemctl enable --now acpid" \
           --firstboot-command "growpart /dev/sda 1" \

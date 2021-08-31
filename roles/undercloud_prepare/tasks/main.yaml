@@ -42,7 +42,9 @@
   tags:
     - lab
     - undercloud-bootstrap
-  when: base_image == 'centos'
+  when:
+    - base_image == 'centos'
+    - os_version <= 8
   import_tasks: epel.yaml
 
 - import_tasks: packages.yaml
