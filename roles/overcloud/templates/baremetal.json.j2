@@ -15,7 +15,7 @@
 {% if node.0.name is match('^ceph') %}
       "root_device": {"size": "{{node.0.disksize | default('100')}}"},
 {% endif %}
-{% if tripleo_repos_branch in ['rocky'] %}
+{% if tripleo_repos_branch in ['queens', 'rocky'] %}
       "mac": ["{{ oc_mac_addresses.results|selectattr('changed', 'equalto', true)|selectattr('cmd', 'contains', vm_name)|map(attribute='stdout')|first }}"],
 {% else %}
       "ports": [
