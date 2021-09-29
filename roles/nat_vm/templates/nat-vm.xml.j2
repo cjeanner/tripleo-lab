@@ -1,8 +1,8 @@
 <domain type='kvm'>
   <name>{{vm_prefix}}-nat-vm</name>
   {% if deploy_ipa | bool %}
-  <memory unit='MB'>{{ nat_vm_memory |default('8192') }}</memory>
-  <vcpu placement='static'>{{ nat_vm_cpu |default('4') }}</vcpu>
+  <memory unit='MB'>{{ nat_vm_memory |default('16384') }}</memory>
+  <vcpu placement='static'>{{ nat_vm_cpu |default('6') }}</vcpu>
   {% else %}
   <memory unit='MB'>{{ nat_vm_memory |default('1024') }}</memory>
   <vcpu placement='static'>{{ nat_vm_cpu |default('1') }}</vcpu>
