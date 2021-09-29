@@ -41,7 +41,7 @@
     state: present
   when:
     - deploy_ipa|bool
-    - ansible_facts['distribution_version'] is version('8.0', 'lt', strict=True)
+    - ansible_facts['distribution_major_version']|int < 8
 
 - name: ensure that DHCP doesn't overwite DNS settings (CentOS/RHEL >= 8)
   tags:
@@ -54,7 +54,7 @@
     line: 'dns=none'
   when:
     - deploy_ipa|bool
-    - ansible_facts['distribution_version'] is version('8.0', 'gt', strict=False)
+    - ansible_facts['distribution_major_version']|int >= 8
 
 - name: update /etc/resolv.conf
   tags:
