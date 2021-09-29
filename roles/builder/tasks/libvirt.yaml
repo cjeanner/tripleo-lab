@@ -49,7 +49,7 @@
       virt_net:
         command: define
         name: default
-        xml: "{{ default_net_xml['content'] }}"
+        xml: "{{ default_net_xml['content']|b64decode }}"
 
     - name: run default network
       virt_net:
