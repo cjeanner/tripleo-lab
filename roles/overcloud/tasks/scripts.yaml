@@ -165,4 +165,5 @@
     - overcloud
   template:
     src: nova-tpm.yaml.j2
-    dest: "/home/stack/overcloud-{{ item }}-yml/container-cli.yaml"
+    dest: "/home/stack/overcloud-{{ item }}-yml/nova-tpm.yaml"
+  loop: "{{ overclouds_range }}"
