@@ -33,6 +33,7 @@ guestfs_appliance_version: "1.40.1"
 guestfs_appliance_checksum: "sha1:525522aaf4fcc4f5212cc2a9e98ee873d125536e"
 growfs_part: /dev/sda1
 local_registry: 'true'
+nova_tpm: false
 oc_image_rpms: []
 os_version: 8
 overcloud_container_cli: podman

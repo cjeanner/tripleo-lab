@@ -158,3 +158,11 @@
   template:
     dest: "/home/stack/ipa.yaml"
     src: ipa.yaml.j2
+
+- name: Push nova vTPM setting
+  tags:
+    - lab
+    - overcloud
+  template:
+    src: nova-tpm.yaml.j2
+    dest: "/home/stack/overcloud-{{ item }}-yml/container-cli.yaml"

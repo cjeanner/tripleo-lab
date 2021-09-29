@@ -51,6 +51,12 @@ if [ -z "`openstack flavor list | grep m1.tiny`" ];then
   openstack flavor create --public m1.tiny --id auto --ram 512 --disk 1 --vcpus 1
 fi
 
+{% if nova_tpm | default(false) | bool -%}
+openstack flavor set m1.tiny \
+    --property hw:tpm_version=2.0 \
+    --property hw:tpm_model=tpm-crb
+{% endif -%}
+
 COUNTVAR=$RANDOM
 openstack server create --image $IMGNAME --flavor m1.tiny test-$COUNTVAR --nic net-id=$SID --wait
 
