@@ -12,6 +12,7 @@ basedir: "/home/{{virt_user}}"
 base_image: centos
 centos_variant: "stream"
 tripleo_repos_stream: true
+cirros_version: 0.5.2
 container_prepare_overrides: {}
 containerized_undercloud: true
 custom_ca: ''

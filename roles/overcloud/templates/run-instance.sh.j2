@@ -37,9 +37,9 @@ openstack security group rule create $SECID --protocol tcp --dst-port 22 --remot
 openstack security group rule create $SECID --protocol icmp --dst-port -1 --remote-ip 0.0.0.0/0 2>/dev/null || true
 #fi
 
-CIRROS="cirros-0.5.2-x86_64-disk.img"
+CIRROS="cirros-{{ cirros_version }}-x86_64-disk.img"
 
-if [ ! -f ${CIRROS} ];then curl -O http://download.cirros-cloud.net/0.5.2/${CIRROS}; fi
+if [ ! -f ${CIRROS} ];then curl -O http://download.cirros-cloud.net/{{ cirros_version }}/${CIRROS}; fi
 
 IMGNAME=$(basename $CIRROS \-x86_64-disk.img)
 if [ -z "`openstack image list | grep ${IMGNAME}`" ];then
