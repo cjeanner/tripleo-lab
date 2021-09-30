@@ -1,0 +1,13 @@
+#!/bin/bash
+
+source ~/stackrc
+openstack tripleo launch heat --restore-db --heat-type pod --skip-heat-pull \
+  --heat-dir overcloud-deploy/overcloud-{{ item }}/heat-launcher/
+unset OS_PROJECT_NAME
+unset OS_PROJECT_DOMAIN_NAME
+unset OS_USER_DOMAIN_NAME
+IP=`cat /etc/hosts | grep "undercloud.{{ domain }} undercloud$" | awk '{print $1}'`
+export OS_AUTH_TYPE=none
+export OS_ENDPOINT=http://$IP:8006/v1/admin
+echo In order to kill heat, run openstack tripleo launch heat --heat-type pod \
+  --heat-dir overcloud-deploy/overcloud-{{ item }}/heat-launcher/ --kill

@@ -9,7 +9,7 @@
   template:
     dest: /tmp/overcloud-firstboot
     src: overcloud-firstboot.j2
-    mode: 0755
+    mode: 0555
 
 - name: create per overcloud yml directory
   tags:
@@ -146,7 +146,7 @@
   template:
     dest: "/home/stack/config-download-oc{{ item }}.sh"
     src: overcloud-configdl.sh.j2
-    mode: 0750
+    mode: 0550
   loop: "{{ overclouds_range }}"
 
 - name: Push IPA env things
@@ -166,4 +166,14 @@
   template:
     src: nova-tpm.yaml.j2
     dest: "/home/stack/overcloud-{{ item }}-yml/nova-tpm.yaml"
+  loop: "{{ overclouds_range }}"
+
+- name: Push ephemeral heat script
+  tags:
+    - lab
+    - overcloud
+  template:
+    src: ephemeral-heat.sh.j2
+    dest: "/home/stack/ephemeral-heat-oc-{{ item }}.sh"
+    mode: 0550
   loop: "{{ overclouds_range }}"
