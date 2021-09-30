@@ -35,6 +35,7 @@
 - name: update the ctlplane-subnet dns server
   when:
     - deploy_undercloud|bool
+    - not deploy_ipa|bool
   tags:
     - lab
     - baremetal
@@ -43,6 +44,19 @@
     source ~/stackrc
     openstack subnet show ctlplane-subnet -f json | jq '.dns_nameservers' | grep "{{ undercloud_dns }}" ||
     openstack subnet set ctlplane-subnet --dns-nameserver {{ undercloud_dns }}
+
+- name: update the ctlplane-subnet dns server
+  when:
+    - deploy_undercloud|bool
+    - deploy_ipa|bool
+  tags:
+    - lab
+    - baremetal
+    - overcloud
+  shell: |
+    source ~/stackrc
+    openstack subnet show ctlplane-subnet -f json | jq '.dns_nameservers' | grep "{{ hostvars['builder']['nat_vm_addr_value'] }}" ||
+    openstack subnet set ctlplane-subnet --dns-nameserver {{ hostvars['builder']['nat_vm_addr_value'] }}
 
 - name: Get generated role-data
   tags:
