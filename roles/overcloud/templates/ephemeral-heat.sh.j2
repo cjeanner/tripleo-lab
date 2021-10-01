@@ -1,6 +1,5 @@
 #!/bin/bash
 
-source ~/stackrc
 openstack tripleo launch heat --restore-db --heat-type pod --skip-heat-pull \
   --heat-dir overcloud-deploy/overcloud-{{ item }}/heat-launcher/
 unset OS_PROJECT_NAME
