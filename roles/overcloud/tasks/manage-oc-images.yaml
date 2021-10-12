@@ -44,6 +44,22 @@
       overcloud-full.qcow2
       {%- endif -%}
 
+- name: Inject root password in OC image
+  tags:
+    - lab
+    - overcloud
+    - overcloud-images
+  when:
+    - new_oc_image|bool
+  shell: |
+    LIBGUESTFS_BACKEND="direct" virt-sysprep -a /home/stack/overcloud_imgs/{{ oc_image_name }} \
+      --selinux-relabel --root-password "password:{{undercloud_password}}" \
+      --ssh-inject root:file:{{ basedir }}/.ssh/authorized_keys
+      &> "{{basedir}}/overcloud_imgs/overcloud-password.done"
+  args:
+    creates: "{{basedir}}/overcloud_imgs/overcloud-password.done"
+
+
 - name: Modify overcloud image
   tags:
     - lab
