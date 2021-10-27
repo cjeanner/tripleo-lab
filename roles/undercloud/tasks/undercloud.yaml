@@ -91,6 +91,25 @@
     option: undercloud_ntp_servers
     value: "{{ NtpServer | join(',') }}"
 
+- name: Set hieradata_override
+  ini_file:
+    backup: false
+    path: /home/stack/undercloud.conf
+    section: DEFAULT
+    option: hieradata_override
+    value: /home/stack/undercloud_hiera_override
+
+- name: Create undercloud_hiera_override
+  copy:
+    dest: /home/stack/undercloud_hiera_override
+    mode: 0444
+    owner: stack
+    group: stack
+    content: |
+      {% for override in undercloud_hiera_override|default([]) %}
+      {{ override }}
+      {% endfor %}
+
 - name: include TLS config if needed
   when: enable_tls|default(False)|bool
   import_tasks: tls.yaml

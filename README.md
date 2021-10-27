@@ -253,3 +253,11 @@ container_prepare_overrides:
 
 *oc_image_rpms*
   List of RPMs/packages you want to inject in the overcloud image.
+
+*undercloud_hiera_override*
+  List of hieradata override you want to pass for the UC deploy
+```YAML
+undercloud_hiera_override:
+  - 'ironic::drivers::ipmi::use_ipmitool_retries: true'
+  - 'ironic::drivers::ipmi::command_retry_timeout: 180'
+```
