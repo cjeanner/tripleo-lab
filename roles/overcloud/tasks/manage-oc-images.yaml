@@ -54,10 +54,9 @@
   shell: |
     LIBGUESTFS_BACKEND="direct" virt-sysprep -a /home/stack/overcloud_imgs/{{ oc_image_name }} \
       --selinux-relabel --root-password "password:{{undercloud_password}}" \
-      --ssh-inject root:file:{{ basedir }}/.ssh/authorized_keys
-      &> "{{basedir}}/overcloud_imgs/overcloud-password.done"
+      --ssh-inject "root:file:/home/stack/.ssh/authorized_keys" &> /home/stack/overcloud_imgs/overcloud-password.done
   args:
-    creates: "{{basedir}}/overcloud_imgs/overcloud-password.done"
+    creates: "/home/stack/overcloud_imgs/overcloud-password.done"
 
 
 - name: Modify overcloud image
@@ -88,7 +87,7 @@
       {% endif %}
       --network &> /home/stack/overcloud_imgs/overcloud-full.done
   args:
-    creates: /home/stack/overcloud_imgs/overcloud-full.done
+    creates: "/home/stack/overcloud_imgs/overcloud-full.done"
 
 - name: Update overcloud image
   tags:
