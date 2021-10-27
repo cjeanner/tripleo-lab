@@ -1,9 +1,9 @@
 ---
 parameter_defaults:
-  CloudName: overcloud{{ item }}.{{ domain }}
-  CloudNameInternal: overcloud{{ item }}.internalapicloud{{ item }}.{{ domain }}
-  CloudNameStorage: overcloud{{ item }}.storagecloud{{ item }}.{{ domain }}
-  CloudNameStorageManagement: overcloud{{ item }}.storagemgmtcloud{{ item }}.{{ domain }}
+  CloudNameExternalCloud{{item}}: overcloud{{ item }}.{{ domain }}
+  CloudNameInternalCloud{{item}}: overcloud{{ item }}.internalapicloud{{ item }}.{{ domain }}
+  CloudNameStorageCloud{{item}}: overcloud{{ item }}.storagecloud{{ item }}.{{ domain }}
+  CloudNameStorageManagementCloud{{item}}: overcloud{{ item }}.storagemgmtcloud{{ item }}.{{ domain }}
   CloudNameCtlplane: overcloud{{ item }}.ctlplane.{{ domain }}
   CloudDomain: {{ domain }}
   DnsSearchDomains: ["{{ domain }}"]

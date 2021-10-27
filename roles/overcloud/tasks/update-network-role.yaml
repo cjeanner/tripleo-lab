@@ -10,6 +10,23 @@
     remote_src: true
     src: /tmp/roledata.yaml
 
+- name: "Update network names for oc{{ item }}"
+  tags:
+    - lab
+    - overcloud
+  replace:
+    path: "/home/stack/oc{{ item }}-role-data.yaml"
+    regexp: "(\\s+){{ network }}:"
+    replace: "\\1{{ network }}Cloud{{ item }}:"
+  loop:
+    - Storage
+    - StorageMgmt
+    - InternalApi
+    - Tenant
+    - External
+  loop_control:
+    loop_var: network
+
 - name: "Update subnets for oc{{ item }}"
   tags:
     - lab

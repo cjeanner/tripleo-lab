@@ -1,14 +1,24 @@
+parameter_merge_strategies:
+    ServiceNetMap: merge
 {% set base_ip = 1+ item|int %}
 parameter_defaults:
     VipSubnetMap:
         ctlplane: ctlplane-subnet
-        InternalApi: internal_api_cloud_{{ item }}_subnet
-        Storage: storage_cloud_{{ item }}_subnet
-        StorageMgmt: storage_mgmt_cloud_{{ item }}_subnet
-        Tenant: tenant_cloud_{{ item }}_subnet
-        External: external_cloud_{{ item }}_subnet
+        InternalApiCloud{{item}}: internal_api_cloud_{{ item }}_subnet
+        StorageCloud{{item}}: storage_cloud_{{ item }}_subnet
+        StorageMgmtCloud{{item}}: storage_mgmt_cloud_{{ item }}_subnet
+        TenantCloud{{item}}: tenant_cloud_{{ item }}_subnet
+        ExternalCloud{{item}}: external_cloud_{{ item }}_subnet
         redis: internal_api_cloud_{{ item }}_subnet
         ovn_dbs: internal_api_cloud_{{ item }}_subnet
+    ServiceNetMap:
+        ComputeHostnameResolveNetwork: internal_api_cloud_{{ item }}
+        ControllerHostnameResolveNetwork: internal_api_cloud_{{ item }}
+        CephStorageHostnameResolveNetwork: storage_cloud_{{ item }}
+
+        ControllerMetricsQdrNetwork: internal_api_cloud_{{ item }}
+        ComputeMetricsQdrNetwork: internal_api_cloud_{{ item }}
+        CephStorageMetricsQdrNetwork: storage_cloud_{{ item }}
     ValidateControllersIcmp: false
     ControlPlaneDefaultRoute: 192.168.24.1
     ControlPlaneSubnetCidr: '24'
@@ -16,8 +26,15 @@ parameter_defaults:
     - 1.1.1.1
     - 208.67.222.222
     - 208.67.220.220
+    NeutronBridgeMappings: ''
+    NeutronEnableDVR: 'false'
+    NeutronExternalNetworkBridge: ''
+    NeutronNetworkType: geneve
+    NeutronNetworkVLANRanges: tenant:1000:2000
+    NeutronTunnelTypes: geneve
+{% if not network_data_v2|bool %}
     EC2MetadataIp: 192.168.24.1
-    ExternalAllocationPools:
+    ExternalCloud{{item}}AllocationPools:
     -   start: '10.10.0.151'
         end: '10.10.0.250'
     ExternalInterfaceDefaultRoute: 192.168.24.1
@@ -29,12 +46,6 @@ parameter_defaults:
         end: '172.16.{{ base_ip }}3.250'
     InternalApiNetCidr: '172.16.{{ base_ip }}3.0/24'
     InternalApiNetworkVlanID: {{ base_ip }}3
-    NeutronBridgeMappings: ''
-    NeutronEnableDVR: 'false'
-    NeutronExternalNetworkBridge: ''
-    NeutronNetworkType: geneve
-    NeutronNetworkVLANRanges: tenant:1000:2000
-    NeutronTunnelTypes: geneve
     StorageAllocationPools:
     -   start: '172.16.{{ base_ip }}1.4'
         end: '172.16.{{ base_ip }}1.250'
@@ -50,3 +61,4 @@ parameter_defaults:
         end: '172.16.{{ base_ip }}4.250'
     TenantNetCidr: '172.16.{{ base_ip }}4.0/24'
     TenantNetworkVlanID: {{ base_ip }}4
+{% endif -%}
