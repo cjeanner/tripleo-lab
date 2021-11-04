@@ -1,5 +1,6 @@
 ---
 parameter_defaults:
+  CephSpecFqdn: {{ deploy_ipa | bool }}
   CephPoolDefaultSize: {{ vms|map(attribute='name')|select("match", '^ceph.+')|list|length }}
   CephPoolDefaultPgNum: 32
   CephAnsibleDisksConfig:
