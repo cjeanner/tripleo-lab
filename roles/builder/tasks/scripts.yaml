@@ -3,6 +3,7 @@
     - config
     - scripts
     - builder-bootstrap
+    - lab
   block:
     - name: push helper scripts
       copy:
