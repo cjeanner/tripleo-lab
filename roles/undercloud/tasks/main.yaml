@@ -36,8 +36,8 @@
   loop: "{{repos | dict2items }}"
   vars:
     repos:
-      'delorean.repo': 'https://trunk.rdoproject.org/centos9-master/current-tripleo/'
-      'delorean-deps.repo': 'https://trunk.rdoproject.org/centos9-master/'
+      "delorean.repo": "https://trunk.rdoproject.org/centos9-master/{{ delorean_line | default('current-tripleo') }}/"
+      "delorean-deps.repo": "https://trunk.rdoproject.org/centos9-master/"
 
 - import_tasks: packages.yaml
   tags:

@@ -76,6 +76,7 @@
     name: pip
     state: latest
     virtualenv: "{{ build_dir }}/dlrn-venv"
+    virtualenv_command: "{{ ansible_python_interpreter }} -m venv"
     extra_args: '--upgrade'
 
 - name: Install rdopkg in virtualenv
