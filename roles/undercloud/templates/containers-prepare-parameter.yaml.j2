@@ -4,5 +4,5 @@
 {% else %}
 {% set registry_cred = {} %}
 {% endif %}
-{% set yml = {'parameter_defaults': {'ContainerImagePrepareDebug': true, 'ContainerImagePrepare': container_image, 'ContainerImageRegistryCredentials': registry_cred}} %}
+{% set yml = {'parameter_defaults': {'ContainerImagePrepareDebug': true, 'ContainerImagePrepare': container_image, 'ContainerImageRegistryCredentials': registry_cred, 'excludes': container_prepare_excludes, 'DockerInsecureRegistryAddress': container_prepare_insecure_registries }} %}
 {{ yml | to_nice_yaml }}
