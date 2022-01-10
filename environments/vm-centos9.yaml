@@ -1,6 +1,6 @@
 ---
 delorean_line: current
-oc_img_line: current-tripleo
+oc_img_line: tripleo-ci-testing
 growfs_part: '/'
 uc_libguestfs_pkg: "guestfs-tools"
 tripleoclient_pkgname: python3-tripleoclient
