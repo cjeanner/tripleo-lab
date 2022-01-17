@@ -73,14 +73,13 @@
     src: hieradata_undercloud_low_memory.yaml.j2
   when: undercloud_low_memory|bool
 
-- name: Disable SELinux if requested
-  when: disable_selinux|default(False)|bool
+- name: Toggle SELinux
   ini_file:
     backup: false
     path: /home/stack/undercloud.conf
     section: DEFAULT
     option: undercloud_enable_selinux
-    value: 'false'
+    value: "{{ enable_selinux | default(true) }}"
 
 - name: Set undercloud NTP servers if needed
   when: NtpServer is defined

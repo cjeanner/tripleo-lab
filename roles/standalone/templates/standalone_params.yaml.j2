@@ -1,7 +1,9 @@
 parameter_defaults:
   ContainerCli: {{ standalone_container_cli | default('podman') }}
   CloudDomain: {{ domain }}
-{% if disable_selinux | default(false) | bool %}
+{% if enable_selinux | default(true) | bool %}
+  SELinuxMode: enforcing
+{% else %}
   SELinuxMode: permissive
 {% endif %}
   CloudName: 192.168.24.2
