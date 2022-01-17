@@ -1,5 +1,5 @@
 ---
-delorean_line: current
+delorean_line: tripleo-ci-testing
 oc_img_line: tripleo-ci-testing
 growfs_part: '/'
 uc_libguestfs_pkg: "guestfs-tools"
