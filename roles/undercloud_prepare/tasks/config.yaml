@@ -74,14 +74,14 @@
     state: permissive
     policy: targeted
   when:
-    - disable_selinux|bool
+    - not enable_selinux|bool
 
 - name: Persist permissive
   tags:
     - lab
     - undercloud-bootstrap
   when:
-    - disable_selinux|bool
+    - not enable_selinux|bool
   copy:
     dest: /etc/selinux/config
     content: |

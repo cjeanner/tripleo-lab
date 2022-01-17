@@ -70,3 +70,9 @@
   fail:
     msg: |
       rhel_image_name is deprecated. Please use base_image_name instead!
+
+- name: Is disable_selinux defined
+  when: disable_selinux is defined
+  fail:
+    msg: |
+      disable_selinux is deprecated. Please use enable_selinux instead!

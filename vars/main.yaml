@@ -24,12 +24,12 @@ deploy_ipa: false
 deploy_standalone: true
 deploy_overcloud: false
 deploy_undercloud: true
-disable_selinux: false
 dlrn_baseurl: >-
     {%- if ansible_distribution == "RedHat" -%}
     https://trunk.rdoproject.org/rhel{{ ansible_distribution_major_version }}-master
     {%- else %}https://trunk.rdoproject.org/centos{{ os_version }}/{% endif -%}
 domain: mydomain.tld
+enable_selinux: true
 freeipa_admin_password: change-me-password
 freeipa_directory_password: ChangeMePassword
 guestfs_appliance_version: "1.46.0"

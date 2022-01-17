@@ -1,8 +1,8 @@
 ---
-{% if disable_selinux|bool %}
-{% set mode = 'permissive' %}
-{% else %}
+{% if enable_selinux|bool %}
 {% set mode = 'enforcing' %}
+{% else %}
+{% set mode = 'permissive' %}
 {% endif %}
 parameter_defaults:
   SELinuxMode: {{ mode }}
