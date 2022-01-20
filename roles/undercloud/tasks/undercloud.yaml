@@ -92,6 +92,7 @@
     value: "{{ NtpServer | join(',') }}"
 
 - name: Set hieradata_override
+  when: undercloud_hiera_override is defined
   ini_file:
     backup: false
     path: /home/stack/undercloud.conf
@@ -100,6 +101,7 @@
     value: /home/stack/undercloud_hiera_override
 
 - name: Create undercloud_hiera_override
+  when: undercloud_hiera_override is defined
   copy:
     dest: /home/stack/undercloud_hiera_override
     mode: 0444
