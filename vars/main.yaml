@@ -1,13 +1,13 @@
 ---
 additional_envs: []
 ansible_tripleo_image_serve_name: >-
-  {%- if tripleo_repos_branch == 'master' -%}
-  tripleo_image_serve
-  {%- else %}tripleo-image-serve {% endif -%}
+  {%- if tripleo_repos_branch == 'train' -%}
+  tripleo-image-serve
+  {%- else %}tripleo_image_serve {% endif -%}
 ansible_tripleo_podman_name: >-
-  {%- if tripleo_repos_branch == 'master' -%}
-  tripleo_podman
-  {%- else %}tripleo-podman {% endif -%}
+  {%- if tripleo_repos_branch == 'train' -%}
+  tripleo-podman
+  {%- else %}tripleo_podman {% endif -%}
 basedir: "/home/{{virt_user}}"
 base_image: centos
 centos_variant: "stream"
