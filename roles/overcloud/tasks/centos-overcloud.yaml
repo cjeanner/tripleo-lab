@@ -1,6 +1,14 @@
+- name: Set OC images base uri
+  set_fact:
+    oc_img_base_uri: >-
+      {%- if oc_img_base_uri is defined -%}
+      {{ oc_img_base_uri }}
+      {%- else -%}
+      "https://images.rdoproject.org/centos{{ os_version }}/{{tripleo_repos_branch}}/rdo_trunk/{{ oc_img_line | default('current-tripleo') }}/"
+      {%- endif -%}
 - name: "Link for CentOS{{os_version}} OC images"
   debug:
-    msg: "https://images.rdoproject.org/centos{{ os_version }}/{{tripleo_repos_branch}}/rdo_trunk/{{ oc_img_line | default('current-tripleo') }}/"
+    var: oc_img_base_uri
 - name: "fetch images for centos{{ os_version }}"
   environment:
     http_proxy: "{{ proxy_host | default('') }}"
@@ -8,7 +16,7 @@
   get_url:
     dest: "/home/stack/overcloud_imgs/{{item.file}}"
     mode: 0644
-    url: "https://images.rdoproject.org/centos{{ os_version }}/{{tripleo_repos_branch}}/rdo_trunk/{{ oc_img_line | default('current-tripleo') }}/{{item.file}}"
+    url: "{{ oc_img_base_uri }}/{{item.file}}"
   retries: 10
   delay: 5
   loop: "{{ overcloud_images }}"
