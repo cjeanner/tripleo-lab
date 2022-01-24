@@ -4,7 +4,7 @@
       {%- if oc_img_base_uri is defined -%}
       {{ oc_img_base_uri }}
       {%- else -%}
-      "https://images.rdoproject.org/centos{{ os_version }}/{{tripleo_repos_branch}}/rdo_trunk/{{ oc_img_line | default('current-tripleo') }}/"
+      https://images.rdoproject.org/centos{{ os_version }}/{{tripleo_repos_branch}}/rdo_trunk/{{ oc_img_line | default('current-tripleo') }}/
       {%- endif -%}
 - name: "Link for CentOS{{os_version}} OC images"
   debug:
