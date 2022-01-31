@@ -45,8 +45,7 @@ overcloud_image_update: true
 overcloud_images:
   - file: ironic-python-agent.tar
     content: ironic-python-agent.kernel
-  - file: overcloud-full.tar
-    content: overcloud-full.qcow2
+  - file: overcloud-hardened-uefi-full.qcow2
 overclouds: 1
 metalsmith: true
 network_data_v2: true

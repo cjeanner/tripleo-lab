@@ -25,6 +25,8 @@
 
 - name: uncompress images
   register: uncompress_centos_img
+  when:
+    - item.content is defined
   unarchive:
     creates: "/home/stack/overcloud_imgs/{{item.content}}"
     dest: "/home/stack/overcloud_imgs/"

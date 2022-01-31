@@ -29,6 +29,16 @@
   stat:
     path: /home/stack/overcloud_imgs/overcloud-full.raw
 
+- name: Check for hardened-uefi-full
+  tags:
+    - lab
+    - overcloud
+    - baremetal
+    - overcloud-images
+  register: hardened_uefi
+  stat:
+    path: /home/stack/overcloud_imgs/overcloud-hardened-uefi-full.qcow2
+
 - name: Set some facts
   tags:
     - lab
@@ -38,7 +48,9 @@
   set_fact:
     new_oc_image: "{{ uncompress_centos_img is changed or uncompress_rhel_img is changed }}"
     oc_image_name: >-
-      {%- if raw_image.stat.exists -%}
+      {%- if hardened_uefi.stat.exists -%}
+      overcloud-hardened-uefi-full.qcow2
+      {%- elif raw_image.stat.exists -%}
       overcloud-full.raw
       {%- else -%}
       overcloud-full.qcow2
