@@ -12,6 +12,16 @@
 - name: Only for recent releases
   when: tripleo_repos_branch not in ['queens', 'rocky']
   block:
+    - name: Allow httpd on 8787
+      become: true
+      become_user: root
+      community.general.seport:
+        ports:
+          - "8787"
+        proto: tcp
+        setype: http_port_t
+        state: present
+
     - name: Ensure we have image-serve
       become: true
       become_user: root
