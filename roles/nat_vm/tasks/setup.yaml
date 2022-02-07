@@ -62,15 +62,6 @@
         name: 8021q
         state: present
 
-    - name: Configure eth1
-      copy:
-        dest: "/etc/sysconfig/network-scripts/ifcfg-eth1"
-        content: |
-          DEVICE="eth1"
-          BOOTPROTO="none"
-          ONBOOT="yes"
-          TYPE="Ethernet"
-
     - name: Configure proxy
       when: proxy_host is defined
       import_role:
@@ -91,14 +82,17 @@
         enabled: true
         state: started
 
-    - name: Start eth1
-      shell: ifup eth1
-
     - name: Create vlan interface
       command: |
-        nmcli con add type vlan con-name vlan-{{ item + 100 }} ifname eth1.{{ item + 100 }} dev eth1 id {{ item + 100 }} ip4 "192.168.{{ 100 + item }}.1/24"
+        nmcli con add type vlan con-name vlan-{{ item + 100 }} vlan.parent eth1 vlan.id {{ item + 100 }} ip4 "192.168.{{ 100 + item }}.1/24"
       args:
         creates: "/etc/sysconfig/network-scripts/ifcfg-vlan{{ item + 100 }}"
+      loop: "{{ overclouds_range }}"
+      loop_control:
+        label: "vlan-{{item+1}}9"
+
+    - name: Start vlan interfaces
+      command: nmcli con up vlan-{{ item + 100 }}
       loop: "{{ overclouds_range }}"
       loop_control:
         label: "vlan-{{item+1}}9"
