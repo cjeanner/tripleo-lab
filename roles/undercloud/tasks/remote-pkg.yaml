@@ -4,5 +4,6 @@
   package:
     name: "{{ custom_rpms }}"
     state: installed
+    disable_gpg_check: true
   when: custom_rpms | length > 0
 
