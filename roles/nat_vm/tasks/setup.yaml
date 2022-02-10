@@ -19,6 +19,13 @@
         state: restarted
       when: sshd_config is changed
 
+    - name: Inject proxy for dnf and yum
+      when:
+        - proxy_host is defined
+      include_role:
+        name: undercloud_prepare
+        tasks_from: proxy.yaml
+
     - name: set up custom repositories
       yum_repository:
         name: "{{ item.name }}"
