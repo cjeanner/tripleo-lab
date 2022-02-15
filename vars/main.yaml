@@ -24,6 +24,9 @@ deploy_ipa: false
 deploy_standalone: true
 deploy_overcloud: false
 deploy_undercloud: true
+director_image_pkgs:
+  - rhosp-director-images-x86_64
+  - rhosp-director-images-uefi-x86_64
 dlrn_baseurl: >-
     {%- if ansible_distribution == "RedHat" -%}
     https://trunk.rdoproject.org/rhel{{ ansible_distribution_major_version }}-master

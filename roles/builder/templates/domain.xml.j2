@@ -3,9 +3,13 @@
   <memory unit='MB'>{{item.0.memory}}</memory>
   <vcpu placement='static'>{{item.0.cpu}}</vcpu>
   <os>
+{% if uefi|default(true)|bool -%}
     <type arch='x86_64' machine='q35'>hvm</type>
     <loader readonly="yes" secure="no" type="pflash">/usr/share/edk2/ovmf/OVMF_CODE.secboot.fd</loader>
     <nvram template='/usr/share/edk2/ovmf/OVMF_VARS.fd'/>
+{% else -%}
+    <type arch='x86_64' machine='pc'>hvm</type>
+{% endif -%}
     <bios useserial='yes' rebootTimeout='0'/>
     <smbios mode='emulate'/>
   </os>
@@ -84,7 +88,11 @@
       <master startport='4'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x2'/>
     </controller>
+{% if uefi|default(true)|bool -%}
     <controller type='pci' index='0' model='pcie-root'>
+{% else -%}
+    <controller type='pci' index='0' model='pci-root'>
+{% endif -%}
       <alias name='pci.0'/>
     </controller>
     <controller type='virtio-serial' index='0'>

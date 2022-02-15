@@ -3,9 +3,7 @@
   become: true
   become_user: root
   package:
-    name:
-      - rhosp-director-images-x86_64
-      - rhosp-director-images-uefi-x86_64
+    name: "{{ director_image_pkgs }}"
     state: installed
 
 - name: uncompress images
