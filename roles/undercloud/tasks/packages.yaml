@@ -8,6 +8,7 @@
       - tmux
       - util-linux
       - vim
+      - wget
     state: present
 
 - name: install tripleo client
