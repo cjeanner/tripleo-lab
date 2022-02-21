@@ -6,6 +6,9 @@
 - import_tasks: upload.yaml
 - import_tasks: networks.yaml
   when: network_data_v2 | bool
+  tags:
+    - lab
+    - overcloud
 - import_tasks: baremetal.yaml
   tags:
     - lab
