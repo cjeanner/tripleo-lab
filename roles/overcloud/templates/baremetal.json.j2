@@ -28,9 +28,9 @@
       "pm_password": "ADMIN",
       "pm_addr": "192.168.122.1",
       "pm_port": "{{ '%s-%s-oc-%s'|format(vm_prefix, node.1, node.0.name)|hashed_port }}",
-{% if uefi|default(true)|bool -%}
+{% if uefi|default(true)|bool %}
       "capabilities": "node:{{ node.1 }}-{{node.0.name}},boot_option:local,boot_mode:uefi"
-{% else -%}
+{% else %}
       "capabilities": "node:{{ node.1 }}-{{node.0.name}},boot_option:local,boot_mode:bios"
 {% endif -%}
     }{% if not loop.last %},
