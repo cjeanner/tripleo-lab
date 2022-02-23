@@ -76,6 +76,12 @@
       set_fact:
         fcip: "{{ f_container_image_prepare['parameter_defaults']['ContainerImagePrepare'][0] }}"
 
+    - name: Include container_prepare_excludes
+      set_fact:
+        fcip: "{{ fcip |combine({'excludes': container_prepare_excludes}, recursive=True) }}"
+      when:
+        - container_prepare_excludes | length > 0
+
     - name: Update default entries
       set_fact:
         fcip: "{{ fcip |combine({'set': {item.key: item.value}}, recursive=True) }}"
