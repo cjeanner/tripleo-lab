@@ -1,5 +1,5 @@
 ---
-- name: upload images to glance (container)
+- name: upload images
   tags:
     - lab
     - overcloud
@@ -13,3 +13,16 @@
     tripleo_overcloud_image_upload_image_path: /home/stack/overcloud_imgs
     tripleo_overcloud_image_upload_update_existing: true
     tripleo_overcloud_image_upload_os_image_name: "{{ oc_image_name }}"
+
+- name: Update references if needed
+  tags:
+    - lab
+    - overcloud
+    - overcloud-images
+  when:
+    - deploy_undercloud|bool
+    - new_oc_image|bool
+  import_role:
+    name: tripleo.operator.tripleo_overcloud_node_configure
+  vars:
+    tripleo_overcloud_node_configure_all_manageable: true
