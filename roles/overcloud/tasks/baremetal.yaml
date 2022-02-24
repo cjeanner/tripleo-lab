@@ -58,7 +58,7 @@
   when:
     - deploy_undercloud|bool
     - new_oc_image|bool
-    - vms|length > 1
+    - known_bm.stdout_lines|default([])|length > 1
   import_role:
     name: tripleo.operator.tripleo_overcloud_node_configure
   vars:
