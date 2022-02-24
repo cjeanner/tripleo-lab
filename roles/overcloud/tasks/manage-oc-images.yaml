@@ -56,7 +56,7 @@
       overcloud-full.qcow2
       {%- endif -%}
 
-- name: Inject root password in OC image
+- name: "Inject root password in OC image {{ oc_image_name }}"
   tags:
     - lab
     - overcloud
@@ -71,7 +71,7 @@
     creates: "/home/stack/overcloud_imgs/overcloud-password.done"
 
 
-- name: Modify overcloud image
+- name: "Modify overcloud image {{ oc_image_name }}"
   tags:
     - lab
     - overcloud
@@ -81,41 +81,18 @@
     - new_oc_image|bool
   shell: |
     LIBGUESTFS_BACKEND="direct" virt-sysprep -a /home/stack/overcloud_imgs/{{ oc_image_name }} \
+      --copy-in /etc/yum.repos.d/:/etc/ \
+      --copy-in /etc/dnf/dnf.conf:/etc/dnf/ \
       --copy-in /etc/yum.conf:/etc/ \
       --copy-in /etc/environment:/etc/ \
       --copy-in /etc/selinux/config:/etc/selinux/ \
       --copy-in /usr/local/src/:/usr/local/ \
       --firstboot /tmp/overcloud-firstboot \
-      {% if base_image == 'centos' %}
-      --copy-in /etc/yum.repos.d/:/etc/ \
-      {% else %}
-      {% if package_use|default('dnf') == 'dnf' %}
-      --copy-in /etc/dnf/dnf.conf:/etc/dnf/ \
-      {% else %}
-      --copy-in /etc/yum.conf:/etc/ \
-      {% endif %}
-      --install {{ rhos_release_repo_url }}/rhos-release-latest.noarch.rpm \
-      --run-command "rhos-release {{ rhos_release_opts|default('') }} {{ rhos_release_version }}" \
-      {% endif %}
+      --update \
+      --selinux-relabel \
       --network &> /home/stack/overcloud_imgs/overcloud-full.done
   args:
     creates: "/home/stack/overcloud_imgs/overcloud-full.done"
-
-- name: Update overcloud image
-  tags:
-    - lab
-    - overcloud
-    - overcloud-images
-  when:
-    - overcloud_image_update|bool
-    - new_oc_image|bool
-  shell: |
-    LIBGUESTFS_BACKEND="direct" virt-customize -a /home/stack/overcloud_imgs/{{ oc_image_name }} \
-      --update \
-      --selinux-relabel \
-      --network &> /home/stack/overcloud_imgs/overcloud-full.updated
-  args:
-    creates: /home/stack/overcloud_imgs/overcloud-full.updated
 
 - name: Inject custom RPMs in OC image
   tags:
