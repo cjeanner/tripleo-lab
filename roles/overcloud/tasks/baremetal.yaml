@@ -50,6 +50,20 @@
   debug:
     msg: "Got {{ known_bm.stdout_lines|length }} instance(s) (should have {{ vms|length -1 }})"
 
+- name: Update references if needed
+  tags:
+    - lab
+    - overcloud
+    - overcloud-images
+  when:
+    - deploy_undercloud|bool
+    - new_oc_image|bool
+    - vms|length > 1
+  import_role:
+    name: tripleo.operator.tripleo_overcloud_node_configure
+  vars:
+    tripleo_overcloud_node_configure_all_manageable: true
+
 - name: Import and provide for metalsmith
   tags:
     - lab
