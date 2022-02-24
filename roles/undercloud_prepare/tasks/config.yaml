@@ -103,6 +103,7 @@
   tags:
     - lab
     - undercloud-bootstrap
+    - repositories
   yum_repository:
     name: "{{ item.name }}"
     description: "{{ item.name }}"
