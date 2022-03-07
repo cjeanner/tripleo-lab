@@ -18,7 +18,9 @@
   package:
     name:
       - network-scripts
-  when: dnf_state.stat.exists
+  when:
+    - dnf_state.stat.exists
+    - ansible_distribution_major_version|int > 9
 
 - name: enforce TZ
   timezone:
