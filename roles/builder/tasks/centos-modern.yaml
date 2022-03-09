@@ -13,18 +13,41 @@
       {%- else -%}
       centos-{{ os_version }}.qcow2
       {%- endif -%}
+    natVmURI: >-
+      {% if centos_variant == "stream" -%}
+      https://cloud.centos.org/centos/8-stream/x86_64/images/
+      {% else -%}
+      http://cloud.centos.org/centos/8/x86_64/images/
+      {% endif -%}
+    natVmDestImg: >-
+      {%- if centos_variant == "stream" -%}
+      centos-8-stream.qcow2
+      {%- else -%}
+      centos-8.qcow2
+      {%- endif -%}
 
 - name: "Get latest centos-{{ os_version }} image name"
   shell: >-
     curl -s "{{ baseURI |trim}}" | awk '/GenericCloud.*\.qcow2</ { print $8 }' | cut -d '"' -f 2 | tail -1
-  register: latest_centos8
+  register: latest_centos
 
 - name: "Fetch latest centos-{{ os_version }} image"
   get_url:
-    url: "{{ baseURI |trim}}{{ latest_centos8.stdout |trim}}"
+    url: "{{ baseURI |trim}}{{ latest_centos.stdout |trim}}"
     dest: "{{ basedir }}/images/{{ destImg |trim}}"
     mode: 0664
 
 - name: Set base_image_name fact
   set_fact:
     base_image_name: "{{ destImg |trim}}"
+
+- name: "Get latest centos-8 image name for nat-vm"
+  shell: >-
+    curl -s "{{ natVmURI |trim}}" | awk '/GenericCloud.*\.qcow2</ { print $8 }' | cut -d '"' -f 2 | tail -1
+  register: latest_centos8
+
+- name: "Fetch latest centos-8 image"
+  get_url:
+    url: "{{ natVmURI |trim}}{{ latest_centos8.stdout |trim}}"
+    dest: "{{ basedir }}/images/{{ natVmDestImg |trim}}"
+    mode: 0664
