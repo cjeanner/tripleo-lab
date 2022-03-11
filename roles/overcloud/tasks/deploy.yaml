@@ -36,7 +36,7 @@
       /home/stack/containers-prepare-parameter.yaml
       /home/stack/generated-container-prepare.yaml
       /home/stack/oc{{ item }}-domain.yaml
-      {% if metalsmith | default(true) | bool %}
+      {% if metalsmith | default(true) | bool and not oc_preprovision|bool %}
       /home/stack/overcloud-baremetal-deployed-{{ item }}.yaml
       {% endif -%}
       {% if network_data_v2 | default(true) | bool %}
@@ -45,6 +45,9 @@
       {% else %}
       /usr/share/openstack-tripleo-heat-templates/environments/network-isolation.yaml
       {% endif -%}
+      {% if oc_preprovision|bool %}
+      /usr/share/openstack-tripleo-heat-templates/environments/deployed-server-environment.yaml
+      {% endif %}
       {% for env in additional_envs -%}
       {{ env }}
       {% endfor -%}

@@ -7,7 +7,7 @@ do_destroy() {
     vbmc show -q $i &> /dev/null && vbmc -q --log-file /home/{{ virt_user }}/vbmc.log --no-daemon delete $i
     $VIRSH destroy $i;
     $VIRSH undefine $i --nvram --snapshots-metadata --checkpoints-metadata;
-    rm -f /home/{{virt_user}}/workload/${i}*
+    rm -rf /home/{{virt_user}}/workload/${i}*
   done
 {% if ansible_facts['distribution_version'] is version('8.0', 'gt', strict=False) %}
   echo 'Flushing temporary VBMC rules'

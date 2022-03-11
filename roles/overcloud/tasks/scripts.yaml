@@ -168,6 +168,17 @@
     dest: "/home/stack/overcloud-{{ item }}-yml/nova-tpm.yaml"
   loop: "{{ overclouds_range }}"
 
+- name: Push provisionned node template
+  when:
+    - oc_preprovision|bool
+  tags:
+    - lab
+    - overcloud
+  template:
+    src: pre-provisioned.yaml.j2
+    dest: "/home/stack/overcloud-{{ item }}-yml/pre-provisioned.yaml"
+  loop: "{{ overclouds_range }}"
+
 - name: Push ephemeral heat script
   tags:
     - lab

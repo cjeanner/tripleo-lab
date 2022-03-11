@@ -1,0 +1,16 @@
+parameter_defaults:
+  DeployedServerPortMap:
+{% for vm in vms %}
+{% if vm.name is not match('^undercloud') %}
+    oc{{ item }}-{{ vm.name }}-ctlplane:
+      fixed_ips:
+        - ip_address: 192.168.24.{{ loop.index|int + 19 }}
+{% endif %}
+{% endfor %}
+
+  HostnameMap:
+{% for vm in vms %}
+{% if vm.name is not match('^undercloud') %}
+    oc{{ item }}-{{ vm.name }}: oc{{ item }}-{{ vm.name }}
+{% endif %}
+{% endfor %}
