@@ -2,17 +2,21 @@
 - import_tasks: packages.yaml
 - import_tasks: config.yaml
 - import_tasks: scripts.yaml
-- import_tasks: manage-oc-images.yaml
-- import_tasks: upload.yaml
-- import_tasks: networks.yaml
-  when: network_data_v2 | bool
+
+- name: Unprovisioned nodes
   tags:
     - lab
     - overcloud
-- import_tasks: baremetal.yaml
-  tags:
-    - lab
-    - overcloud
+  when:
+    - not oc_preprovision|bool
+  block:
+    - import_tasks: manage-oc-images.yaml
+    - import_tasks: upload.yaml
+    - import_tasks: networks.yaml
+      when:
+        - network_data_v2 | bool
+    - import_tasks: baremetal.yaml
+
 - name: Deploy all overclouds
   tags:
     - lab

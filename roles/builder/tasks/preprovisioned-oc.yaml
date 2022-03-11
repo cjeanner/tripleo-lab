@@ -1,0 +1,101 @@
+- name: run tasks as virt_user user
+  tags:
+    - lab
+    - overcloud
+    - domains
+  when:
+    - oc_preprovision|bool
+  become: true
+  become_user: "{{ virt_user }}"
+  block:
+    - name: create overclouds range
+      set_fact:
+        overclouds_range: "{{ range(0, overclouds|int)|list }}"
+
+    - name: Output stack user pubkey in a file
+      copy:
+        dest: "{{ basedir }}/workload/ssh_stack.pub"
+        content: "{{ hostvars['undercloud']['stackuser_pubkey']['content']|b64decode }}"
+
+    - name: Create overcloud image based on centos
+      when:
+        - base_image == "centos"
+        - item.0.name is not match('^undercloud')
+      tags:
+        - images
+      command: |
+        qemu-img create -o backing_file=../images/{{ base_image_name }},backing_fmt=qcow2 -f qcow2 "{{ vm_prefix }}-oc{{ item.1 }}-{{ item.0.name }}.qcow2" "{{ item.0.disksize|default ('100') }}G"
+      args:
+        creates: "{{ basedir }}/workload/{{ vm_prefix }}-oc{{ item.1 }}-{{ item.0.name }}.qcow2"
+        chdir: "{{ basedir }}/workload"
+      loop: "{{ vms|product(overclouds_range)|list }}"
+      loop_control:
+        label: "oc{{ item.1 }}-{{ item.0.name }}"
+
+    - name: Create image for overcloud based on RHEL
+      when:
+        - (base_image | lower) in ['rhel', 'redhat']
+        - item.0.name is not match('^undercloud')
+      tags:
+        - images
+      command: |
+        qemu-img create -o backing_file=../images/{{ base_image_name }},backing_fmt=qcow2 -f qcow2 "{{ vm_prefix }}-oc{{ item.1 }}-{{ item.0.name }}.qcow2" "{{ item.0.disksize|default ('100') }}G"
+      args:
+        creates: "{{ basedir }}/workload/{{ vm_prefix }}-oc{{ item.1 }}-{{ item.0.name }}.qcow2"
+        chdir: "{{ basedir }}/workload"
+      loop: "{{ vms|product(overclouds_range)|list }}"
+      loop_control:
+        label: "oc{{ item.1 }}-{{ item.0.name }}"
+
+    - name: Create per-node config directory
+      when:
+        - item.0.name is not match('^undercloud')
+      file:
+        path: "{{ basedir }}/workload/{{ vm_prefix }}-oc{{ item.1 }}-{{ item.0.name }}"
+        state: directory
+      loop: "{{ vms|product(overclouds_range)|list }}"
+      loop_control:
+        label: "oc{{ item.1 }}-{{ item.0.name }}"
+
+    - name: Generate interface configuration for each node
+      when:
+        - item.0.name is not match('^undercloud')
+      template:
+        src: oc-iface-config.j2
+        dest: "{{ basedir }}/workload/{{ vm_prefix }}-oc{{ item.1 }}-{{ item.0.name }}/ifcfg-eth0"
+      loop: "{{ vms|product(overclouds_range)|list }}"
+      loop_control:
+        label: "oc{{ item.1 }}-{{ item.0.name }}"
+        index_var: node_id
+
+    - name: Modify overcloud images
+      when:
+        - item.0.name is not match('^undercloud')
+      tags:
+        - images
+      args:
+        creates: "{{ basedir }}/workload/{{ vm_prefix }}-oc{{ item.1 }}-{{ item.0.name }}/config.done"
+      shell: |
+        export LIBGUESTFS_BACKEND=direct
+        virt-sysprep -a "{{ basedir }}/workload/{{ vm_prefix }}-oc{{ item.1 }}-{{ item.0.name }}.qcow2" \
+          --firstboot-command "growpart /dev/sda {{ root_device }}" \
+          --firstboot-command "xfs_growfs {{ growfs_part }}" \
+          --copy-in "{{ basedir }}/workload/{{ vm_prefix }}-oc{{ item.1 }}-{{ item.0.name }}/ifcfg-eth0":/etc/sysconfig/network-scripts/ \
+          --hostname "{{ vm_prefix }}-oc{{ item.1 }}-{{ item.0.name }}.{{ domain }}" \
+          --selinux-relabel \
+          --root-password "password:{{undercloud_password}}" \
+          --ssh-inject root:file:{{ basedir }}/workload/ssh_stack.pub &> "{{ basedir }}/workload/{{ vm_prefix }}-oc{{ item.1 }}-{{ item.0.name }}/config.done"
+      loop: "{{ vms|product(overclouds_range)|list }}"
+      loop_control:
+        label: "oc{{ item.1 }}-{{ item.0.name }}"
+
+    - name: Boot OC nodes to ensure they are available on due time
+      when:
+        - item.0.name is not match('^undercloud')
+      virt:
+        name: "{{ vm_prefix }}-oc{{ item.1 }}-{{ item.0.name }}"
+        state: running
+        uri: "qemu:///system"
+      loop: "{{ vms|product(overclouds_range)|list }}"
+      loop_control:
+        label: "oc{{ item.1 }}-{{ item.0.name }}"

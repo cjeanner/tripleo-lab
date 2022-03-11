@@ -11,6 +11,16 @@
     ssh_key_bits: 4096
     state: present
 
+- name: Slurp public key
+  tags:
+    - lab
+    - undercloud-bootstrap
+    - domains
+    - overcloud
+  ansible.builtin.slurp:
+    src: /home/stack/.ssh/id_rsa.pub
+  register: stackuser_pubkey
+
 - name: create ansible temp dir for stack user
   tags:
     - lab

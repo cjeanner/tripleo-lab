@@ -126,7 +126,7 @@
       loop_control:
         label: "{{ item.name }}"
 
-    - name: create images based on RHEL
+    - name: create undercloud image based on RHEL
       when:
         - (base_image | lower) in ['rhel', 'redhat']
         - item.name is match('^undercloud')
@@ -155,9 +155,9 @@
       loop_control:
         label: "{{ item.name }}"
 
-
-    - name: create empty image for non-undercloud
+    - name: create empty image for overcloud
       when:
+        - not oc_preprovision|bool
         - item.0.name is not match('^undercloud')
       tags:
         - images

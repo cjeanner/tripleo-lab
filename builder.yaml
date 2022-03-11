@@ -25,6 +25,22 @@
   roles:
     - undercloud_prepare
 
+# Reconnect to the builder for some more tasks on the OC images
+# This is especially used for pre-provisioned nodes.
+- hosts: builder
+  remote_user: root
+  vars_files:
+    - vars/main.yaml
+  tasks:
+    - name: Pre-provision OC nodes
+      tags:
+        - lab
+        - overcloud
+        - domains
+      include_role:
+        name: builder
+        tasks_from: preprovisioned-oc.yaml
+
 # Reconnect to the undercloud as stack user
 - hosts: undercloud
   remote_user: stack
