@@ -17,27 +17,8 @@
     - undercloud
   when:
     - base_image == 'centos'
-    - os_version != 9
   import_role:
     name: tripleo.operator.tripleo_repos
-
-- name: Configure upstream repository manually
-  tags:
-    - lab
-    - undercloud
-  when:
-    - base_image == 'centos'
-    - os_version == 9
-  become: true
-  get_url:
-    url: "{{ item.value}}{{item.key}}"
-    dest: "/etc/yum.repos.d/{{item.key}}"
-    mode: 0644
-  loop: "{{repos | dict2items }}"
-  vars:
-    repos:
-      "delorean.repo": "https://trunk.rdoproject.org/centos9-master/{{ delorean_line | default('current-tripleo') }}/"
-      "delorean-deps.repo": "https://trunk.rdoproject.org/centos9-master/"
 
 - import_tasks: remote-pkg.yaml
   tags:
