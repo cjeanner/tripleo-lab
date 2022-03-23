@@ -6,3 +6,19 @@
   package:
     name: '*'
     state: latest
+
+- name: install some tools
+  tags:
+    - lab
+    - undercloud-bootstrap
+  package:
+    name:
+      - git
+      - iotop
+      - tmux
+      - util-linux
+      - unzip
+      - vim
+      - wget
+    state: present
+
