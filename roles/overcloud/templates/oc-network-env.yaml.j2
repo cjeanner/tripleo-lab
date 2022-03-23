@@ -32,6 +32,8 @@ parameter_defaults:
     NeutronNetworkType: geneve
     NeutronNetworkVLANRanges: tenant:1000:2000
     NeutronTunnelTypes: geneve
+    NeutronGlobalPhysnetMtu: 1350
+    TenantNetPhysnetMtu: 1350
 {% if not network_data_v2|bool %}
     EC2MetadataIp: 192.168.24.1
     ExternalCloud{{item}}AllocationPools:
