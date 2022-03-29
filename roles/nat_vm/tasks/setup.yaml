@@ -38,6 +38,8 @@
       loop: "{{ custom_repositories }}"
 
     - name: Update all packages
+      tags:
+        - updates
       dnf:
         name: "*"
         state: latest
