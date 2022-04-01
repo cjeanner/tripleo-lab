@@ -8,4 +8,11 @@
   command: yum-config-manager --disable epel
 
 - name: ensure epel-modular is deactivated
+  when:
+    - ansible_facts['distribution_major_version']|int < 9
   command: yum-config-manager --disable epel-modular
+
+- name: ensure epel-next is deactivated
+  when:
+    - ansible_facts['distribution_major_version']|int >= 9
+  command: yum-config-manager --disable epel-next
