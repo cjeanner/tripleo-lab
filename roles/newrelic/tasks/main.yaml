@@ -1,0 +1,20 @@
+---
+- name: Only if we enable newrelic
+  when:
+    - newrelic | bool
+  tags:
+    - lab
+  block:
+    - name: Push install script
+      template:
+        dest: /usr/local/bin/lab-newrelic
+        src: install.j2
+        mode: 0555
+        owner: root
+        group: root
+
+    - name: Run newrelic install
+      async: 600
+      poll: 0
+      register: newrelic_installer
+      command: /usr/local/bin/lab-newrelic

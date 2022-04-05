@@ -1,0 +1,15 @@
+#!/bin/bash
+# currently, no el9 package. Let's cap to 8.
+curl -o /etc/yum.repos.d/newrelic-infra.repo \
+  https://download.newrelic.com/infrastructure_agent/linux/yum/el/{{ [8, ansible_facts['distribution_major_version']|int ]| min }}/x86_64/newrelic-infra.repo
+dnf install -y newrelic-infra
+
+cat <<EOF >/etc/newrelic-infra.yml
+enable_process_metrics: true
+status_server_enabled: true
+status_server_port: 18003
+license_key: {{ newrelic_license }}
+EOF
+
+systemctl enable --now newrelic-infra.service
+yum-config-manager --disable newrelic-infra

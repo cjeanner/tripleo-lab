@@ -1,0 +1,10 @@
+---
+- name: Ensure newrelic is installed
+  when:
+    - newrelic | bool
+  async_status:
+    jid: "{{ newrelic_installer.ansible_job_id }}"
+  register: job_result
+  until: job_result.finished
+  retries: 100
+  delay: 6
