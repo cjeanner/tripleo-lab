@@ -1,4 +1,9 @@
 ---
+- name: Set timezone
+  tags:
+    - always
+  command: timedatectl set-timezone UTC
+
 - name: Ensure fresh facts
   tags:
     - always
@@ -47,6 +52,16 @@
   import_tasks: epel.yaml
 
 - import_tasks: packages.yaml
+
+- name: Setup newrelic
+  import_role:
+    name: newrelic
+
 - name: Install and configure tmate if wanted
   when: install_tmate | default(true) | bool
   import_tasks: tmate.yaml
+
+- name: Check for newrelic
+  import_role:
+    name: newrelic
+    tasks_from: finished.yaml
