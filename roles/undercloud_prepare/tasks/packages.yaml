@@ -22,3 +22,42 @@
       - wget
     state: present
 
+- name: Enable mitogen on demand
+  when:
+    - mitogen|default(false)|bool
+  block:
+    - name: Get mitogen strategy
+      tags:
+        - lab
+        - undercloud-bootstrap
+      git:
+        repo: https://github.com/mitogen-hq/mitogen.git
+        dest: /home/stack/mitogen
+        accept_hostkey: true
+
+    - name: Configure ansible to use mitogen
+      tags:
+        - lab
+        - undercloud-bootstrap
+      ini_file:
+        path: /etc/ansible/ansible.cfg
+        section: "{{ item.section }}"
+        option: "{{ item.option }}"
+        value: "{{ item.value }}"
+      loop:
+        - 'option': 'strategy_plugins'
+          'section': 'defaults'
+          'value': '/home/stack/mitogen/ansible_mitogen/plugins/strategy'
+        - 'option': 'strategy'
+          'section': 'defaults'
+          'value': 'mitogen_linear'
+
+    - name: Configure ANSIBLE_STRATEGY_PLUGINS
+      tags:
+        - lab
+        - undercloud-bootstrap
+      copy:
+        dest: /etc/profile.d/ansible-strategy.sh
+        content: |
+          export ANSIBLE_STRATEGY_PLUGINS=/home/stack/mitogen/ansible_mitogen/plugins/strategy
+          export ANSIBLE_STRATEGY=mitogen_linear
