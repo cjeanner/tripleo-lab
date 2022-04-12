@@ -13,6 +13,15 @@
   tags:
     - lab
     - overcloud
+
+- import_role:
+    name: tripleo.operator.tripleo_container_image_prepare
+  vars:
+    tripleo_container_image_prepare_environment_files: /home/stack/containers-prepare-parameter.yaml
+    tripleo_container_image_prepare_output_env_file: /home/stack/generated-container-prepare-overcloud.yaml
+    tripleo_container_image_prepare_log_file: /home/stack/generated-container-prepare-overcloud.log
+    tripleo_container_image_prepare_roles_file: /home/stack/oc0-role-data.yaml
+
 - name: Deploy all overclouds
   tags:
     - lab

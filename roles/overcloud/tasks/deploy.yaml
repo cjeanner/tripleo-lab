@@ -34,7 +34,7 @@
       /home/stack/ipa.yaml
       {% endif -%}
       /home/stack/containers-prepare-parameter.yaml
-      /home/stack/generated-container-prepare.yaml
+      /home/stack/generated-container-prepare-overcloud.yaml
       /home/stack/oc{{ item }}-domain.yaml
       {% if metalsmith | default(true) | bool %}
       /home/stack/overcloud-baremetal-deployed-{{ item }}.yaml
