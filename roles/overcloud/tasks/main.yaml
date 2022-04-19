@@ -21,6 +21,9 @@
     tripleo_container_image_prepare_output_env_file: /home/stack/generated-container-prepare-overcloud.yaml
     tripleo_container_image_prepare_log_file: /home/stack/generated-container-prepare-overcloud.log
     tripleo_container_image_prepare_roles_file: /home/stack/oc0-role-data.yaml
+  tags:
+    - lab
+    - overcloud
 
 - name: Deploy all overclouds
   tags:
