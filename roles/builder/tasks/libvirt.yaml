@@ -109,7 +109,7 @@
           --network \
           --uninstall cloud-init \
           --selinux-relabel \
-          --truncate /etc/machine-id \
+          --delete /etc/machine-id \
           --update
 
     - name: create undercloud image based on centos

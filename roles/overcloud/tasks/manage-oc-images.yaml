@@ -68,7 +68,7 @@
       --selinux-relabel --root-password "password:{{undercloud_password}}" \
       --enable customize \
       --ssh-inject "root:file:/home/stack/.ssh/authorized_keys" \
-      --truncate /etc/machine-id &> /home/stack/overcloud_imgs/overcloud-password.done
+      --delete /etc/machine-id &> /home/stack/overcloud_imgs/overcloud-password.done
   args:
     creates: "/home/stack/overcloud_imgs/overcloud-password.done"
 
@@ -94,7 +94,7 @@
       --selinux-relabel \
       --enable customize \
       --network \
-      --truncate /etc/machine-id &> /home/stack/overcloud_imgs/overcloud-full.done
+      --delete /etc/machine-id &> /home/stack/overcloud_imgs/overcloud-full.done
   args:
     creates: "/home/stack/overcloud_imgs/overcloud-full.done"
 
@@ -112,7 +112,7 @@
       --selinux-relabel \
       --enable customize \
       --network \
-      --truncate /etc/machine-id &> /home/stack/overcloud_imgs/overcloud-full.modified
+      --delete /etc/machine-id &> /home/stack/overcloud_imgs/overcloud-full.modified
   args:
     creates: /home/stack/overcloud_imgs/overcloud-full.modified
 
@@ -128,6 +128,6 @@
       --network --copy-in /usr/local/bin/lab-newrelic:/usr/local/bin/ \
       --run /usr/local/bin/lab-newrelic \
       --selinux-relabel \
-      --truncate /etc/machine-id &> /home/stack/overcloud_imgs/overcloud-newrelic.log
+      --delete /etc/machine-id &> /home/stack/overcloud_imgs/overcloud-newrelic.log
   args:
     creates: /home/stack/overcloud_imgs/overcloud-newrelic.log
