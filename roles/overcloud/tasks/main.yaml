@@ -33,3 +33,20 @@
   loop_control:
     label: "Deploying overcloud {{ item }}"
   include_tasks: deploy.yaml
+
+- name: Persist routing for OC routers
+  become: true
+  tags:
+    - lab
+    - overcloud
+  template:
+    dest: /etc/sysconfig/network-scripts/route-br-ctlplane
+    src: undercloud-static-routes-ctlplane.j2
+
+- name: Add routing for OC routers
+  become: true
+  tags:
+    - lab
+    - overcloud
+  command: ip ro add 10.0.{{ item }}.0/24 dev br-ctlplane
+  loop: "{{ overclouds_range }}"
