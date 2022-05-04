@@ -4,64 +4,61 @@ set -e
 
 source /home/stack/overcloud-{{ item }}rc
 
-if [ -z "`openstack network list | grep private`" ];then
-  openstack network create private
-  openstack subnet create --gateway 192.168.100.1 --dhcp --network private --subnet-range 192.168.100.0/24 private
-  openstack subnet set --dns-nameserver 10.34.32.1 --dns-nameserver 10.34.32.3 private
+if [ -z "`openstack --os-cloud overcloud-{{ item }} network list | grep private`" ];then
+  openstack --os-cloud overcloud-{{ item }} network create private
+  openstack --os-cloud overcloud-{{ item }} subnet create --gateway 192.168.{{ item + 100 }}.1 --dhcp --network private --subnet-range 192.168.{{ item + 100 }}.0/24 private
+  openstack --os-cloud overcloud-{{ item }} subnet set --dns-nameserver 10.34.32.1 --dns-nameserver 10.34.32.3 private
   echo "****************************************Private network created****************************************************"
 fi
 
-SID=$(openstack network list| awk '/private/ {print $2}' | head -n 1)
+SID=$(openstack --os-cloud overcloud-{{ item }} network list| awk '/private/ {print $2}' | head -n 1)
 
-EXT_NW=$(openstack network list --long -c "Router Type" -c Name | grep -i external | head -n 1 | awk '{print $2}')
+EXT_NW=$(openstack --os-cloud overcloud-{{ item }} network list --long -c "Router Type" -c Name | grep -i external | head -n 1 | awk '{print $2}')
 if [ -z "$EXT_NW" ]; then
-  openstack network create --share --external --provider-physical-network datacentre --provider-network-type flat public
-  openstack subnet create --network public --allocation-pool start=10.0.0.210,end=10.0.0.250 --gateway 10.0.0.1 --subnet-range 10.0.0.0/24 public
+  openstack --os-cloud overcloud-{{ item }} network create --share --external --provider-physical-network datacentre --provider-network-type flat public
+  openstack --os-cloud overcloud-{{ item }} subnet create --network public --allocation-pool start=10.0.{{ item }}.210,end=10.0.{{ item }}.250 --gateway 10.0.{{ item }}.1 --subnet-range 10.0.{{ item }}.0/24 public
   EXT_NW="public"
 fi
 
-if [ -z "`openstack router list | grep testrouter`" ];then
-    openstack router create testrouter
-    openstack router set --external-gateway $EXT_NW testrouter
-    openstack router add subnet testrouter private
+if [ -z "`openstack --os-cloud overcloud-{{ item }} router list | grep testrouter`" ];then
+    openstack --os-cloud overcloud-{{ item }} router create testrouter
+    openstack --os-cloud overcloud-{{ item }} router set --external-gateway $EXT_NW testrouter
+    openstack --os-cloud overcloud-{{ item }} router add subnet testrouter private
   echo "****************************************Router and subnet created*************************************************"
 fi
 
-SECID=$(openstack security group list | grep `openstack project show admin -f value -c id` | head -n 1 | awk '{print $2}')
+SECID=$(openstack --os-cloud overcloud-{{ item }} security group list | grep `openstack --os-cloud overcloud-{{ item }} project show admin -f value -c id` | head -n 1 | awk '{print $2}')
 
-#if [ "$RELEASE" -lt 12 ];then
-#  nova secgroup-add-rule default icmp -1 -1 0.0.0.0/0 2>/dev/null || true
-#  nova secgroup-add-rule default tcp 22 22 0.0.0.0/0 2>/dev/null || true
-#else
-openstack security group rule create $SECID --protocol tcp --dst-port 22 --remote-ip 0.0.0.0/0 2>/dev/null || true
-openstack security group rule create $SECID --protocol icmp --dst-port -1 --remote-ip 0.0.0.0/0 2>/dev/null || true
-#fi
+openstack --os-cloud overcloud-{{ item }} security group rule create $SECID --protocol tcp --dst-port 22 --remote-ip 0.0.0.0/0 2>/dev/null || true
+openstack --os-cloud overcloud-{{ item }} security group rule create $SECID --protocol icmp --dst-port -1 --remote-ip 0.0.0.0/0 2>/dev/null || true
 
+{% if (vms|map(attribute='name')|select("match", 'compute.+')|list|length)|int > 0 %}
 CIRROS="cirros-{{ cirros_version }}-x86_64-disk.img"
 
 if [ ! -f ${CIRROS} ];then curl -O http://download.cirros-cloud.net/{{ cirros_version }}/${CIRROS}; fi
 
 IMGNAME=$(basename $CIRROS \-x86_64-disk.img)
-if [ -z "`openstack image list | grep ${IMGNAME}`" ];then
-  openstack image create $IMGNAME --disk-format qcow2 --container-format bare --file ${CIRROS}
+if [ -z "`openstack --os-cloud overcloud-{{ item }} image list | grep ${IMGNAME}`" ];then
+  openstack --os-cloud overcloud-{{ item }} image create $IMGNAME --disk-format qcow2 --container-format bare --file ${CIRROS}
   echo "****************************************Image uploaded to glance**************************************************"
 fi
 
-if [ -z "`openstack flavor list | grep m1.tiny`" ];then
-  openstack flavor create --public m1.tiny --id auto --ram 512 --disk 1 --vcpus 1
+if [ -z "`openstack --os-cloud overcloud-{{ item }} flavor list | grep m1.tiny`" ];then
+  openstack --os-cloud overcloud-{{ item }} flavor create --public m1.tiny --id auto --ram 512 --disk 1 --vcpus 1
 fi
 
 {% if nova_tpm | default(false) | bool -%}
-openstack flavor set m1.tiny \
+openstack --os-cloud overcloud-{{ item }} flavor set m1.tiny \
     --property hw:tpm_version=2.0 \
     --property hw:tpm_model=tpm-crb
 {% endif -%}
 
 COUNTVAR=$RANDOM
-openstack server create --image $IMGNAME --flavor m1.tiny test-$COUNTVAR --nic net-id=$SID --wait
+openstack --os-cloud overcloud-{{ item }} server create --image $IMGNAME --flavor m1.tiny test-$COUNTVAR --nic net-id=$SID --wait
 
-IP=$(openstack floating ip create $EXT_NW -f value -c floating_ip_address)
-openstack server add floating ip test-$COUNTVAR $IP
+IP=$(openstack --os-cloud overcloud-{{ item }} floating ip create $EXT_NW -f value -c floating_ip_address)
+openstack --os-cloud overcloud-{{ item }} server add floating ip test-$COUNTVAR $IP
 
-openstack server list --long
+openstack --os-cloud overcloud-{{ item }} server list --long
 echo "Please login to the instance as a cirros user (passwd: gocubsgo) : ssh -i ~/.ssh/id_rsa cirros@$IP"
+{% endif %}
