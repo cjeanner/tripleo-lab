@@ -6,10 +6,9 @@
     - undercloud
     - lab
   block:
-    - name: install acpid only on centos
-      set_fact: opt_pkg="--install acpid"
-      when:
-        - base_image == "centos"
+    - name: Activate swap only if needed
+      set_fact:
+        enable_swap: "{{ undercloud_swap is defined and undercloud_swap |bool }}"
 
     - name: undercloud image settings
       shell: |
@@ -17,12 +16,11 @@
         virt-sysprep -a "{{basedir}}/workload/{{vm_prefix}}-{{ item.name }}.qcow2" \
           --firstboot-command "growpart /dev/sda {{ root_device }}" \
           --firstboot-command "xfs_growfs {{ growfs_part }}" \
-          --firstboot-command "systemctl enable acpid" \
-          --firstboot-command "systemctl start acpid" \
+        {% if enable_swap | bool %}
           --firstboot-command "mkswap /dev/sdb" \
           --firstboot-command "swapon /dev/sdb" \
+        {% endif %}
           --hostname {{ undercloud_hostname | lower }} \
-          --network {{ opt_pkg|default('') }} \
           --uninstall cloud-init \
           --selinux-relabel \
           --root-password "password:{{undercloud_password}}" \
