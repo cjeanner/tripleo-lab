@@ -37,7 +37,7 @@
           --selinux-relabel \
           --install acpid,iptables \
           --ssh-inject root:file:{{ basedir }}/.ssh/authorized_keys \
-          --delete /etc/machine-id &> "{{basedir}}/workload/{{vm_prefix}}-nat-vm.qcow2.done"
+          --truncate /etc/machine-id &> "{{basedir}}/workload/{{vm_prefix}}-nat-vm.qcow2.done"
       args:
         creates: "{{basedir}}/workload/{{vm_prefix}}-nat-vm.qcow2.done"
 
