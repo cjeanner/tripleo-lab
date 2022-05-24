@@ -56,6 +56,16 @@
       overcloud-full.qcow2
       {%- endif -%}
 
+- name: Detect if "--selinux-relabel" exists in the options
+  tags:
+    - lab
+    - overcloud
+    - overcloud-images
+  register: selinux_relabel_option
+  shell: virt-sysprep --help | grep '\-\-selinux-relabel'
+  failed_when:
+    - selinux_relabel_option.rc not in [0, 1]
+
 - name: "Inject root password in OC image {{ oc_image_name }}"
   tags:
     - lab
@@ -65,7 +75,7 @@
     - new_oc_image|bool
   shell: |
     LIBGUESTFS_BACKEND="direct" virt-sysprep -a /home/stack/overcloud_imgs/{{ oc_image_name }} \
-      --selinux-relabel --root-password "password:{{undercloud_password}}" \
+      {{ (selinux_relabel_option.rc == 0) | ternary('--selinux-relabel', '') }} --root-password "password:{{undercloud_password}}" \
       --enable customize \
       --ssh-inject "root:file:/home/stack/.ssh/authorized_keys" \
       --truncate /etc/machine-id &> /home/stack/overcloud_imgs/overcloud-password.done
@@ -91,8 +101,7 @@
       --copy-in /usr/local/src/:/usr/local/ \
       --firstboot /tmp/overcloud-firstboot \
       --update \
-      --selinux-relabel \
-      --enable customize \
+      {{ (selinux_relabel_option.rc == 0) | ternary('--selinux-relabel', '') }}--enable customize \
       --network \
       --truncate /etc/machine-id &> /home/stack/overcloud_imgs/overcloud-full.done
   args:
@@ -109,8 +118,7 @@
   shell: |
     LIBGUESTFS_BACKEND="direct" virt-sysprep -a /home/stack/overcloud_imgs/{{ oc_image_name }} \
       --install {{ oc_image_rpms|join(',') }}\
-      --selinux-relabel \
-      --enable customize \
+      {{ (selinux_relabel_option.rc == 0) | ternary('--selinux-relabel', '') }} --enable customize \
       --network \
       --truncate /etc/machine-id &> /home/stack/overcloud_imgs/overcloud-full.modified
   args:
@@ -127,7 +135,6 @@
     LIBGUESTFS_BACKEND="direct" virt-sysprep -a /home/stack/overcloud_imgs/{{ oc_image_name }} \
       --network --copy-in /usr/local/bin/lab-newrelic:/usr/local/bin/ \
       --run /usr/local/bin/lab-newrelic \
-      --selinux-relabel \
-      --truncate /etc/machine-id &> /home/stack/overcloud_imgs/overcloud-newrelic.log
+      {{ (selinux_relabel_option.rc == 0) | ternary('--selinux-relabel', '') }} --truncate /etc/machine-id &> /home/stack/overcloud_imgs/overcloud-newrelic.log
   args:
     creates: /home/stack/overcloud_imgs/overcloud-newrelic.log
