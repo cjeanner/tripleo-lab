@@ -8,3 +8,4 @@ sudo rm -rf /var/lib/config-data/ \
   /var/lib/pacemaker/* \
   /var/lib/image-serve/* \
   /home/stack/*
+sudo nft flush ruleset
