@@ -117,6 +117,16 @@
     src: container-cli.yaml.j2
   loop: "{{ overclouds_range }}"
 
+- name: Push custom OC settings
+  tags:
+    - lab
+    - overcloud
+    - baremetal
+  copy:
+    dest: "/home/stack/overcloud-{{ item }}-yml/custom.yaml"
+    content: "{{ overcloud_custom_settings|default({})|to_nice_yaml }}"
+  loop: "{{ overclouds_range }}"
+
 - name: push selinux setting
   tags:
     - lab

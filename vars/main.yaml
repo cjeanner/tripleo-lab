@@ -46,6 +46,7 @@ nova_tpm: false
 oc_image_rpms: []
 os_version: 8
 overcloud_container_cli: podman
+overcloud_custom_settings: {}
 overcloud_image_update: true
 overcloud_images:
   - file: ironic-python-agent.tar
