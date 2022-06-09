@@ -1,5 +1,6 @@
 ansible.log
 custom-*.yaml
+custom-*.sh
 .*.swp
 satellite.yaml
 roles/satellite
