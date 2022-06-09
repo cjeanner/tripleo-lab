@@ -7,34 +7,54 @@
       nameserver {{ nameserver }}
       {% endfor %}
 
-- name: Ensure rhos-release is installed via proxy
+- name: Install rhos-release if no registration is set
   when:
-    - proxy_host is defined
-  package:
-    name: "{{ rhos_release_repo_url }}/rhos-release-latest.noarch.rpm"
-    state: installed
-    disable_gpg_check: true
-  register: rhos_release
-  environment:
-    http_proxy: "http://{{ proxy_host }}"
-    https_proxy: "http://{{ proxy_host }}"
+    - rhsm_register is undefined
+  block:
+    - name: Ensure rhos-release is installed via proxy
+      when:
+        - proxy_host is defined
+      package:
+        name: "{{ rhos_release_repo_url }}/rhos-release-latest.noarch.rpm"
+        state: installed
+        disable_gpg_check: true
+      register: rhos_release
+      environment:
+        http_proxy: "http://{{ proxy_host }}"
+        https_proxy: "http://{{ proxy_host }}"
 
-- name: Ensure rhos-release is installed
+    - name: Ensure rhos-release is installed
+      when:
+        - proxy_host is not defined
+      package:
+        name: "{{ rhos_release_repo_url }}/rhos-release-latest.noarch.rpm"
+        state: installed
+        disable_gpg_check: true
+      register: rhos_release
+
+    - name: yum-clean-metadata
+      when:
+        - rhos_release is changed
+      command: yum clean metadata
+      args:
+        warn: false
+
+    - name: Run rhos-release
+      command: rhos-release {{ rhos_release_opts|default('') }} {{ rhos_release_version }}
+      become: true
+
+- name: Register node against rhel or satellite
   when:
-    - proxy_host is not defined
-  package:
-    name: "{{ rhos_release_repo_url }}/rhos-release-latest.noarch.rpm"
-    state: installed
-    disable_gpg_check: true
-  register: rhos_release
-
-- name: yum-clean-metadata
-  when:
-    - rhos_release is changed
-  command: yum clean metadata
-  args:
-    warn: false
-
-- name: Run rhos-release
-  command: rhos-release {{ rhos_release_opts|default('') }} {{ rhos_release_version }}
-  become: true
+    - rhsm_register is defined
+  vars:
+    rhsm_activation_key: "{{ rhsm_register['rhsm_activation_key'] | default(omit) }}"
+    rhsm_org_id: "{{ rhsm_register['rhsm_org_id'] | default(omit) }}"
+    rhsm_server_hostname: "{{ rhsm_register['rhsm_hostname'] | default(omit) }}"
+    rhsm_baseurl: "{{ rhsm_register['rhsm_baseurl']| default(omit) }}"
+    rhsm_method: "{{ rhsm_register['rhsm_method'] | default(omit) }}"
+    rhsm_insecure: "{{ rhsm_register['rhsm_insecure'] | default(omit) }}"
+    rhsm_username: "{{ rhsm_register['rhsm_username'] | default(omit) }}"
+    rhsm_password: "{{ rhsm_register['rhsm_password'] | default(omit) }}"
+    rhsm_repos: "{{ rhsm_register['rhsm_repos'] | default(omit) }}"
+  include_role:
+    name: redhat_subscription

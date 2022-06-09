@@ -12,17 +12,20 @@
     - always
     - lab
   file:
-    path: ~/.ansible
+    path: "{{ item }}"
     state: directory
+  loop:
+    - ~/.ansible
+    - ~/.ansible/roles
 
-- name: Clone tripleo-operator-ansible
+- name: Clone operator
   register: git_operator
   tags:
     - always
     - lab
   git:
-    dest: ~/.ansible/tripleo-operator-ansible
-    repo: https://opendev.org/openstack/tripleo-operator-ansible
+    dest: "~/.ansible/tripleo-operator-ansible"
+    repo: "https://opendev.org/openstack/tripleo-operator-ansible"
     update: "{{ update_operator | bool }}"
 
 - name: Build operator collection
@@ -31,7 +34,7 @@
   command: "ansible-galaxy collection build --force --output-path /tmp/collections"
   register: collection_name
   args:
-    chdir: ~/.ansible/tripleo-operator-ansible
+    chdir: "~/.ansible/tripleo-operator-ansible"
 
 - name: Install operator collection
   tags: always
@@ -39,3 +42,12 @@
   command: "ansible-galaxy collection install --force {{ collection_name.stdout.split(' ')[-1] }}"
   args:
     chdir: ~/.ansible/tripleo-operator-ansible
+
+- name: Clone ansible-role-redhat-subscription
+  tags:
+    - always
+    - lab
+  git:
+    dest: "~/.ansible/roles/redhat_subscription"
+    repo: "https://opendev.org/openstack/ansible-role-redhat-subscription"
+    update: "{{ update_operator | bool }}"
