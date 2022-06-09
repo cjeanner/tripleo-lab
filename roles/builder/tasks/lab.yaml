@@ -107,7 +107,7 @@
     - inventory
     - lab
   add_host:
-    hostname: "{{ item.item.name }}"
+    hostname: "{{ item.item.name is match('^undercloud')|ternary('undercloud', item.item.name) }}"
     ansible_host: "{{ item.stdout|replace('/24','') }}"
     ansible_python_interpreter: "{{ undercloud_python_interpreter }}"
   loop: "{{ ip_address.results }}"
