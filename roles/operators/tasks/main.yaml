@@ -18,31 +18,6 @@
     - ~/.ansible
     - ~/.ansible/roles
 
-- name: Clone operator
-  register: git_operator
-  tags:
-    - always
-    - lab
-  git:
-    dest: "~/.ansible/tripleo-operator-ansible"
-    repo: "https://opendev.org/openstack/tripleo-operator-ansible"
-    update: "{{ update_operator | bool }}"
-
-- name: Build operator collection
-  tags: always
-  when: git_operator is changed
-  command: "ansible-galaxy collection build --force --output-path /tmp/collections"
-  register: collection_name
-  args:
-    chdir: "~/.ansible/tripleo-operator-ansible"
-
-- name: Install operator collection
-  tags: always
-  when: git_operator is changed
-  command: "ansible-galaxy collection install --force {{ collection_name.stdout.split(' ')[-1] }}"
-  args:
-    chdir: ~/.ansible/tripleo-operator-ansible
-
 - name: Clone ansible-role-redhat-subscription
   tags:
     - always
@@ -51,3 +26,8 @@
     dest: "~/.ansible/roles/redhat_subscription"
     repo: "https://opendev.org/openstack/ansible-role-redhat-subscription"
     update: "{{ update_operator | bool }}"
+
+- name: Install collections
+  tags:
+    - always
+  command: "ansible-galaxy collection install --force community.libvirt tripleo.operator"
