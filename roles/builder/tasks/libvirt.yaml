@@ -46,25 +46,25 @@
       register: default_net_xml
 
     - name: ensure default network is present
-      virt_net:
+      community.libvirt.virt_net:
         command: define
         name: default
         xml: "{{ default_net_xml['content']|b64decode }}"
 
     - name: run default network
-      virt_net:
+      community.libvirt.virt_net:
         command: create
         name: default
       ignore_errors: true
 
     - name: ensure network is active and autostart
-      virt_net:
+      community.libvirt.virt_net:
         state: active
         autostart: true
         name: default
 
     - name: load ctlplane network
-      virt_net:
+      community.libvirt.virt_net:
         command: define
         name: ctlplane
         xml: '{{ lookup("file", "virsh/networks/ctlplane.xml") }}'
@@ -72,12 +72,12 @@
 
     - name: create ctlplane network
       when: ctlplane_create is changed
-      virt_net:
+      community.libvirt.virt_net:
         command: create
         name: ctlplane
 
     - name: ensure ctlplane is active and autostart
-      virt_net:
+      community.libvirt.virt_net:
         state: active
         autostart: true
         name: ctlplane

@@ -7,7 +7,7 @@
   block:
     - name: define undercloud node
       when: item.name is match('^undercloud')
-      virt:
+      community.libvirt.virt:
         command: define
         xml: "{{ lookup('template', 'undercloud.xml.j2') }}"
         uri: "qemu:///system"
@@ -18,7 +18,7 @@
     - name: define overcloud node
       when:
         - item.0.name is not match('^undercloud')
-      virt:
+      community.libvirt.virt:
         command: define
         xml: "{{ lookup('template', 'domain.xml.j2') }}"
         uri: "qemu:///system"
@@ -38,7 +38,7 @@
     - name: start undercloud
       tags:
         - start-domains
-      virt:
+      community.libvirt.virt:
         name: "{{ vm_prefix }}-{{ item.name }}"
         state: running
         uri: "qemu:///system"
