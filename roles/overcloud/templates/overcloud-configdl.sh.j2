@@ -32,7 +32,7 @@ stdbuf -i0 -o0 -e0 openstack overcloud deploy \
   --ntp-server pool.ntp.org --libvirt-type qemu 2>&1 | tee -a ~/config-download-oc{{ item }}.log
 
 tripleo-config-download --stack-name overcloud-{{ item }} --output-dir oc{{ item }}-config-download
-tripleo-ansible-inventory --ansible_ssh_user heat-admin --static-yaml-inventory oc{{ item }}-inventory.yaml --stack overcloud-{{ item }}
+tripleo-ansible-inventory --ansible_ssh_user tripleo-admin --static-yaml-inventory oc{{ item }}-inventory.yaml --stack overcloud-{{ item }}
 
 echo ansible-playbook \
   -i oc{{ item }}-inventory.yaml \

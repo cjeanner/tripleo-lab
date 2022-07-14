@@ -1,4 +1,4 @@
 Host 192.168.24.* *.ctlplane
-  User heat-admin
+  User tripleo-admin
   StrictHostKeyChecking no
   UserKnownHostsFile /dev/null
