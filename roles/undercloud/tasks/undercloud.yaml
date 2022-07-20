@@ -111,6 +111,24 @@
       {{ override }}
       {% endfor %}
 
+- name: Create undercloud_custom_env
+  when: undercloud_custom_env is defined
+  copy:
+    dest: /home/stack/undercloud_custom_env.yaml
+    mode: 0444
+    owner: stack
+    group: stack
+    content: "{{ undercloud_custom_env |to_nice_json }}"
+
+- name: Set custom_env_files
+  when: undercloud_custom_env is defined
+  ini_file:
+    backup: false
+    path: /home/stack/undercloud.conf
+    section: DEFAULT
+    option: custom_env_files
+    value: /home/stack/undercloud_custom_env.yaml
+
 - name: include TLS config if needed
   when: enable_tls|default(False)|bool
   import_tasks: tls.yaml
