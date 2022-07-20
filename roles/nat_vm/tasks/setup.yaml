@@ -93,7 +93,7 @@
 
     - name: Create vlan interface
       command: |
-        nmcli con add type vlan con-name vlan-{{ item + 100 }} vlan.parent eth1 vlan.id {{ item + 100 }} ip4 "192.168.{{ 100 + item }}.1/24"
+        nmcli con add type vlan con-name vlan-{{ item + 100 }} vlan.parent eth1 vlan.id {{ item + 100 }} ip4 "192.168.{{ 100 + item }}.1/24" ipv6.addr-gen-mode 1
       args:
         creates: "/etc/sysconfig/network-scripts/ifcfg-vlan{{ item + 100 }}"
       loop: "{{ overclouds_range }}"
