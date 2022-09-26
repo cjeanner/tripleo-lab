@@ -24,12 +24,12 @@
         - proxy_host is defined
     - name: install rdo-trunk deps
       get_url:
-        url: https://trunk.rdoproject.org/centos7-master/rdo-trunk-runtime-deps.repo
+        url: https://trunk.rdoproject.org/centos9-master/rdo-trunk-runtime-deps.repo
         dest: /etc/yum.repos.d/rdo-trunk-runtime-deps.repo
 
     - name: install delorean
       get_url:
-        url: https://trunk.rdoproject.org/centos7-master/puppet-passed-ci/delorean.repo
+        url: https://trunk.rdoproject.org/centos9-master/puppet-passed-ci/delorean.repo
         dest: /etc/yum.repos.d/delorean.repo
 
     - name: ensure packages are present
@@ -37,7 +37,7 @@
         use: "{{ package_use|default(omit) }}"
         name:
         - bash-completion
-        - libguestfs-tools
+        - guestfs-tools
         - libvirt
         - libvirt-client
         - libvirt-daemon
