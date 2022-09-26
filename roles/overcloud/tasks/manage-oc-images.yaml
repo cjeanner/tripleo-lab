@@ -101,7 +101,7 @@
       --copy-in /usr/local/src/:/usr/local/ \
       --firstboot /tmp/overcloud-firstboot \
       --update \
-      {{ (selinux_relabel_option.rc == 0) | ternary('--selinux-relabel', '') }}--enable customize \
+      {{ (selinux_relabel_option.rc == 0) | ternary('--selinux-relabel', '') }} --enable customize \
       --network \
       --truncate /etc/machine-id &> /home/stack/overcloud_imgs/overcloud-full.done
   args:

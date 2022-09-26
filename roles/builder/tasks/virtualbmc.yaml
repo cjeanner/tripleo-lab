@@ -50,7 +50,7 @@
 
     - name: Create the Virtual BMCs
       when: item.0.name is not match('^undercloud')
-      command: "vbmc add {{vm_prefix}}-oc{{ item.1 }}-{{ item.0.name }} --port {{ '%s-%s-oc-%s'|format(vm_prefix, item.1, item.0.name)|hashed_port }} --libvirt-uri qemu:///system --username ADMIN --password ADMIN"
+      command: "/usr/local/bin/vbmc add {{vm_prefix}}-oc{{ item.1 }}-{{ item.0.name }} --port {{ '%s-%s-oc-%s'|format(vm_prefix, item.1, item.0.name)|hashed_port }} --libvirt-uri qemu:///system --username ADMIN --password ADMIN"
       args:
         creates: "/var/lib/vbmcd/.vbmc/{{vm_prefix}}-oc{{ item.1 }}-{{ item.0.name }}/config"
       loop: "{{ vms|product(overclouds_range)|list }}"
@@ -61,7 +61,7 @@
       ignore_errors: true
 
     - name: Start the Virtual BMCs (virtualbmc >= 1.4.0+)
-      command: "vbmc start {{vm_prefix}}-oc{{ item.1 }}-{{ item.0.name }}"
+      command: "/usr/local/bin/vbmc start {{vm_prefix}}-oc{{ item.1 }}-{{ item.0.name }}"
       loop: "{{ vms|product(overclouds_range)|list }}"
       loop_control:
         label: "oc{{ item.1 }}-{{ item.0.name }}"
@@ -72,7 +72,7 @@
 
     - name: Manage iptables on older centos release
       when:
-        - ansible_facts['distribution_version'] is version('8.0', 'lt', strict=True)
+        - ansible_facts['distribution_version'] is version('8.0', 'lt')
       block:
         - name: Open port on libvirt interface for each node
           when:

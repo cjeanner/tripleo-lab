@@ -43,6 +43,15 @@
     dest: /etc/sysconfig/network-scripts/route-br-ctlplane
     src: undercloud-static-routes-ctlplane.j2
 
+- name: Check if routing for OC routers exists
+  command: ip ro list 10.0.{{ item }}.0/24 dev br-ctlplane
+  become: true
+  tags:
+    - lab
+    - overcloud
+  loop: "{{ overclouds_range }}"
+  register: oc_router_routing
+
 - name: Add routing for OC routers
   become: true
   tags:
@@ -50,3 +59,4 @@
     - overcloud
   command: ip ro add 10.0.{{ item }}.0/24 dev br-ctlplane
   loop: "{{ overclouds_range }}"
+  when: oc_router_routing.results.{{ item }}.stdout == ""
