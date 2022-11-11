@@ -7,7 +7,7 @@
 
     - name: push vbmcd unit
       when:
-        - ansible_facts['python_version'] is version('3.0', 'gt', strict=False)
+        - ansible_facts['python_version'] is version('3.0', 'gt')
       copy:
         src: vbmcd.service
         dest: /etc/systemd/system/virtualbmc.service
@@ -15,7 +15,7 @@
 
     - name: create vbmcd user
       when:
-        - ansible_facts['python_version'] is version('3.0', 'gt', strict=False)
+        - ansible_facts['python_version'] is version('3.0', 'gt')
       user:
         comment: VirtualBMC Daemon user
         create_home: true
@@ -25,7 +25,7 @@
 
     - name: authorize vbmcd on libvirt
       when:
-        - ansible_facts['python_version'] is version('3.0', 'gt', strict=False)
+        - ansible_facts['python_version'] is version('3.0', 'gt')
       copy:
         dest: /etc/polkit-1/rules.d/60-vbmcd.rules
         src: vbmc-polkit.rules
@@ -92,7 +92,7 @@
 
     - name: Manage firewalld on newer centos release
       when:
-        - ansible_facts['distribution_version'] is version('8.0', 'gt', strict=False)
+        - ansible_facts['distribution_version'] is version('8.0', 'gt')
       block:
         - name: Open firewalld in libvirt zone for each node
           when:
