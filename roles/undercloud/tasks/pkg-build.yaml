@@ -98,7 +98,9 @@
     version: master
 
 - name: Build packages
-  include: rdo-project-build.yaml project={{ item }}
+  include_tasks: rdo-project-build.yaml
+  vars:
+    project: "{{ item }}"
   loop: "{{ synchronize }}"
   loop_control:
     label: "{{ item.name }}"
