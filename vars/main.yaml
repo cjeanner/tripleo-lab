@@ -8,6 +8,10 @@ ansible_tripleo_podman_name: >-
   {%- if tripleo_repos_branch == 'train' -%}
   tripleo-podman
   {%- else %}tripleo_podman {% endif -%}
+guestfs_tools_package_name: >-
+  {%- if ansible_distribution_major_version >= 8 -%}
+  guestfs-tools
+  {%- else %}libguestfs-tools {% endif -%}
 basedir: "/home/{{virt_user}}"
 base_image: centos
 centos_variant: "stream"
