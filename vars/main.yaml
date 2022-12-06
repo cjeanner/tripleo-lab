@@ -14,7 +14,10 @@ centos_variant: "stream"
 tripleo_repos_stream: true
 cirros_version: 0.5.2
 container_prepare_excludes: []
-container_prepare_insecure_registries: []
+container_prepare_insecure_registries:
+  - "localhost"
+  - "undercloud.ctlplane"
+  - "192.168.122.1"
 container_prepare_overrides: {}
 containerized_undercloud: true
 custom_ca: ''
