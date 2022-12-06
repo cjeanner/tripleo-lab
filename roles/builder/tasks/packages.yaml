@@ -35,7 +35,7 @@
         use: "{{ package_use|default(omit) }}"
         name:
         - bash-completion
-        - guestfs-tools
+        - "{{ guestfs_tools_package_name }}"
         - libvirt
         - libvirt-client
         - libvirt-daemon
