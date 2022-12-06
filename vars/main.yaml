@@ -9,7 +9,7 @@ ansible_tripleo_podman_name: >-
   tripleo-podman
   {%- else %}tripleo_podman {% endif -%}
 guestfs_tools_package_name: >-
-  {%- if ansible_distribution_major_version >= 8 -%}
+  {%- if ansible_distribution_major_version is version('8', 'ge') -%}
   guestfs-tools
   {%- else %}libguestfs-tools {% endif -%}
 basedir: "/home/{{virt_user}}"
