@@ -27,5 +27,6 @@
     tripleo_deploy_standalone: true
     tripleo_deploy_output_dir: /home/stack
     tripleo_deploy_environment_files: "{{ standalone_env_files.split('\n') }}"
-    tripleo_deploy_local_ip: '192.168.24.2'
+    tripleo_deploy_local_ip: '192.168.24.2/24'
+    tripleo_deploy_control_virtual_ip: '192.168.24.10'
     tripleo_deploy_generate_scripts_only: "{{ not deploy_standalone | bool }}"
