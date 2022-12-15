@@ -40,17 +40,18 @@
         dest: /tmp/ansible-facts.json
         content: "{ \"ansible_facts\": {{ ansible_facts | to_nice_json }} }"
 
+    - name: Prepare environment file for registry parameters
+      template:
+        dest: /tmp/image-prepare-registry.yaml
+        src: image-prepare-registry.yaml.j2
+
     - name: Ensure we have something for podman registry
       become: true
       become_user: root
       command: |
-        ansible -m include_role \
+        ansible -m include_role -vvv \
           -a role={{ ansible_tripleo_podman_name }} \
-          -e tripleo_container_registry_insecure_registries='["localhost","undercloud.ctlplane","192.168.122.1"]' \
-          -e ansible_distribution={{ ansible_facts['distribution'] }} \
-          -e ansible_os_family={{ ansible_facts['os_family'] }} \
-          -e ansible_distribution_version={{ ansible_facts['distribution_version'] }} \
-          -e ansible_distribution_major_version={{ ansible_facts['distribution_major_version'] }} \
+          -e @/tmp/image-prepare-registry.yaml \
           -e @/tmp/ansible-facts.json \
           localhost
 
