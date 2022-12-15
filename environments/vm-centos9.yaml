@@ -11,16 +11,24 @@ undercloud_custom_repositories:
   - name: custom-BaseOS
     file: centos-base
     uri: http://mirror.stream.centos.org/9-stream/BaseOS/x86_64/os
+    gpgkey: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-centosofficial
+    gpgcheck: 1
     priority: 100
   - name: custom-appstreams
     file: centos-appstreams
     uri: http://mirror.stream.centos.org/9-stream/AppStream/x86_64/os
+    gpgkey: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-centosofficial
+    gpgcheck: 1
     priority: 100
   - name: custom-crb
     file: centos-crb
     uri: http://mirror.stream.centos.org/9-stream/CRB/x86_64/os
+    gpgkey: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-centosofficial
+    gpgcheck: 1
     priority: 100
   - name: custom-ha
     file: centos-ha
     uri: http://mirror.stream.centos.org/9-stream/HighAvailability/x86_64/os
     priority: 100
+    gpgkey: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-centosofficial
+    gpgcheck: 1
