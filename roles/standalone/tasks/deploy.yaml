@@ -24,9 +24,9 @@
   import_role:
     name: tripleo.operator.tripleo_deploy
   vars:
-    tripleo_deploy_standalone: true
-    tripleo_deploy_output_dir: /home/stack
+    tripleo_deploy_output_dir: /home/stack/tripleo-deploy
     tripleo_deploy_environment_files: "{{ standalone_env_files.split('\n') }}"
-    tripleo_deploy_local_ip: '192.168.24.2/24'
     tripleo_deploy_control_virtual_ip: '192.168.24.10'
+    tripleo_deploy_local_ip: '192.168.24.1/24'
     tripleo_deploy_generate_scripts_only: "{{ not deploy_standalone | bool }}"
+    tripleo_deploy_reproducer_command: true
