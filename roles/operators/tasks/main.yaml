@@ -30,4 +30,4 @@
 - name: Install collections
   tags:
     - always
-  command: "ansible-galaxy collection install --force community.libvirt tripleo.operator"
+  command: "ansible-galaxy collection install --force -r collections.yaml"

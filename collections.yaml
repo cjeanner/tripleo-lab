@@ -1,0 +1,4 @@
+collections:
+  - name: https://opendev.org/openstack/tripleo-operator-ansible
+    type: git
+  - name: community.libvirt
