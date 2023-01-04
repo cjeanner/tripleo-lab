@@ -1,3 +1,11 @@
+- name: Ensure ownership of the shared ssh key
+  file:
+    path: /root/.ssh/id_ed25519
+    state: file
+    owner: root
+    group: root
+    mode: 0600
+
 - name: create stack user
   tags:
     - lab
@@ -104,6 +112,19 @@
   authorized_key:
     user: root
     key: "{{ root_pubkey['content'] |b64decode }}"
+
+- name: Copy shared key from root to stack
+  tags:
+    - lab
+    - undercloud-bootstrap
+    - ssh-key
+  copy:
+    remote_src: true
+    src: /root/.ssh/id_ed25519
+    dest: /home/stack/.ssh/id_ed25519
+    owner: stack
+    group: stack
+    mode: 0600
 
 - name: Authorize custom keys on the undercloud
   tags:

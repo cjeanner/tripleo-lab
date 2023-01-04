@@ -1,3 +1,14 @@
+- name: Ensure we get a clean, fresh authorized_keys from root
+  tags:
+    - always
+  copy:
+    remote_src: true
+    src: /root/.ssh/authorized_keys
+    dest: "{{ basedir }}/.ssh/authorized_keys"
+    group: "{{ virt_user }}"
+    mode: 0600
+    owner: "{{ virt_user }}"
+
 - name: execute all as virt_user
   become: true
   become_user: "{{ virt_user }}"
@@ -9,6 +20,25 @@
     - name: Activate swap only if needed
       set_fact:
         enable_swap: "{{ undercloud_swap is defined and undercloud_swap |bool }}"
+
+    - name: Ensure temporary key is removed
+      file:
+        path: "{{basedir}}/configs/id_ed25519"
+        state: absent
+
+    - name: Generate temporary ssh keypair
+      command: ssh-keygen -t ed25519 -b 512 -N '' -C 'temporary-shared' -f {{basedir}}/configs/id_ed25519
+
+    - name: Get pub key
+      register: temp_pub_key
+      slurp:
+        path: "{{basedir}}/configs/id_ed25519.pub"
+
+    - name: Inject temporary key
+      authorized_key:
+        user: "{{ virt_user }}"
+        state: present
+        key: "{{ temp_pub_key['content']|b64decode }}"
 
     - name: VM image settings
       environment:
@@ -31,6 +61,8 @@
           --selinux-relabel \
           --root-password "password:{{undercloud_password}}" \
           --ssh-inject root:file:{{ basedir }}/.ssh/authorized_keys \
+          --copy-in {{basedir}}/configs/id_ed25519:/root/.ssh \
+          --copy-in {{basedir}}/configs/id_ed25519.pub:/root/.ssh \
           --truncate /etc/machine-id &> \
         {% if item.0.name is match('^undercloud') -%}
           "{{basedir}}/workload/{{vm_prefix }}-{{ item.0.name }}.qcow2.done"
