@@ -1,17 +1,20 @@
+{%- set global_uefi = (uefi|default(true)|bool and not item.0.autostart|default(false)|bool) -%}
 <domain type='kvm'>
   <name>{{vm_prefix}}-oc{{ item.1 }}-{{item.0.name}}</name>
   <memory unit='MB'>{{item.0.memory}}</memory>
   <vcpu placement='static'>{{item.0.cpu}}</vcpu>
   <os>
-{% if uefi|default(true)|bool -%}
+{% if global_uefi|bool -%}
     <type arch='x86_64' machine='q35'>hvm</type>
     <loader readonly="yes" secure="no" type="pflash">/usr/share/edk2/ovmf/OVMF_CODE.secboot.fd</loader>
     <nvram template='/usr/share/edk2/ovmf/OVMF_VARS.fd'/>
 {% else -%}
     <type arch='x86_64' machine='pc'>hvm</type>
 {% endif -%}
+{% if item.0.autostart|default(false)|bool -%}
+    <boot dev='hd'/>
+{% endif -%}
     <bios useserial='yes' rebootTimeout='0'/>
-    <smbios mode='emulate'/>
   </os>
   <cpu mode='host-passthrough' check='none'/>
   <clock offset='utc'>
@@ -28,7 +31,7 @@
     <disk type='file' device='disk'>
       <driver name='qemu' type='qcow2'/>
       <source file='{{basedir}}/workload/{{vm_prefix}}-oc{{item.1}}-{{item.0.name}}.qcow2'/>
-      <target dev='sda' bus='sata'/>
+      <target dev='sda'/>
       {% if item.0.iotune is defined %}
       <iotune>
       {% for option in item.0.iotune %}
@@ -41,7 +44,7 @@
     <disk type='file' device='disk'>
       <driver name='qemu' type='raw'/>
       <source file='{{basedir}}/workload/{{vm_prefix}}-oc{{item.1}}-{{item.0.name}}-swap.img'/>
-      <target dev='sdb' bus='sata'/>
+      <target dev='sdb'/>
       {% if item.0.iotune is defined %}
       <iotune>
       {% for option in item.0.iotune %}
@@ -88,7 +91,7 @@
       <master startport='4'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x2'/>
     </controller>
-{% if uefi|default(true)|bool -%}
+{% if global_uefi -%}
     <controller type='pci' index='0' model='pcie-root'>
 {% else -%}
     <controller type='pci' index='0' model='pci-root'>

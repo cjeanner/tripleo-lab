@@ -10,27 +10,43 @@
       set_fact:
         enable_swap: "{{ undercloud_swap is defined and undercloud_swap |bool }}"
 
-    - name: undercloud image settings
+    - name: VM image settings
+      environment:
+        LIBGUESTFS_BACKEND: direct
       shell: |
-        export LIBGUESTFS_BACKEND=direct
-        virt-sysprep -a "{{basedir}}/workload/{{vm_prefix}}-{{ item.name }}.qcow2" \
+        {% if item.0.name is match('^undercloud') -%}
+        virt-sysprep -a "{{basedir}}/workload/{{vm_prefix}}-{{ item.0.name }}.qcow2" \
+          --hostname {{ undercloud_hostname | lower }} \
+        {% else -%}
+        virt-sysprep -a "{{basedir}}/workload/{{ vm_prefix }}-oc{{ item.1 }}-{{ item.0.name }}.qcow2" \
+          --hostname "{{ vm_prefix }}-oc{{ item.1 }}-{{ item.0.name }}.{{ domain }}" \
+        {% endif -%}
           --firstboot-command "growpart /dev/sda {{ root_device }}" \
           --firstboot-command "xfs_growfs {{ growfs_part }}" \
-        {% if enable_swap | bool %}
+        {% if enable_swap | bool -%}
           --firstboot-command "mkswap /dev/sdb" \
           --firstboot-command "swapon /dev/sdb" \
-        {% endif %}
-          --hostname {{ undercloud_hostname | lower }} \
+        {% endif -%}
           --uninstall cloud-init \
           --selinux-relabel \
           --root-password "password:{{undercloud_password}}" \
           --ssh-inject root:file:{{ basedir }}/.ssh/authorized_keys \
-          --truncate /etc/machine-id &> "{{basedir}}/workload/{{vm_prefix}}-{{ item.name }}.qcow2.done"
+          --truncate /etc/machine-id &> \
+        {% if item.0.name is match('^undercloud') -%}
+          "{{basedir}}/workload/{{vm_prefix }}-{{ item.0.name }}.qcow2.done"
+        {% else -%}
+          "{{basedir}}/workload/{{vm_prefix }}-oc{{ item.1 }}-{{ item.0.name }}.qcow2.done"
+        {% endif -%}
       args:
-        creates: "{{basedir}}/workload/{{vm_prefix}}-{{ item.name }}.qcow2.done"
+        creates: >-
+          {%- if item.0.name is match('^undercloud') -%}
+          {{basedir}}/workload/{{vm_prefix }}-{{ item.0.name }}.qcow2.done
+          {%- else -%}
+          {{basedir}}/workload/{{vm_prefix}}-oc{{ item.1 }}-{{ item.0.name }}.qcow2.done
+          {%- endif -%}
       when:
-        - item.name is match('^undercloud')
-      loop: "{{ vms }}"
+        - item.0.name is match('^undercloud') or item.0.autostart|default(false)|bool
+      loop: "{{ vms|product(overclouds_range)|list }}"
       loop_control:
-        label: "{{ item.name }}"
+        label: "{{ item.0.name }}"
 

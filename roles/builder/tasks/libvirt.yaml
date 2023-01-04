@@ -112,19 +112,32 @@
           --truncate /etc/machine-id \
           --update
 
-    - name: "Create undercloud image based on {{ base_image_name }}"
-      when:
-        - item.name is match('^undercloud')
+    - name: "Create workload images using either {{ base_image_name }} or empty disk"
       tags:
         - images
-      command: |
-        qemu-img create -o backing_file=../images/{{ base_image_name }},backing_fmt=qcow2 -f qcow2 "{{ vm_prefix }}-{{ item.name }}.qcow2" "{{ item.disksize|default ('100') }}G"
+      shell: >-
+        {%- if item.0.name is match('^undercloud') -%}
+        test -f "{{ vm_prefix }}-{{ item.0.name }}.qcow2" && exit 0;
+        qemu-img create -o backing_file=../images/{{ base_image_name }},backing_fmt=qcow2 -f qcow2 "{{ vm_prefix }}-{{ item.0.name }}.qcow2" "{{ item.0.disksize|default ('100') }}G";
+        {%- else -%}
+        test -f "{{ vm_prefix }}-oc{{ item.1 }}-{{ item.0.name }}.qcow2" && exit 0;
+        {%-   if item.0.autostart|default(false)|bool %}
+        qemu-img create -o backing_file=../images/{{ base_image_name }},backing_fmt=qcow2 -f qcow2 "{{ vm_prefix }}-oc{{ item.1 }}-{{ item.0.name }}.qcow2" "{{ item.0.disksize|default ('100') }}G";
+        {%-   else %}
+        qemu-img create -f qcow2 "{{ vm_prefix }}-oc{{ item.1 }}-{{ item.0.name }}.qcow2" "{{ item.0.disksize|default ('100') }}G";
+        {%-   endif -%}
+        {%- endif -%}
       args:
-        creates: "{{ basedir }}/workload/{{ vm_prefix }}-{{ item.name }}.qcow2"
+        creates: >-
+          {%- if item.0.name is match('^undercloud') -%}
+          "{{ basedir }}/workload/{{ vm_prefix }}-{{ item.0.name }}.qcow2"
+          {%- else -%}
+          "{{ basedir }}/workload/{{ vm_prefix }}-oc{{ item.1 }}-{{ item.0.name }}.qcow2"
+          {%- endif -%}
         chdir: "{{ basedir }}/workload"
-      loop: "{{ vms }}"
+      loop: "{{ vms|product(overclouds_range)|list }}"
       loop_control:
-        label: "{{ item.name }}"
+        label: "{{ item.0.name }}"
 
     - name: create undercloud swap file when needed
       register: undercloud_swap
@@ -140,21 +153,6 @@
       loop: "{{ vms }}"
       loop_control:
         label: "{{ item.name }}"
-
-
-    - name: create empty image for non-undercloud
-      when:
-        - item.0.name is not match('^undercloud')
-      tags:
-        - images
-      command: |
-        qemu-img create -f qcow2 "{{ vm_prefix }}-oc{{ item.1 }}-{{ item.0.name }}".qcow2 "{{ item.0.disksize|default ('100') }}"G
-      args:
-        creates: "{{ basedir }}/workload/{{ vm_prefix }}-oc{{ item.1 }}-{{ item.0.name }}.qcow2"
-        chdir: "{{ basedir }}/workload"
-      loop: "{{ vms|product(overclouds_range)|list }}"
-      loop_control:
-        label: "oc{{ item.1 }}-{{ item.0.name }}"
 
     - name: create overcloud swap files when needed
       tags:

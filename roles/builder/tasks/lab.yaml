@@ -35,17 +35,31 @@
       loop_control:
         label: "oc{{ item.1 }}-{{ item.0.name }}"
 
-    - name: start undercloud
+    - name: start autostart VMs
       tags:
         - start-domains
       community.libvirt.virt:
-        name: "{{ vm_prefix }}-{{ item.name }}"
+        name: >-
+          {%- if item.0.name is match('^undercloud') -%}
+          {{ vm_prefix }}-{{ item.0.name }}
+          {%- else -%}
+          {{ vm_prefix }}-oc{{ item.1 }}-{{ item.0.name }}
+          {%- endif -%}
         state: running
         uri: "qemu:///system"
-      loop: "{{ vms }}"
+      loop: "{{ vms|product(overclouds_range)|list }}"
       loop_control:
-        label: "{{ item.name }}"
-      when: item.name is match('^undercloud')
+        label: "{{ item.0.name }}"
+      when: item.0.name is match('^undercloud') or item.0.autostart|default(false)|bool
+
+    - name: list running VMs
+      tags:
+        - start-domains
+        - gen-ssh-config
+        - inventory
+      shell: |
+        virsh --connect qemu:///system list --name
+      register: running_vms
 
     - name: fetch associated IP address for running domains
       tags:
@@ -53,17 +67,16 @@
         - gen-ssh-config
         - inventory
       shell: |
-        virsh --connect qemu:///system domifaddr "{{ vm_prefix }}-{{ item.name }}" | \
+        virsh --connect qemu:///system domifaddr "{{ item }}" | \
         awk '/ipv4/ {print $4}' | head -n1
       register: ip_address
       retries: "{{ node_retries | default(10) | int }}"
       delay: 5
       until:
         - ip_address.stdout != ""
-      loop: "{{ vms }}"
+      loop: "{{ running_vms.stdout_lines }}"
       loop_control:
-        label: "{{ item.name }}"
-      when: item.name is match('^undercloud')
+        label: "{{ item }}"
 
     - name: ensure variable ip_address is not empty
       tags:
@@ -72,7 +85,8 @@
       fail:
         msg: "No IP address for undercloud"
       when:
-        - ip_address.results[0].stdout == ""
+        - item.stdout == ""
+      loop: "{{ ip_address.results }}"
 
     - name: populate ssh_config
       tags:
@@ -91,13 +105,13 @@
     - start-domains
     - lab
   lineinfile:
-    line: "{{ item.stdout|replace('/24','') }} {{ item.item.name }} {{ vm_prefix }}-{{ item.item.name }}"
+    line: "{{ item.stdout|replace('/24','') }} {{ item.item is match('undercloud')|ternary('undercloud '~item.item, item.item) }}"
     path: /etc/hosts
-    regexp: "{{ item.item.name }}$"
+    regexp: "{{ item.item }}$"
     state: present
   loop: "{{ ip_address.results }}"
   loop_control:
-    label: "{{ item.item.name }}"
+    label: "{{ item.item }}"
   when: item.stdout is defined
 
 - name: inject domains in inventory
@@ -107,12 +121,12 @@
     - inventory
     - lab
   add_host:
-    hostname: "{{ item.item.name is match('^undercloud')|ternary('undercloud', item.item.name) }}"
+    hostname: "{{ item.item is match('undercloud')|ternary('undercloud', item.item) }}"
     ansible_host: "{{ item.stdout|replace('/24','') }}"
     ansible_python_interpreter: "{{ undercloud_python_interpreter }}"
   loop: "{{ ip_address.results }}"
   loop_control:
-    label: "{{ item.item.name }}"
+    label: "{{ item.item }}"
   when: item.stdout is defined
 
 - name: inject config on ansible host
@@ -125,11 +139,11 @@
   local_action:
     module: blockinfile
     path: ~/.ssh/config
-    marker: "## {mark} {{ vm_prefix }}-{{ item.item.name }}"
+    marker: "## {mark} {{ item.item is match('undercloud')|ternary('undercloud ' ~ item.item, item.item) }}"
     create: true
     mode: 0600
     block: |
-      Host {{ vm_prefix }}-{{ item.item.name }} {{ item.item.name }} {{ item.stdout|replace('/24','') }}
+      Host {{ item.item is match('undercloud')|ternary('undercloud ' ~ item.item, item.item) }} {{ item.stdout|replace('/24','') }}
         ProxyJump {{ virt_user }}@{{ ansible_host }}
         Hostname {{ item.stdout|replace('/24','') }}
         User root
@@ -137,7 +151,7 @@
         UserKnownHostsFile /dev/null
   loop: "{{ ip_address.results }}"
   loop_control:
-    label: "{{ item.item.name }}"
+    label: "{{ item.item }}"
   when: item.stdout is defined
 
 - name: wait for undercloud to be up

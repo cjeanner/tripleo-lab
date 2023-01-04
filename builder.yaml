@@ -18,7 +18,7 @@
     - nat_vm
 
 # Connect as root first in order to push basic config and accesses
-- hosts: undercloud
+- hosts: "{{ vm_prefix }}-undercloud"
   remote_user: root
   vars_files:
     - vars/main.yaml
@@ -26,7 +26,7 @@
     - undercloud_prepare
 
 # Reconnect to the undercloud as stack user
-- hosts: undercloud
+- hosts: "{{ vm_prefix }}-undercloud"
   remote_user: stack
   vars_files:
     - vars/main.yaml

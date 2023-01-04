@@ -4,7 +4,7 @@ Host *
 
 {% for result in ip_address.results %}
 {% if result.skipped is not defined %}
-Host {{ result.item.name }} {{result.stdout|replace('/24','')}}
+Host {{ result.item is match('undercloud')|ternary('undercloud '~result.item, result.item) }} {{result.stdout|replace('/24','')}}
   HostName {{result.stdout|replace('/24','')}}
   User root
 {% endif %}
