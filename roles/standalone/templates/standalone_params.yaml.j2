@@ -15,6 +15,7 @@ parameter_defaults:
   DnsServers: {{ nameservers | to_yaml }}
   DockerInsecureRegistryAddress:
     - undercloud.ctlplane.mydomain.tld:8787
+    - localhost:8787
   NeutronPublicInterface: eth1
   NeutronDnsDomain: {{ domain }}
   StandaloneEnableRoutedNetworks: false
