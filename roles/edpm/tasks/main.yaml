@@ -1,0 +1,145 @@
+---
+- name: End play if we are not in EDPM scenario
+  tags:
+    - always
+  when:
+    - not deploy_edpm|default(false)|bool
+  meta: end_play
+
+- name: Create overcloud range
+  tags:
+    - always
+  ansible.builtin.set_fact:
+    overclouds_range: "{{ range(0, overclouds|int)|list }}"
+
+# Target directory is owned by root:root
+- name: Copy tripleo-inventory for later EDPM edition
+  tags:
+    - lab
+    - edpm
+  become: true
+  ansible.builtin.copy:
+    src: /usr/share/ansible/tripleo-inventory/
+    dest: "/home/stack/tripleo-deploy/edpm-inventory/"
+    remote_src: true
+    directory_mode: 0755
+    owner: stack
+    group: stack
+
+# tripleo-ansible has a script for resource conversion - not shipped in the RPM
+- name: Fetch tripleo-standalone-vars from upstream tripleo-ansible repository
+  tags:
+    - lab
+    - edpm
+  ansible.builtin.get_url:
+    dest: "/home/stack/tripleo-standalone-vars"
+    mode: 0644
+    url: https://opendev.org/openstack/tripleo-ansible/raw/branch/master/scripts/tripleo-standalone-vars
+
+- name: Generate 99-standalone-vars for EDPM
+  tags:
+    - lab
+    - edpm
+  args:
+    chdir: "/home/stack/tripleo-deploy/edpm-inventory"
+    creates: "/home/stack/tripleo-deploy/edpm-inventory/99-standalone-vars"
+  ansible.builtin.shell: |
+    python3 /home/stack/tripleo-standalone-vars -c $(ls -d /home/stack/tripleo-deploy/standalone-ansible-*| tail -1) -r Standalone
+
+- name: Manipulate the inventory
+  tags:
+    - lab
+    - edpm
+  block:
+    - name: Get original inventory content
+      register: original_inventory
+      ansible.builtin.slurp:
+        path: "/home/stack/tripleo-deploy/edpm-inventory/02-computes"
+
+    - name: Set new host for inventory
+      ansible.builtin.set_fact:
+        compute_hosts: >-
+          {%- set _vms = vms|product(overclouds_range)|list %}
+          {%- set target_host = {} %}
+          {%- for entry in _vms if entry.0.name is not match('^undercloud') %}
+          {%-   set _hostname = vm_prefix ~ '-oc' ~ entry.1 ~ '-' ~ entry.0.name -%}
+          {%-   set _ = target_host.update({ _hostname: { 'ansible_host': hostvars[_hostname]['ansible_host'], 'ansible_user': 'root', 'ansible_ssh_private_key_file': '/home/stack/.ssh/id_ed25519', 'ansible_ssh_common_args': '-o StrictHostKeyChecking=no'} }) %}
+          {%- endfor %}
+          { hosts: {{ target_host }} }
+
+    - name: Update inventory with actual computes
+      ansible.builtin.set_fact:
+        updated_inventory: >-
+          {%- set _inventory = original_inventory['content']|b64decode|from_yaml %}
+          {%- set _hosts = compute_hosts|from_yaml %}
+          {%- set _ = _inventory['Compute'].update( _hosts ) %}
+          {{ _inventory }}
+
+    - name: Output updated inventory
+      ansible.builtin.copy:
+        dest: "/home/stack/tripleo-deploy/edpm-inventory/02-computes"
+        content: "{{ updated_inventory | from_yaml | to_nice_yaml }}"
+
+- name: Edit the localhost hostvar before duplicating it
+  tags:
+    - lab
+    - edpm
+  ansible.builtin.lineinfile:
+    path: "/home/stack/tripleo-deploy/edpm-inventory/host_vars/localhost"
+    line: 'ansible_connection: local'
+    state: absent
+
+- name: Create hostvars for each compute
+  tags:
+    - lab
+    - edpm
+  ansible.builtin.copy:
+    dest: "/home/stack/tripleo-deploy/edpm-inventory/host_vars/{{ vm_prefix }}-oc{{ item.1 }}-{{ item.0.name }}"
+    src: "/home/stack/tripleo-deploy/edpm-inventory/host_vars/localhost"
+    remote_src: true
+  loop: "{{ vms|product(overclouds_range)|list }}"
+  loop_control:
+    label: "{{ item.0.name }}"
+  when:
+    - item.0.name is not match('^undercloud')
+
+- name: Remove old file
+  tags:
+    - lab
+    - edpm
+  ansible.builtin.file:
+    path: "/home/stack/tripleo-deploy/edpm-inventory/host_vars/localhost"
+    state: absent
+
+- name: Generate edpm-compute.yaml file
+  tags:
+    - lab
+    - edpm
+  ansible.builtin.template:
+    dest: /home/stack/edpm-compute-parameters.yaml
+    src: compute-parameters.yaml
+    owner: stack
+    group: stack
+    mode: 0644
+
+- name: Push preparation playbook
+  tags:
+    - lab
+    - edpm
+  ansible.builtin.copy:
+    dest: /home/stack/edpm-prepare-playbook.yaml
+    src: edpm-prepare-playbook.yaml
+    owner: stack
+    group: stack
+    mode: 0644
+
+- name: Generate deploy script
+  tags:
+    - lab
+    - edpm
+  ansible.builtin.template:
+    dest: /home/stack/edpm-compute-deploy.sh
+    src: compute-deploy.sh
+    owner: stack
+    group: stack
+    mode: 0755

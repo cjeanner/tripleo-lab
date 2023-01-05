@@ -1,0 +1,12 @@
+---
+- hosts: Compute
+  gather_facts: false
+  tasks:
+    - name: Copy yum.repos.d content to remote computes
+      ansible.builtin.copy:
+        src: /etc/yum.repos.d/
+        dest: /etc/yum.repos.d/
+    - name: "Push dnf config (good for proxy)"
+      ansible.builtin.copy:
+        src: /etc/dnf/dnf.conf
+        dest: /etc/dnf/dnf.conf

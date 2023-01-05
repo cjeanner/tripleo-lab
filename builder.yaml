@@ -32,3 +32,4 @@
     - vars/main.yaml
   roles:
     - undercloud
+    - edpm

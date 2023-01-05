@@ -1,0 +1,8 @@
+---
+neutron_public_interface_name: eth0
+ctlplane_dns_nameservers: {{ nameservers }}
+tripleo_container_registry_insecure_registries: {{ container_prepare_insecure_registries }}
+deploy_tripleo_openstack_run_firewall: false
+tripleo_sshd_configure_firewall: true
+tripleo_hosts_entries_overcloud_hosts_entries:
+  - 192.168.24.1 undercloud undercloud.{{ domain }} undercloud.ctlplane undercloud.ctlplane.{{ domain }}
