@@ -10,3 +10,8 @@
       ansible.builtin.copy:
         src: /etc/dnf/dnf.conf
         dest: /etc/dnf/dnf.conf
+    - name: Install some basic packages
+      ansible.builtin.package:
+        name:
+          - tmux
+          - git

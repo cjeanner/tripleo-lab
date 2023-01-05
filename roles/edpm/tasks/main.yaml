@@ -143,3 +143,10 @@
     owner: stack
     group: stack
     mode: 0755
+
+- name: Deploy remote computes
+  tags:
+    - lab
+    - edpm
+    - deploy_edpm
+  ansible.builtin.command: /home/stack/edpm-compute-deploy.sh

@@ -1,5 +1,6 @@
 ---
 neutron_public_interface_name: eth0
+tripleo_network_config_template:  templates/net_config_static_bridge_with_external_dhcp.j2
 ctlplane_dns_nameservers: {{ nameservers }}
 tripleo_container_registry_insecure_registries: {{ container_prepare_insecure_registries }}
 deploy_tripleo_openstack_run_firewall: false
